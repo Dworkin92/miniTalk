@@ -70,9 +70,9 @@ Quelques Classes prédéfinies utiles :
 - **Class** : c'est un objet spécial qui permet d'unifier le comportement de toutes les classes
 - **System** : c'est une classe porte-manteau pour supporter les méthodes altérant le langage (chargement des librairies par exemple).
 
-Si vous avez envie de vous prendre la tête, ci-après le diagramme UML de miniTalk.
+Si vous avez envie de vous prendre la tête, ci-après le diagramme UML complet de miniTalk.
 
-### schéma UML de miniTalk
+### schéma UML complet de miniTalk
 
 ```mermaid
 classDiagram
