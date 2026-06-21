@@ -1,3 +1,5 @@
+"@module Math"
+
 "Math helpers"
 
 Math := Class new: 'Math'.

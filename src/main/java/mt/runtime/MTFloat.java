@@ -46,6 +46,12 @@ public final class MTFloat implements MTObject {
                 }
                 return new MTBoolean(false);
 
+case "!=":
+    MTObject eq = send("=", args);
+    return ((MTBoolean) eq).value()
+        ? new MTBoolean(false)
+        : new MTBoolean(true);
+
             case "printString":
                 return new MTString(Double.toString(value));
         }

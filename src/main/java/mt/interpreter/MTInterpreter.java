@@ -3,6 +3,7 @@ package mt.interpreter;
 
 import java.util.List;
 import java.util.ArrayList;
+import mt.runtime.MTFileClass;
 
 import mt.ast.*;
 import mt.runtime.*;
@@ -26,6 +27,8 @@ public class MTInterpreter {
         globalEnv.define("Object", objectClass);
         globalEnv.define("Class", classClass);
         globalEnv.define("Array", arrayClass);
+	globalEnv.define("File", new MTFileClass());
+        globalEnv.define("Process", new MTProcessClass());
     }
 
     // ✅ nécessaire pour Main

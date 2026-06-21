@@ -55,6 +55,14 @@ public final class MTInteger implements MTObject {
                 }
                 return new MTBoolean(false);
 
+
+case "!=": 
+    MTObject eq = send("=", args);
+    return ((MTBoolean) eq).value()
+        ? new MTBoolean(false)
+        : new MTBoolean(true);
+
+
             case "timesRepeat:":
                 if (!(args.get(0) instanceof MTBlockObject)) {
                     throw new RuntimeException("Block attendu pour timesRepeat:");
@@ -70,7 +78,7 @@ public final class MTInteger implements MTObject {
                 return last;
 
 
-            case "printString":
+            case "printString", "toString" :
                 return new MTString(Integer.toString(value));
         }
 

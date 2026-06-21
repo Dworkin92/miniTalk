@@ -11,6 +11,20 @@ public final class MTNil implements MTObject {
     @Override
     public MTObject send(String selector, List<MTObject> args) {
         return switch (selector) {
+	    case "=" -> {
+    		if (args.get(0) instanceof MTNil) {
+        		yield new MTBoolean(true);
+    		}
+    		yield new MTBoolean(false);
+	    }
+
+	    case "!=" -> {
+    		MTObject eq = send("=", args);
+    		yield ((MTBoolean) eq).value()
+        		? new MTBoolean(false)
+        		: new MTBoolean(true);
+	    }
+
             case "printString" -> new MTString("nil");
             default -> throw new RuntimeException("Message inconnu pour nil: " + selector);
         };

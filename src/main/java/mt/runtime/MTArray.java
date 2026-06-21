@@ -18,6 +18,35 @@ public final class MTArray implements MTObject {
     public MTObject send(String selector, List<MTObject> args) {
         return switch (selector) {
 
+case "=" -> {
+    if (!(args.get(0) instanceof MTArray other)) {
+        yield new MTBoolean(false);
+    }
+
+    if (values.size() != other.values.size()) {
+        yield new MTBoolean(false);
+    }
+
+    for (int i = 0; i < values.size(); i++) {
+        MTObject a = values.get(i);
+        MTObject b = other.values.get(i);
+
+        MTObject eq = a.send("=", List.of(b));
+
+        if (!(eq instanceof MTBoolean bool) || !bool.value()) {
+            yield new MTBoolean(false);
+        }
+    }
+
+    yield new MTBoolean(true);
+}
+
+
+case "!=" -> {
+    MTBoolean eq = (MTBoolean) send("=", args);
+    yield new MTBoolean(!eq.value());
+}
+
             case "size" -> new MTInteger(values.size());
 
             case "at:" -> {

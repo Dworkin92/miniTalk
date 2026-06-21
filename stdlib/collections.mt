@@ -1,3 +1,5 @@
+"@module Collections"
+
 "Common collection utilities"
 
 Array addMethod: 'average' with: [

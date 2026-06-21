@@ -100,6 +100,14 @@ public final class MTLexer {
                     ));
                 }
 
+case '!' -> {
+    if (pos + 1 < input.length() && input.charAt(pos + 1) == '=') {
+        pos += 2;
+        tokens.add(new MTToken(MTTokenType.BINARY_SELECTOR, "!=", start));
+    } else {
+        throw new RuntimeException("Unknown char: !");
+    }
+}
 
 		case '<' -> {
     		    if (pos + 1 < input.length() && input.charAt(pos + 1) == '-') {

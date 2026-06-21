@@ -19,7 +19,28 @@ public final class MTString implements MTObject {
         return switch (selector) {
             case "size" -> new MTInteger(value.length());
             case "," -> new MTString(value + ((MTString) args.get(0)).value());
-            case "printString" -> this;
+
+
+case "!=" -> {
+    MTObject eq = send("=", args);
+    yield ((MTBoolean) eq).value()
+        ? new MTBoolean(false)
+        : new MTBoolean(true);
+}
+
+case "=" -> {
+    if (args.get(0) instanceof MTString s) {
+        yield new MTBoolean(value.equals(s.value()));
+    }
+    yield new MTBoolean(false);
+}
+
+            
+case "printString" -> {
+    System.out.println(value);
+    yield this;
+}
+
             default -> throw new RuntimeException("Message inconnu pour String: " + selector);
         };
     }

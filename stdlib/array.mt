@@ -1,3 +1,5 @@
+"@module Array"
+
 "Array helpers"
 
 Array addMethod: 'sum' with: [
