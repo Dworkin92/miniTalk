@@ -2,7 +2,9 @@
 *.o
 *.out
 *.exe
+*.class
 build/
+target/
 
 # Debug
 *.log
@@ -16,4 +18,6 @@ build/
 
 # Temp files
 *~
+*.bak
+
 

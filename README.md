@@ -12,7 +12,7 @@ travailler avec elle est un vrai gain de temps : au lieu de passer un mois
 pour obtenir un premier prototype fonctionnel, j'ai seulement mis une semaine !
 Par contre, tenir en laisse une IA pour qu'elle fasse ce que vous voulez
 n'est pas de tout repos : parfois elle se met à faire des modifications
-puis à revenir en arrière puis repartir en avnt ... c'est un peu déstabilisant.
+puis à revenir en arrière puis repartir en avant ... c'est un peu déstabilisant.
 
 ## Principales fonctionalités de miniTalk
 
@@ -29,38 +29,74 @@ puis à revenir en arrière puis repartir en avnt ... c'est un peu déstabilisan
 - super + return (^)
 - collections
 - traitement des chaines de caractères
+- de librairies de méthodes et classes
 - et, cerise sur le gateau, une interopérabilité avec les classes Java
   dans le langage et dans le code, avec la possibilité de mapper les
   méthodes Java avec d'autres noms dans miniTalk
 
-## syntaxe du langage
+## utilisation du langage
+
+java -cp <rep classes> mt.Main -L *dir_libs*
 
 - toutes les instructions se terminent par un '.'
+
+- les commentaires sont encadrés par des doubles guillemets.
+
+  Exemple : "ceci est un commentaire"
+
 - tout est objet (les nombres, les classes, les méthodes, les blocks, etc.)
-- les commentaires sont des chaînes ou paragraphes délimitées par des
-  double quotes.
-- toutes les instructions commencent par un objet auquel on adresse une succession de messages. ces messages sont de plusieurs type :
-  - messages unaires : c'est juste un mot clé correspondant à une méthode. Par exemple : "a name."
-  - messages 
+
+- par convention :
+  * les noms de classes commencent par une majuscule
+  * les noms d'instances et de méthodes commencent par une minuscule
+  * les noms de méthodes ne comportent que des caractères alphabétiques
+    et, s'il sont composés, ont une majuscule sur chaque terme.
+    
+    Exemple : uneMethode
+
+- l'affectation se fait comme en Pascal.
+
+  Exemple : var := *expression*.
+  
+  Alternativement, et c'est peut-être plus parlant, on peut utiliser '<-'.
+  
+  Exemple : var <- *expression*.
+
+- toutes les instructions commencent par un objet auquel on adresse
+  une succession de messages. ces messages sont de plusieurs type :
+  - messages unaires : c'est un mot clé correspondant à une méthode.
+
+    Exemple : "a name."
+  - messages binaires : ce sont des mots clé réclamant un argument. Il faut
+    qu'ils se terminent par ':'.
+    
+    Exemple : "a name: 'Julian'."
   
 ### les types de bases
 
 Les classes sont des objets spéciaux dans le langage miniTalk.
 
-Elles sont organisées en une arborescence qui permet de dériver facilement d'autres classes, miniTalk en proposant un système d'héritage des méthodes et des propriétés, ainsi que d'une fonctionalité de surcharge des opérateurs et des méthodes.
+Elles sont organisées en une arborescence qui permet de dériver facilement d'autres classes, miniTalk en proposant un système d'héritage pour les méthodes et les propriétés, ainsi qu'un mécanisme de surcharge des opérateurs et des méthodes.
 
 Quelques Classes prédéfinies utiles :
 - **SmallInteger** : entiers mappés sur le type "int" de Java. Ils sont donc
-  limités à l'étendue [ -2**32, +2**32 - 1] sur les infrastructure 64b.
+  limités à l'intervalle [ -2**32, +2**32 - 1] sur les infrastructure 64b.
+
 - **String** : chaines de caractères, délimitées par des simples quotes.
+
+  Exemple: 'ceci est une chaine de caractères.'
+  
 - **Array** : permet de construire des tableaux. L'indice d'un tableau
   commence toujours à 1.
   
   Il existe deux méthodes pour créer un tableau :
   
-  - la création directe : a := #( 10 3 7 0 ).
-  - la création puis l'alimentation du tableau :
-     * v := Array new: 20.
+  - la création directe :
+  
+    Exemple : a := #( 10 3 7 0 ).
+
+  - la création puis l'alimentation du tableau. Exemple :
+     * v <- Array new: 20.
      * v at: 1 put 39.
      * etc.
     
@@ -258,8 +294,8 @@ Les blocs sont des séquences d'instructions délimités par des crochets : [ ].
 ## Exemples
 ```
 
-a := Array new: 5.
-a at: 1 put: 23.
+a := Array new: 5. "on crée un tableau"
+a at: 1 put: 23.   "on valorise son premier élément"
 a at: 2 put: 47.
 a map: [ :x | x * 2 ] dbg.
 
