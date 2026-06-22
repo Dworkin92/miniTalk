@@ -19,5 +19,5 @@ target/
 # Temp files
 *~
 *.bak
-
+*.old
 
