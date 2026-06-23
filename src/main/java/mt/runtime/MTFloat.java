@@ -31,8 +31,35 @@ public final class MTFloat implements MTObject {
             case "/":
                 return new MTFloat(value / asDouble(args.get(0)));
 
+
+	    case "//":
+    		if (args.get(0) instanceof MTFloat f) {
+        		return new MTFloat(Math.floor(value / f.value()));
+    		}
+
+    		double divisor = ((MTInteger) args.get(0)).value();
+
+    		if (divisor == 0) {
+        		throw new RuntimeException("Division entière par zéro");
+    		}
+
+    		return new MTFloat(Math.floor(value / divisor));
+
+	    case "%":
+    		if (args.get(0) instanceof MTFloat f) {
+        		return new MTFloat(value % f.value());
+    		}
+
+    		return new MTFloat(value % ((MTInteger) args.get(0)).value());
+
+            case ">=":
+                return new MTBoolean(value >= asDouble(args.get(0)));
+
             case ">":
                 return new MTBoolean(value > asDouble(args.get(0)));
+
+            case "<=":
+                return new MTBoolean(value <= asDouble(args.get(0)));
 
             case "<":
                 return new MTBoolean(value < asDouble(args.get(0)));
@@ -46,11 +73,11 @@ public final class MTFloat implements MTObject {
                 }
                 return new MTBoolean(false);
 
-case "!=":
-    MTObject eq = send("=", args);
-    return ((MTBoolean) eq).value()
-        ? new MTBoolean(false)
-        : new MTBoolean(true);
+            case "!=", "<>":
+                MTObject eq = send("=", args);
+                return ((MTBoolean) eq).value()
+                    ? new MTBoolean(false)
+                    : new MTBoolean(true);
 
             case "printString":
                 return new MTString(Double.toString(value));

@@ -91,7 +91,7 @@ public final class MTLexer {
             switch (c) {
 
                 // opérateurs
-                case '+', '-', '*', '/', '=', '>', ',' -> {
+                case '+', '-', '*', '%', '=', ',' -> {
                     pos++;
                     tokens.add(new MTToken(
                             MTTokenType.BINARY_SELECTOR,
@@ -100,24 +100,50 @@ public final class MTLexer {
                     ));
                 }
 
-case '!' -> {
-    if (pos + 1 < input.length() && input.charAt(pos + 1) == '=') {
-        pos += 2;
-        tokens.add(new MTToken(MTTokenType.BINARY_SELECTOR, "!=", start));
-    } else {
-        throw new RuntimeException("Unknown char: !");
-    }
-}
+                case '/' -> {
+                    if (pos + 1 < input.length() && input.charAt(pos + 1) == '/') {
+                        pos += 2;
+                        tokens.add(new MTToken(MTTokenType.BINARY_SELECTOR, "//", start));
+                    } else {
+                        pos++;
+                        tokens.add(new MTToken(MTTokenType.BINARY_SELECTOR, "/", start));
+                    }
+                }
+
+                case '!' -> {
+                    if (pos + 1 < input.length() && input.charAt(pos + 1) == '=') {
+                        pos += 2;
+                        tokens.add(new MTToken(MTTokenType.BINARY_SELECTOR, "!=", start));
+                    } else {
+                        throw new RuntimeException("Unknown char: !");
+                    }
+                }
 
 		case '<' -> {
-    		    if (pos + 1 < input.length() && input.charAt(pos + 1) == '-') {
-        		pos += 2;
-        		tokens.add(new MTToken(MTTokenType.ASSIGN, "<-", start));
-    		    } else {
-        		pos++;
-        		tokens.add(new MTToken(MTTokenType.BINARY_SELECTOR, "<", start));
-    		    }
+    		        if (pos + 1 < input.length() && input.charAt(pos + 1) == '-') {
+        		        pos += 2;
+        		        tokens.add(new MTToken(MTTokenType.ASSIGN, "<-", start));
+    		        } else if (pos + 1 < input.length() && input.charAt(pos + 1) == '>') {
+        		        pos += 2;
+        		        tokens.add(new MTToken(MTTokenType.BINARY_SELECTOR, "<>", start));
+    		        } else if (pos + 1 < input.length() && input.charAt(pos + 1) == '=') {
+        		        pos += 2;
+        		        tokens.add(new MTToken(MTTokenType.BINARY_SELECTOR, "<=", start));
+    		        } else {
+        		        pos++;
+        		        tokens.add(new MTToken(MTTokenType.BINARY_SELECTOR, "<", start));
+    		        }
 		}
+
+                case '>' -> {
+                    if (pos + 1 < input.length() && input.charAt(pos + 1) == '=') {
+                        pos += 2;
+                        tokens.add(new MTToken(MTTokenType.BINARY_SELECTOR, ">=", start));
+                    } else {
+                        pos++;
+                        tokens.add(new MTToken(MTTokenType.BINARY_SELECTOR, ">", start));
+                    }
+                }
 
                 // #
                 case '#' -> {

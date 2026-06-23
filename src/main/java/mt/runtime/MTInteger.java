@@ -40,8 +40,40 @@ public final class MTInteger implements MTObject {
             case "/":
                 return new MTFloat((double) value / ((MTInteger) args.get(0)).value());
 
+	    case "//":
+    		if (args.get(0) instanceof MTFloat) {
+        		MTFloat f = (MTFloat) args.get(0);
+        		int divisor = (int) f.value();
+
+        		if (divisor == 0) {
+            			throw new RuntimeException("Division entière par zéro");
+        		}
+
+        		return new MTInteger(value / divisor);
+    		}
+
+    		int divisor = ((MTInteger) args.get(0)).value();
+
+    		if (divisor == 0) {
+        		throw new RuntimeException("Division entière par zéro");
+    		}
+    		return new MTInteger(value / divisor);
+
+	    case "%":
+    		if (args.get(0) instanceof MTFloat f) {
+        		return new MTFloat(value % f.value());
+    		}
+    		return new MTInteger(value % ((MTInteger) args.get(0)).value());
+
+
+            case ">=":
+                return new MTBoolean(value >= ((MTInteger) args.get(0)).value());
+
             case ">":
                 return new MTBoolean(value > ((MTInteger) args.get(0)).value());
+ 
+            case "<=":
+                return new MTBoolean(value <= ((MTInteger) args.get(0)).value());
 
             case "<":
                 return new MTBoolean(value < ((MTInteger) args.get(0)).value());
@@ -55,13 +87,11 @@ public final class MTInteger implements MTObject {
                 }
                 return new MTBoolean(false);
 
-
-case "!=": 
-    MTObject eq = send("=", args);
-    return ((MTBoolean) eq).value()
-        ? new MTBoolean(false)
-        : new MTBoolean(true);
-
+            case "!=", "<>": 
+                MTObject eq = send("=", args);
+                return ((MTBoolean) eq).value()
+                    ? new MTBoolean(false)
+                    : new MTBoolean(true);
 
             case "timesRepeat:":
                 if (!(args.get(0) instanceof MTBlockObject)) {

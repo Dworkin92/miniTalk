@@ -1,6 +1,6 @@
 # MiniTalk
 
-MiniTalk est un petit langage objet dynamique, inspiré de Smalltalk et implémenté en Java.Il est distribué sous licence GPLv3 afin de garantir
+MiniTalk est un petit langage objet dynamique, largement inspiré de Smalltalk et implémenté en Java. Il est distribué sous licence GPLv3 afin de garantir
 que ses améliorations restent libres et accessibles à tous.
 
 
@@ -9,6 +9,8 @@ L’objectif du projet est triple :
 - explorer la conception d’un langage orienté objet ;
 - disposer d’un langage de script simple et expressif ;
 - expérimenter une façon de travailler outillée et itérative sur un runtime de langage.
+
+Vous l'aurez compris : il s'agit d'un outil expérimental, que vous utiliserez à vos risques et périls, sans que l'auteur de ces lignes ne puisse être tenu pour responsable des dommages éventuellement causés par l'outil.
 
 ## Points forts
 
@@ -25,6 +27,8 @@ L’objectif du projet est triple :
 
 ### Compiler
 
+Avec l'aide de Maven, lancez :
+
 ```bash
 mvn clean compile
 ```
@@ -35,6 +39,7 @@ ou, pour créer un jar exécutable :
 mvn clean package
 ```
 
+troisième alternative : récupérer le jar depuis ce projet GitHub.
 
 ### Lancer le REPL
 
@@ -42,16 +47,16 @@ mvn clean package
 java -cp target/classes mt.Main
 ```
 
-ou, si vous avez le fichier jar :
+ou, si vous avez le fichier jar que vous avez placé dans un répertoire donné :
 
 ```bash
-java -jar miniTalk-1.0.jar
+java -jar <répertoire>/miniTalk-1.0.jar
 ```
 
 
 ### Charger la bibliothèque standard
 
-Par défaut, le runtime cherche `stdlib/stdlib.mt` dans le projet.
+Par défaut, le runtime cherche etcharge tous les fichiers `stdlib/*.mt` dans le répertoire courant.
 
 Vous pouvez ajouter des chemins de recherche de fichiers minitalk en définissant une variable d'environnement :
 
