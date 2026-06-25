@@ -93,7 +93,35 @@ public final class MTInteger implements MTObject {
                     ? new MTBoolean(false)
                     : new MTBoolean(true);
 
-            case "timesRepeat:":
+	    case "to:do:": {
+    		if (!(args.get(0) instanceof MTInteger)) {
+        		throw new RuntimeException("Argument entier attendu pour to:");
+    		}
+    		if (!(args.get(1) instanceof MTBlockObject)) {
+        		throw new RuntimeException("Block attendu pour do:");
+    		}
+
+    		int end = ((MTInteger) args.get(0)).value();
+    		MTBlockObject block = (MTBlockObject) args.get(1);
+
+    		MTObject last = MTNil.INSTANCE;
+
+    		if (value <= end) {
+        		// sens croissant
+        		for (int i = value; i <= end; i++) {
+            			last = block.call(List.of(new MTInteger(i)));
+        		}
+    		} else {
+        		// sens décroissant
+        		for (int i = value; i >= end; i--) {
+            			last = block.call(List.of(new MTInteger(i)));
+        		}
+    		}
+
+    		return last;
+	    }
+
+            case "timesRepeat:": {
                 if (!(args.get(0) instanceof MTBlockObject)) {
                     throw new RuntimeException("Block attendu pour timesRepeat:");
                 }
@@ -106,7 +134,22 @@ public final class MTInteger implements MTObject {
                 }
 
                 return last;
+	    }
 
+	    case "timesRepeatWithIndex:": {
+    		if (!(args.get(0) instanceof MTBlockObject)) {
+        		throw new RuntimeException("Block attendu pour timesRepeatWithIndex:");
+    		}
+
+    		MTBlockObject block = (MTBlockObject) args.get(0);
+    		MTObject last = MTNil.INSTANCE;
+
+    		for (int i = 0; i < value; i++) {
+        		last = block.call(List.of(new MTInteger(i)));
+    		}
+
+    		return last;
+	    }
 
             case "printString", "toString" :
                 return new MTString(Integer.toString(value));

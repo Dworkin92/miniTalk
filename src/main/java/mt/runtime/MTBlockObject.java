@@ -56,6 +56,31 @@ public class MTBlockObject implements MTObject {
                 yield last;
             }
 
+
+	    case "repeatWhile:" -> {
+    		MTBlockObject condition = requireBlock(args, 0);
+    		MTObject last = MTNil.INSTANCE;
+
+    		while (true) {
+        	    // 1. exécuter le corps (this)
+       		    last = callWithReceiver(null, List.of(), null);
+
+        	    // 2. évaluer la condition
+        	    MTObject cond = condition.call(List.of());
+
+        	    if (!(cond instanceof MTBoolean b)) {
+            		throw new RuntimeException("repeatWhile: exige un Boolean");
+        	    }
+
+        	    // 3. sortir si faux
+        	    if (!b.value()) {
+            		break;
+        	    }
+    		}
+
+    		yield last;
+	    }
+
             case "whileFalse:" -> {
                 MTBlockObject bodyBlock = requireBlock(args, 0);
                 MTObject last = MTNil.INSTANCE;
@@ -77,6 +102,27 @@ public class MTBlockObject implements MTObject {
                 yield last;
             }
 
+
+	    case "repeatUntil:" -> {
+    		MTBlockObject condition = requireBlock(args, 0);
+    		MTObject last = MTNil.INSTANCE;
+
+    		while (true) {
+        		last = callWithReceiver(null, List.of(), null);
+
+        		MTObject cond = condition.call(List.of());
+
+        		if (!(cond instanceof MTBoolean b)) {
+            			throw new RuntimeException("repeatUntil: exige un Boolean");
+        		}
+
+        		if (b.value()) {
+            			break;
+        		}
+    		}
+
+    		yield last;
+	    }
 
 	    case "repeat" -> {
     		while (true) {

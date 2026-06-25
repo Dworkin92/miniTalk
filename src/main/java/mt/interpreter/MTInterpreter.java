@@ -23,12 +23,22 @@ public class MTInterpreter {
         MTClass objectClass = new MTClass("Object", null);
         MTClass classClass  = new MTClass("Class", objectClass, true, objectClass);
         MTClass arrayClass  = new MTClass("Array", objectClass);
+	MTClass stringClass = new MTClass("String", objectClass);
+	MTClass integerClass = new MTClass("Integer", objectClass);
+	MTClass floatClass   = new MTClass("Float", objectClass);
+	MTClass booleanClass = new MTClass("Boolean", objectClass);
+
 
         globalEnv.define("Object", objectClass);
         globalEnv.define("Class", classClass);
         globalEnv.define("Array", arrayClass);
 	globalEnv.define("File", new MTFileClass());
         globalEnv.define("Process", new MTProcessClass());
+        globalEnv.define("String", stringClass);
+	globalEnv.define("Integer", integerClass);
+	globalEnv.define("Float", floatClass);
+	globalEnv.define("Boolean", booleanClass);
+
     }
 
     // ✅ nécessaire pour Main

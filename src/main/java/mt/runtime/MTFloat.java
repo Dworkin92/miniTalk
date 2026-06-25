@@ -32,7 +32,7 @@ public final class MTFloat implements MTObject {
                 return new MTFloat(value / asDouble(args.get(0)));
 
 
-	    case "//":
+	    case "//": {
     		if (args.get(0) instanceof MTFloat f) {
         		return new MTFloat(Math.floor(value / f.value()));
     		}
@@ -44,13 +44,15 @@ public final class MTFloat implements MTObject {
     		}
 
     		return new MTFloat(Math.floor(value / divisor));
+	    }
 
-	    case "%":
+	    case "%": {
     		if (args.get(0) instanceof MTFloat f) {
         		return new MTFloat(value % f.value());
     		}
 
     		return new MTFloat(value % ((MTInteger) args.get(0)).value());
+	    }
 
             case ">=":
                 return new MTBoolean(value >= asDouble(args.get(0)));
@@ -79,6 +81,57 @@ public final class MTFloat implements MTObject {
                     ? new MTBoolean(false)
                     : new MTBoolean(true);
 
+	    case "to:step:do:": {
+    		if (!(args.get(2) instanceof MTBlockObject)) {
+        		throw new RuntimeException("Block attendu pour do:");
+    		}
+
+    		double end;
+    		if (args.get(0) instanceof MTFloat f) {
+        		end = f.value();
+    		} else {
+        		end = ((MTInteger) args.get(0)).value();
+    		}
+
+    		double step;
+    		if (args.get(1) instanceof MTFloat f) {
+        		step = f.value();
+    		} else {
+        		step = ((MTInteger) args.get(1)).value();
+    		}
+
+    		if (step == 0.0) {
+        		throw new RuntimeException("step ne peut pas être 0");
+    		}
+
+    		MTBlockObject block = (MTBlockObject) args.get(2);
+    		MTObject last = MTNil.INSTANCE;
+
+    		if (step > 0) {
+        		for (double i = value; i <= end; i += step) {
+            			last = block.call(List.of(new MTFloat(i)));
+        		}
+    		} else {
+        		for (double i = value; i >= end; i += step) {
+            			last = block.call(List.of(new MTFloat(i)));
+        		}
+    		}
+
+    		return last;
+	    }
+
+	    case "round:": {
+    		int digits = ((MTInteger) args.get(0)).value();
+    		double factor = Math.pow(10, digits);
+    		double rounded = Math.round(value * factor) / factor;
+    		return new MTFloat(rounded);
+	    }
+
+	    case "approxEqual:": {
+    		double other = asDouble(args.get(0));
+    		return new MTBoolean(Math.abs(value - other) < 1e-9);
+	    }
+
             case "printString":
                 return new MTString(Double.toString(value));
         }
@@ -94,6 +147,11 @@ public final class MTFloat implements MTObject {
 
     @Override
     public String toString() {
-        return Double.toString(value);
+
+    	return new java.math.BigDecimal(value)
+            .stripTrailingZeros()
+            .toPlainString();
+
+        /* return Double.toString(value); */
     }
 }

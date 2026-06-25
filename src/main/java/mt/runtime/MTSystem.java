@@ -18,6 +18,16 @@ public class MTSystem implements MTObject {
     @Override
     public MTObject send(String selector, List<MTObject> args) {
         return switch (selector) {
+
+	    case "print:" -> {
+    		if (!(args.get(0) instanceof MTObject obj)) {
+        		throw new RuntimeException("Argument invalide pour print:");
+    		}
+
+    		System.out.println(obj.toString());
+    		yield MTNil.INSTANCE;
+	    }
+
             case "load:" -> {
                 String name = ((MTString) args.get(0)).value();
                 try {
