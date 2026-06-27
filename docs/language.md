@@ -483,15 +483,21 @@ fait déjà beaucoup de choses pour un langage expérimental, non ? ).
 
 Les chaînes sont délimitées par des quotes simples.
 
+Si vous souhaitez employer une quote dans votre chaine, il
+faut la définir avec une séquece d'échappement : `\'`
 ```smalltalk
 'Bonjour'.
-'It's working'.
+'It\'s working'.
 ```
+
+le backslash indque que le caractère qui suit doit être interprété
+comme un caractère normal de chaine, et non comme un élément du
+langage.
 
 Ne vous laissez pas submerger en voyant le nombre de méthodes
 disponibles pour les chaînes de caractères : miniTalk ayant été
 conçu comme un langage de script, il fallait accorder une attention
-toute particulière aux possibilités de traitement des chaînes de
+toute particulière aux possibilités de traitements des chaînes de
 caractères, afin  de rendre le plus de services possibles pour
 l'analyse des fichiers textes.
 

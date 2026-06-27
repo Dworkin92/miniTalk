@@ -76,7 +76,7 @@ case "!=" -> {
                 yield this;
             }
 
-            case "collect:" -> {
+            case "collect:", "map:" -> {
                 MTBlockObject block = requireBlock(args, 0);
                 List<MTObject> result = new ArrayList<>();
 
@@ -87,7 +87,7 @@ case "!=" -> {
                 yield new MTArray(result);
             }
 
-            case "select:" -> {
+            case "select:", "filter:" -> {
                 MTBlockObject block = requireBlock(args, 0);
                 List<MTObject> result = new ArrayList<>();
 
@@ -189,7 +189,7 @@ case "!=" -> {
                 yield new MTBoolean(true);
             }
 
-            case "inject:into:" -> {
+            case "inject:into:", "reduce:with:" -> {
                 MTObject accumulator = args.get(0);
                 MTBlockObject block = requireBlock(args, 1);
 

@@ -215,7 +215,7 @@ public final class MTString implements MTObject {
 
 
 
-	    case "reduce:with:" -> {
+	    case "inject:into:", "reduce:with:" -> {
     		MTObject initial = args.get(0);
     		MTBlockObject block = requireBlock(args, 1, selector);
 
@@ -285,7 +285,7 @@ public final class MTString implements MTObject {
                 yield last;
             }
 
-            case "collectChars:" -> {
+            case "collectChars:", "mapChars:" -> {
                 MTBlockObject block = requireBlock(args, 0, selector);
                 List<MTObject> result = new ArrayList<>();
 
@@ -297,7 +297,7 @@ public final class MTString implements MTObject {
                 yield new MTArray(result);
             }
 
-            case "selectChars:" -> {
+            case "selectChars:", "filterChars:" -> {
                 MTBlockObject block = requireBlock(args, 0, selector);
                 StringBuilder result = new StringBuilder();
 

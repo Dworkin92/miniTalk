@@ -175,6 +175,18 @@ public class MTClass implements MTObject {
                 return superclass != null ? superclass : MTNil.INSTANCE;
             }
 
+
+	    //----------------------------------------------------------
+	    // introspection
+	    //----------------------------------------------------------
+	    case "methods" -> {
+    		List<MTObject> names = new ArrayList<>();
+    		for (String name : methods.keySet()) {
+        		names.add(new MTString(name));
+    		}
+    		yield new MTArray(names);
+	    }
+
             case "printString" -> {
                 //return new MTString("Class(" + name + ")");
 		new MTString(name);
