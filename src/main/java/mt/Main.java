@@ -3,6 +3,7 @@ package mt;
 import mt.interpreter.MTInterpreter;
 import mt.runtime.MTObject;
 import mt.runtime.MTSystem;
+import mt.runtime.MTString;
 import mt.util.MTLibraryLoader;
 
 import java.io.BufferedReader;
@@ -98,7 +99,14 @@ private static void runRepl(MTInterpreter interpreter) throws Exception {
         try {
             MTObject result = MTLibraryLoader.executeSource(source, interpreter);
             if (result != null) {
-                System.out.println(result);
+                //System.out.println(result);
+		MTObject printable = result.send("printString", List.of());
+
+		if (printable instanceof MTString s) {
+    			System.out.println(s.value());
+		} else {
+    			System.out.println(printable.toString());
+		}
             }
         } catch (Exception e) {
             System.out.println("Erreur: " + e.getMessage());

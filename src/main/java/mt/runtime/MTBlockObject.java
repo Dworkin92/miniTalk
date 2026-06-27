@@ -124,14 +124,27 @@ public class MTBlockObject implements MTObject {
     		yield last;
 	    }
 
-	    case "repeat" -> {
-    		while (true) {
-        		callWithReceiver(null, List.of(), null);
+
+	    case "repeat" -> {  
+    		while (true) {  
+        		callWithReceiver(null, List.of(), null);  
     		}
+    		//throw new RuntimeException("Boucle infinie");
 	    }
 
+            case "printString" -> {
+    		if (params.isEmpty()) {
+        		yield new MTString("[...]");
+    		}
 
-            case "printString" -> new MTString("[block]");
+    		StringBuilder sb = new StringBuilder("[");
+    		for (String p : params) {
+        		sb.append(":").append(p).append(" ");
+    		}
+    		sb.append("...]");
+
+    		yield new MTString(sb.toString());
+	    }
 
             default -> throw new RuntimeException("Message inconnu pour block: " + selector);
         };

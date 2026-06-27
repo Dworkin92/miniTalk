@@ -30,9 +30,29 @@ public abstract class MTCollectionObject implements MTObject {
                 return this;
             }
 
-            case "printString" -> {
-                return new MTString(delegate.toString());
-            }
+	    case "printString" -> {
+    		StringBuilder sb = new StringBuilder("#(");
+
+    		boolean first = true;
+    		for (Object obj : delegate) {
+        		if (!first) sb.append(" ");
+        		first = false;
+
+        		if (obj instanceof MTObject mt) {
+            			MTObject ps = mt.send("printString", List.of());
+            			if (ps instanceof MTString s) {
+                			sb.append(s.value());
+            			} else {
+                			sb.append(ps.toString());
+            			}
+        		} else {
+            			sb.append(obj.toString());
+        		}
+    		}
+
+    		sb.append(")");
+    		return new MTString(sb.toString());
+	    }
         }
 
         throw new RuntimeException("Message inconnu pour Collection: " + selector);

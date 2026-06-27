@@ -17,7 +17,13 @@ public class MTInstance implements MTObject {
     public MTObject send(String selector, List<MTObject> args) {
 
         if (selector.equals("printString") && args.isEmpty()) {
-            return new MTString("a " + clazz.toString());
+            //return new MTString("a " + clazz.toString());
+	    MTObject nameObj = clazz.send("name", List.of());
+	    String name = ((MTString) nameObj).value();
+
+	    String article = startsWithVowel(name) ? "an " : "a ";
+
+	    return new MTString(article + name);
         }
 
         // --- getters / setters automatiques pour variables d’instance déclarées ---
@@ -51,6 +57,14 @@ public class MTInstance implements MTObject {
     public MTObject getField(String name) {
         return fields.get(name);
     }
+
+
+    private boolean startsWithVowel(String s) {
+    	if (s.isEmpty()) return false;
+    	char c = Character.toLowerCase(s.charAt(0));
+    	return "aeiou".indexOf(c) >= 0;
+    }
+
 
     public MTClass clazz() {
         return clazz;

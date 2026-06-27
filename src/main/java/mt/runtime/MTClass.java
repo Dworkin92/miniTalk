@@ -176,7 +176,8 @@ public class MTClass implements MTObject {
             }
 
             case "printString" -> {
-                return new MTString("Class(" + name + ")");
+                //return new MTString("Class(" + name + ")");
+		new MTString(name);
             }
         }
 

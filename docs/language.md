@@ -488,22 +488,292 @@ Les chaînes sont délimitées par des quotes simples.
 'It's working'.
 ```
 
+Ne vous laissez pas submerger en voyant le nombre de méthodes
+disponibles pour les chaînes de caractères : miniTalk ayant été
+conçu comme un langage de script, il fallait accorder une attention
+toute particulière aux possibilités de traitement des chaînes de
+caractères, afin  de rendre le plus de services possibles pour
+l'analyse des fichiers textes.
+
 Les opérateurs sur les chaines sont :
-1. la concaténation, en utilisant l'opérateur : `,`
+
+1. `,` : permet de concaténer deux chaînes.
    ```smalltalk
    c <- 'une chaine ' , 'concaténée.'.
+   → 'une chaine concaténée.'
    ```
    
-2. la concaténation multiple en utilisant l'opérateur : `*` suivi
-   obligatoirement d'un entier
+2. `*` : crée une nouvelle chaine contenant n fois le receveur. cet
+   opérateur est obligatoirement suivi d'un entier.
+   ```smalltak
+   s <- 'say '
+   s * 3
+   → say say say 
+   ```
    
-3. la transformation en tableaux de lettres grâce à la méthode :
-   `asArray`.
+3. `asArray` : transforme une chaîne en tableaux de lettres :
+
    ```smalltalk
    a <- 'une chaine' asArray.
-   -> #('u' 'n' 'e' ' ' 'c' 'h' 'a' 'i' 'n' 'e')
+   → #('u' 'n' 'e' ' ' 'c' 'h' 'a' 'i' 'n' 'e')
    ```
 
-4. l'application d'un bloc à chaque caractère d'une chaine avec :
-   `charsDo:`.
+4. `charsDo:` : applique une closure à chaque caractère d'une
+    chaine.
+   
+   C’est un comportement utile à connaître : charsDo: ne retourne pas le receveur, mais la dernière valeur produite par le bloc.
+   
+   Voici quelques exemples d'utilisation :
 
+   ```smalltak
+   'une chaine' charsDo: [ :c |
+     System print: c.
+    ].
+    → u
+    n
+    e
+    
+    c
+    h
+    a
+    i
+    n
+    e
+   ```
+   permet d'afficher ligne à ligne chaque caractère de la chaine.
+   
+   ```smalltak
+   result := ''.
+   first := true.
+
+   'abc' charsDo: [ :ch |
+      first
+          ifTrue: [
+              result := ch.
+              first := false
+          ]
+          ifFalse: [
+              result := result , '-' , ch
+          ]
+   ].
+
+   System print: result.
+   → a-b-c
+   ```
+
+5. `toUpper` : permet de mettre toute la chaine en majuscules
+
+6. `toLower` : permet de mettre toute la chaine en minuscules.
+
+7. `isEmpty` : indique si une chaine est vide
+
+8. `at:` : permet d'accéder à un caractère de la chaîne.
+
+9. `copyFrom:to:` : permet d'extraine une sous-chaîne, borne incluses.
+
+   ```smalltalk
+   a <- 'une chaine moyenne' copyFrom: 5 to: 10.
+   → 'chaine'
+   ```
+
+10. `substringTo:` : extrait une sous-chaine commençant à la position
+   au début de la chaine initiale, et se terminant à la position
+   indiquée, celle-ci inclue.
+   
+   ```smalltalk
+   '123456789' substringTo: 5.
+   → '12345'
+   ```
+   
+11. `substringFrom:` : extrait une sous-chaine commençant à la position
+   indiquée jusqu'à la fin de la chaine initiale.
+   
+   ```smalltalk
+   '123456789' substringFrom: 5.
+   → '56789'
+   ```
+   
+12. `trim`, `trimLeft`, `trimRight` : la première méthode supprime tous 
+   les caractères espaces d'une chaîne, la seconde, tous les caractères
+   espaces en début de chaines, et la dernière tous les caractères
+   espaces en fin de chaîne.
+
+13. `startsWith:`, 'endsWith:` : teste si une chaine commence ou
+   se termine avec une sous-chaine donnée.
+   
+   ```smalltalk   
+   'hello' startsWith: 'he'   → true
+   'hello' endsWith: 'lo'     → true
+   ```
+   
+14. `indexOf:` : indique la position dans la chaine de la première
+   occurence d'un caractère ou d'une sous-chaine.
+   ```smalltalk
+   a <- 'une tres longue chaine.'.
+   → une tres longue chaine.
+   
+   a indexOf: 'longue'.
+   → 10
+   
+   a indexOf: 'e'.
+   → 3
+   ```
+ 
+15. `includes:` : indique si la chaine indiquée en paramètre
+   est contenue dans le receveur. Cette
+   méthode retourne un booléen.
+ 
+16. `split:` : crée un tableaux avec les sous-chaines résultant
+   du découpage de la chaîne d'origine avec la chaine fournie en
+   paramètre.
+   
+   exemples :
+   ```smalltak
+   a <- 'une tres longue chaine'.
+   a split: ' longue '.
+   → ['une tres', 'chaine' ]
+   ```
+   
+   typiquement, cette méthode rend possible le découpage d'une
+   ligne de fichier CSV en ses éléments, en utilisant le séparateur
+   comme élément de découpage.
+ 
+17. `lines` : autorise le parsing d'un fichier texte ligne par ligne.
+ 
+18. `isWhitespace`, `isDigit`, `isLetter`, `isLetterOrDigit` :
+   permet la classification d'un caractère (et non d'une chaîne).
+ 
+19. `asInteger`, `asFloat` : permet de traduire une chaine en entier
+   ou réel. C'est l'équivalent du 'toInt()' ou 'toFloat()' du C ou du
+   Java
+   
+   ```smalltalk
+   a <- '2981' asInteger.
+   → 2981
+   a <- '12.87e-5' asFloat.
+   → 0.000012870000000000000037821308584984336675915983505547046661376953125
+   ```
+   
+   ==Note :== le fait d'avoir des décimales flottantes supplémentaires
+   est normal : il provient de la représentation interne, en format
+   binaire par le processeur, du nombre décimal.
+   
+20. `takeWhile:`, `dropWhile:` : la première méthode  lit une chaine 
+   de caractères tant qu'une condition est vraie. La seconde laisse
+   de coté les caractères tant que la condition est vraie.
+   
+   ```smalltalk
+   digits := '123abc' takeWhile: [:ch | ch isDigit].
+   System print: digits.
+   → '123'
+   
+   
+   rest := '   hello' dropWhile: [:ch | ch isWhitespace].
+   System print: rest.
+   → 'hello'
+   ```
+ 
+21. `readUntil:` : cette méthode permet de lire une chaîne jusqu'à 
+   un séparateur particulier.
+   
+   ```smalltalk
+   name := 'title:bonjour' readUntil: [:ch | ch = ':' ].
+   System print: name.
+   → 'title'
+   ```
+
+22. `matches:` : teste si la chaine receveur suit entèrement
+   l'expression régulière donnée par la chaine en paramètre
+   
+   ```smalltak
+   'abc123' matches: '[a-z]+[0-9]+'.
+   → true
+   ```
+   
+23. `containsMatch:` : teste si la chaine receveur contient une
+   sous-chaine qui respecte l'expression régulière fournie en
+   paramètre.
+   
+   ```smalltak
+   'hello123world' containsMatch: '[0-9]+'.
+   → true
+   ```
+   
+24. `allMatches:`: retourne un tableau contenant toutes
+     les sous-chaines de la chaine receveur respectant 
+     l'expression régulière fournie
+   
+   ```smalltalk
+   'abc123def456' allMatches: '[0-9]+'
+   → [123, 456]
+   ```
+### les fonctions magiques sur les chaînes
+
+Ci-après, les méthodes un peu "magiques" offertes par le langage.
+Si vous n'en comprenez pas immédiatement l'usage, ce n'est pas
+grave : regardez les exemples, et expérimentez par vous-même. Vous
+finirez bien par trouver un usage à ces fonctions :)
+
+1. `collectChars:`: applique une closure à chaque caractères de la
+    chaine de départ et produit un array avec chaque résultat
+    
+    ```smalltalk
+    'abc' collectChars: [ :c | c , c ]
+    → #('aa' 'bb' 'cc')
+
+    
+    'abc' collectChars: [ :c | c toUpper ]
+    → #('A' 'B' 'C')
+    
+    'abc' collectChars: [ :c | c asInteger ]
+    → #(97 98 99)
+
+    ```
+
+2. `selectChars:` : retourne une chaine dans laquelle seuls
+   restent les caractères ayant satisfait les conditions de la
+   closure.
+   
+   ```smalltak
+   "ici on ne garde que les voyelles"
+   bonjour' selectChars: [ :c |
+     c = 'a' or: [
+     c = 'e' or: [
+     c = 'i' or: [
+     c = 'o' or: [
+     c = 'u' ]]]]
+   ]
+   → 'ouo'
+   
+   "ici on ne garde que les chiffres"
+   'a1b2c3' selectChars: [ :c | c isDigit ]
+   → '123'
+
+   ```
+
+3. ``rejectChars:`` : c'est la fonction inverse de la précédente :
+   on ne conserve dans la chaine finale que les lettres n'ayant
+   pas satisfait les traitements de la closure.
+   
+   ```smalltalk
+   "on retire tous les espaces de la chaine"
+   'hello world' rejectChars: [ :c | c = ' ' ]
+   → 'helloworld'
+   ```
+   
+3. `reduce:with:` : permet d'appliquer un traitement itératif sur
+   chaque caractère d'une chaine pour produire un nouvel objet.
+   
+   `reduce:` est suivi de la valeur initiale pour le nouvel objet.
+   
+   `with:`est suivi de la closure de traitement qui va mettre à jour
+   le nouvel object en fonction de la valeur de chaque caractère.
+   
+   ```smalltak   
+   'abc' reduce: 0 with: [ :acc :l | acc + 1 ]
+   → 3
+   ```
+   
+   dans l'exemple précédent, acc est initialisé à 0, et est incrémenté
+   pour chaque lettre l de la chaine 'abc'.
+   

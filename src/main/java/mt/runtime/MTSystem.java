@@ -24,7 +24,13 @@ public class MTSystem implements MTObject {
         		throw new RuntimeException("Argument invalide pour print:");
     		}
 
-    		System.out.println(obj.toString());
+		MTObject ps = obj.send("printString", List.of());
+		if (ps instanceof MTString s) {
+    			System.out.println(s.value());
+		} else {
+    		System.out.println(ps.toString());
+		}
+
     		yield MTNil.INSTANCE;
 	    }
 
