@@ -1,53 +1,46 @@
 package mt.runtime;
 
-import mt.interpreter.MTInterpreter;
-import java.util.ArrayList;
+import java.util.ArrayList;import mt.interpreter.MTInterpreter;
 import java.util.List;
 
-
-public final class MTArray implements MTObject {
+public final class MTArray extends MTCollectionObject {
 
     private final List<MTObject> values;
-    MTClass arrayClass = (MTClass) MTInterpreter.GLOBAL.lookup("Array");
 
     public MTArray(List<MTObject> values) {
-        this.values = new ArrayList<>(values);
+        super(new ArrayList<>(values));
+        this.values = (List<MTObject>) delegate;
     }
 
     @Override
     public MTObject send(String selector, List<MTObject> args) {
+
         return switch (selector) {
 
-case "=" -> {
-    if (!(args.get(0) instanceof MTArray other)) {
-        yield new MTBoolean(false);
-    }
+            case "=" -> {
+                if (!(args.get(0) instanceof MTArray other)) {
+                    yield new MTBoolean(false);
+                }
 
-    if (values.size() != other.values.size()) {
-        yield new MTBoolean(false);
-    }
+                if (values.size() != other.values.size()) {
+                    yield new MTBoolean(false);
+                }
 
-    for (int i = 0; i < values.size(); i++) {
-        MTObject a = values.get(i);
-        MTObject b = other.values.get(i);
+                for (int i = 0; i < values.size(); i++) {
+                    MTObject eq = values.get(i).send("=", List.of(other.values.get(i)));
 
-        MTObject eq = a.send("=", List.of(b));
+                    if (!(eq instanceof MTBoolean b) || !b.value()) {
+                        yield new MTBoolean(false);
+                    }
+                }
 
-        if (!(eq instanceof MTBoolean bool) || !bool.value()) {
-            yield new MTBoolean(false);
-        }
-    }
+                yield new MTBoolean(true);
+            }
 
-    yield new MTBoolean(true);
-}
-
-
-case "!=" -> {
-    MTBoolean eq = (MTBoolean) send("=", args);
-    yield new MTBoolean(!eq.value());
-}
-
-            case "size" -> new MTInteger(values.size());
+            case "!=" -> {
+                MTBoolean eq = (MTBoolean) send("=", args);
+                yield new MTBoolean(!eq.value());
+            }
 
             case "at:" -> {
                 int index = ((MTInteger) args.get(0)).value() - 1;
@@ -66,186 +59,10 @@ case "!=" -> {
                 yield this;
             }
 
-            case "do:" -> {
-                MTBlockObject block = requireBlock(args, 0);
-
-                for (MTObject each : values) {
-                    block.call(List.of(each));
-                }
-
-                yield this;
+            // tout le reste est factorisé
+            default -> {
+                yield super.send(selector, args);
             }
-
-            case "collect:", "map:" -> {
-                MTBlockObject block = requireBlock(args, 0);
-                List<MTObject> result = new ArrayList<>();
-
-                for (MTObject each : values) {
-                    result.add(block.call(List.of(each)));
-                }
-
-                yield new MTArray(result);
-            }
-
-            case "select:", "filter:" -> {
-                MTBlockObject block = requireBlock(args, 0);
-                List<MTObject> result = new ArrayList<>();
-
-                for (MTObject each : values) {
-                    MTObject condition = block.call(List.of(each));
-
-                    if (!(condition instanceof MTBoolean b)) {
-                        throw new RuntimeException(
-                                "Le bloc passé à select: doit retourner un Boolean, reçu: " + condition
-                        );
-                    }
-
-                    if (b.value()) {
-                        result.add(each);
-                    }
-                }
-
-                yield new MTArray(result);
-            }
-
-            case "reject:" -> {
-                MTBlockObject block = requireBlock(args, 0);
-                List<MTObject> result = new ArrayList<>();
-
-                for (MTObject each : values) {
-                    MTObject condition = block.call(List.of(each));
-
-                    if (!(condition instanceof MTBoolean b)) {
-                        throw new RuntimeException(
-                                "Le bloc passé à reject: doit retourner un Boolean, reçu: " + condition
-                        );
-                    }
-
-                    if (!b.value()) {
-                        result.add(each);
-                    }
-                }
-
-                yield new MTArray(result);
-            }
-
-            case "detect:" -> {
-                MTBlockObject block = requireBlock(args, 0);
-
-                for (MTObject each : values) {
-                    MTObject condition = block.call(List.of(each));
-
-                    if (!(condition instanceof MTBoolean b)) {
-                        throw new RuntimeException(
-                                "Le bloc passé à detect: doit retourner un Boolean, reçu: " + condition
-                        );
-                    }
-
-                    if (b.value()) {
-                        yield each;
-                    }
-                }
-
-                yield MTNil.INSTANCE;
-            }
-
-            case "anySatisfy:" -> {
-                MTBlockObject block = requireBlock(args, 0);
-
-                for (MTObject each : values) {
-                    MTObject condition = block.call(List.of(each));
-
-                    if (!(condition instanceof MTBoolean b)) {
-                        throw new RuntimeException(
-                                "Le bloc passé à anySatisfy: doit retourner un Boolean, reçu: " + condition
-                        );
-                    }
-
-                    if (b.value()) {
-                        yield new MTBoolean(true);
-                    }
-                }
-
-                yield new MTBoolean(false);
-            }
-
-            case "allSatisfy:" -> {
-                MTBlockObject block = requireBlock(args, 0);
-
-                for (MTObject each : values) {
-                    MTObject condition = block.call(List.of(each));
-
-                    if (!(condition instanceof MTBoolean b)) {
-                        throw new RuntimeException(
-                                "Le bloc passé à allSatisfy: doit retourner un Boolean, reçu: " + condition
-                        );
-                    }
-
-                    if (!b.value()) {
-                        yield new MTBoolean(false);
-                    }
-                }
-
-                yield new MTBoolean(true);
-            }
-
-            case "inject:into:", "reduce:with:" -> {
-                MTObject accumulator = args.get(0);
-                MTBlockObject block = requireBlock(args, 1);
-
-                for (MTObject each : values) {
-                    accumulator = block.call(List.of(accumulator, each));
-                }
-
-                yield accumulator;
-            }
-
-            case "printString" -> {
-                StringBuilder sb = new StringBuilder("#(");
-
-                for (int i = 0; i < values.size(); i++) {
-                    if (i > 0) sb.append(" ");
-                    sb.append(values.get(i));
-                }
-
-                sb.append(")");
-                yield new MTString(sb.toString());
-            }
-
-            
-
-	    default -> {
-    		MTClass arrayClass = (MTClass) MTInterpreter.GLOBAL.lookup("Array");
-
-    		MTMethod method = arrayClass.lookup(selector);
-
-    		if (method != null) {
-        		yield method.body().callWithReceiver(this, args, method.owner());
-    		}
-
-    		throw new RuntimeException("Message inconnu pour Array: " + selector);
-	    }
-
-
         };
-    }
-
-    private MTBlockObject requireBlock(List<MTObject> args, int index) {
-        if (index >= args.size()) {
-            throw new RuntimeException("Argument manquant à l’indice " + index);
-        }
-
-        if (!(args.get(index) instanceof MTBlockObject block)) {
-            throw new RuntimeException(
-                    "Block attendu à l’indice " + index + ", reçu: " + args.get(index)
-            );
-        }
-
-        return block;
-    }
-
-    @Override
-    public String toString() {
-        return values.toString();
     }
 }

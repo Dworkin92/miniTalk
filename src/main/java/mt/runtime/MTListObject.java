@@ -12,26 +12,19 @@ public final class MTListObject extends MTCollectionObject {
     @Override
     public MTObject send(String selector, List<MTObject> args) {
 
-        switch (selector) {
+        return switch (selector) {
 
             case "add:" -> {
-                delegate.add(unwrap(args.get(0)));
-                return this;
+                delegate.add(args.get(0));
+                yield this;
             }
 
             case "at:" -> {
-                int index = ((MTInteger) args.get(0)).value();
-                return wrap(((ArrayList<Object>) delegate).get(index));
+                int index = ((MTInteger) args.get(0)).value() - 1;
+                yield ((ArrayList<MTObject>) delegate).get(index);
             }
-        }
 
-        return super.send(selector, args);
-    }
-
-    private MTObject wrap(Object value) {
-        if (value instanceof Integer i) return new MTInteger(i);
-        if (value instanceof String s) return new MTString(s);
-        if (value instanceof Boolean b) return new MTBoolean(b);
-        return (MTObject) value;
+            default -> super.send(selector, args);
+        };
     }
 }

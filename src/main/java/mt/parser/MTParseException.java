@@ -10,4 +10,3 @@ public class MTParseException extends RuntimeException {
         super(message + " (position " + position + ")");
     }
 }
-

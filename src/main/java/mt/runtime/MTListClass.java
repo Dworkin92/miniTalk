@@ -14,4 +14,3 @@ public final class MTListClass implements MTObject {
         throw new RuntimeException("Message inconnu pour List");
     }
 }
-

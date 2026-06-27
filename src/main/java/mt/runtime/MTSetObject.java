@@ -12,19 +12,18 @@ public final class MTSetObject extends MTCollectionObject {
     @Override
     public MTObject send(String selector, List<MTObject> args) {
 
-        switch (selector) {
+        return switch (selector) {
 
             case "add:" -> {
-                delegate.add(unwrap(args.get(0)));
-                return this;
+                delegate.add(args.get(0));
+                yield this;
             }
 
             case "contains:" -> {
-                Object value = unwrap(args.get(0));
-                return new MTBoolean(delegate.contains(value));
+                yield new MTBoolean(delegate.contains(args.get(0)));
             }
-        }
 
-        return super.send(selector, args);
+            default -> super.send(selector, args);
+        };
     }
 }

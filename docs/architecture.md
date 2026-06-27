@@ -1,44 +1,115 @@
-# Architecture du runtime
+## Architecture du runtime
 
-## Vue générale
+### Vue générale
 
 MiniTalk repose sur deux couches :
+- un runtime Java ;
+- un modèle objet MiniTalk exécuté au-dessus de ce runtime.
 
-1. un runtime Java ;
-2. un modèle objet MiniTalk exécuté au-dessus de ce runtime.
+---
 
 ## Éléments principaux
 
 ### Runtime Java
 
-- `MTInterpreter` : évalue l’AST ;
-- `MTEnvironment` : gère les variables lexicales ;
-- `MTObject` : interface commune des objets runtime ;
-- `MTClass` : classes MiniTalk ;
-- `MTInstance` : instances utilisateur ;
-- `MTBlockObject` : blocs et closures ;
-- `MTArray`, `MTInteger`, `MTFloat`, `MTString`, `MTBoolean` : primitives.
+- MTInterpreter : évalue l’AST
+- MTEnvironment : gère les variables lexicales
+- MTObject : interface commune
+- MTClass : classes MiniTalk
+- MTInstance : instances utilisateur
+- MTBlockObject : blocs / closures
+
+---
+
+### Types natifs
+
+- MTCollectionObject : base des collections (logique partagée)
+- MTArray : tableau indexé
+- MTListObject : liste mutable
+- MTSetObject : ensemble sans doublons
+- MTDictionaryObject : dictionnaire clé -> valeur
+
+- MTInteger, MTFloat, MTString, MTBoolean, MTNil
+
+---
+
+## Modèle objet
+
+```
+Object
+├── Class
+├── Collection
+│   ├── Array
+│   ├── List
+│   ├── Set
+│   └── Dictionary
+├── String
+├── Integer
+├── Float
+└── Boolean
+```
+
+---
 
 ## Dispatch
 
-Le dispatch se fait par envoi de messages (`send(selector, args)`).
+Chaque objet répond à :
 
-Les objets natifs comme `MTArray` peuvent faire un fallback vers leur classe MiniTalk (`Array`) pour exécuter des méthodes ajoutées dynamiquement dans la stdlib.
+    send(selector, args)
+
+Fallback possible vers la classe MiniTalk associée.
+
+---
 
 ## Environnement lexical
 
 Les blocs capturent leur environnement de création.
+Permet : closures, boucles, retour non local (^).
 
-C’est ce qui permet les closures, les boucles et le retour non local `^`.
+---
 
-## Modèle objet
+## Collections
 
-Arbre minimal actuel :
+Factorisées dans MTCollectionObject :
 
-```text
-Object
-├── Class
-└── Array
-```
+- do:
+- collect: / map:
+- select: / filter:
+- reject:
+- detect:
+- anySatisfy:
+- allSatisfy:
+- inject:into: / reduce:with:
 
-Ce modèle reste volontairement simple : MiniTalk ne met pas en œuvre un système complet de métaclasses.
+Dictionary ajoute :
+- at:
+- put:value:
+- containsKey:
+- keys / values
+- do: (clé, valeur)
+
+---
+
+## Héritage
+
+- Toute classe hérite de Object
+- Sous-classes enregistrées automatiquement
+
+---
+
+## État actuel
+
+Langage dynamique avec :
+- objets
+- closures
+- collections complètes
+- dispatch par message
+
+---
+
+## Évolutions possibles
+
+- Association (clé/valeur)
+- Dictionary collect:
+- introspection complète
+- métaclasses

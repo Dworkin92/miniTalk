@@ -162,4 +162,16 @@ public final class MTInteger implements MTObject {
     public String toString() {
         return Integer.toString(value);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+    	if (!(obj instanceof MTInteger other)) return false;
+    	return value == other.value();
+    }
+
+    @Override
+    public int hashCode() {
+    	return Integer.hashCode(value);
+    }
+
 }

@@ -2,6 +2,7 @@ package mt.runtime;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -112,9 +113,18 @@ public class MTClass implements MTObject {
 
         switch (selector) {
             case "new" -> {
+		// creatiobn de classe (meta)
                 if (classFactory) {
                     return new MTClass("Anonymous", instanceSuperclass);
                 }
+
+
+    		// types natifs
+    		if (name.equals("List")) return new MTListObject();
+    		if (name.equals("Set"))  return new MTSetObject();
+		if (name.equals("Dictionary")) return new MTDictionaryObject();
+
+		// instance standard
                 return new MTInstance(this);
             }
 
@@ -156,7 +166,7 @@ public class MTClass implements MTObject {
                 return new MTClass("Anonymous", this);
             }
 
-            case "subclassNamed:" -> {
+            case "subclassNamed:", "subclass:" -> {
                 String childName = ((MTString) args.get(0)).value();
                 return new MTClass(childName, this);
             }
@@ -165,7 +175,7 @@ public class MTClass implements MTObject {
                 return new MTString(name);
             }
 
-            case "named:" -> {
+            case "named:", "name:" -> {
                 String newName = ((MTString) args.get(0)).value();
                 this.name = newName;
                 return this;
@@ -179,21 +189,21 @@ public class MTClass implements MTObject {
 	    //----------------------------------------------------------
 	    // introspection
 	    //----------------------------------------------------------
-/* *en preparation pour introspection*
 	    case "methods" -> {
     		List<MTObject> names = new ArrayList<>();
     		for (String name : methods.keySet()) {
         		names.add(new MTString(name));
     		}
-    		yield new MTArray(names);
+    		return new MTArray(names);
 	    }
-*/
 
             case "printString" -> {
                 //return new MTString("Class(" + name + ")");
 		new MTString(name);
+		return new MTString(name);
             }
         }
+
         throw new RuntimeException("Message inconnu pour Class: " + selector);
     }
 

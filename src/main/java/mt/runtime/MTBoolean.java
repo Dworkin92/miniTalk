@@ -128,4 +128,15 @@ public final class MTBoolean implements MTObject {
     public String toString() {
         return Boolean.toString(value);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+    	if (!(obj instanceof MTBoolean other)) return false;
+    	return value == other.value();
+    }
+
+    @Override
+    public int hashCode() {
+    	return Boolean.hashCode(value);
+    }
 }

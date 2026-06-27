@@ -128,19 +128,29 @@ private static int count(String s, char c) {
 private static void runFilesFromCLI(String[] args, MTInterpreter interpreter) {
     for (int i = 0; i < args.length; i++) {
 
-        // ignorer les options -L
         if ("-L".equals(args[i])) {
-            i++; // skip path argument
+            i++;
             continue;
         }
 
         String arg = args[i];
 
-        // heuristique simple : fichier .mt
         if (arg.endsWith(".mt")) {
             try {
                 System.out.println("[exec] " + arg);
-                MTLibraryLoader.executeFile(Path.of(arg), interpreter);
+
+                MTObject result = MTLibraryLoader.executeFile(Path.of(arg), interpreter);
+
+                if (result != null && result != mt.runtime.MTNil.INSTANCE) {
+                    MTObject printable = result.send("printString", List.of());
+
+                    if (printable instanceof MTString s) {
+                        System.out.println(s.value());
+                    } else {
+                        System.out.println(printable.toString());
+                    }
+                }
+
             } catch (Exception e) {
                 System.err.println("Erreur exécution fichier : " + arg);
                 System.err.println(e.getMessage());

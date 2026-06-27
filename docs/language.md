@@ -107,12 +107,37 @@ qui ne pourront être utilisé qu'avec une instance pour receveur,
 et des variable et méthodes de classe qui ne seront utilisables
 qu'avec la classe pour receveur.
 
+Il existe plusieurs méthodes pour créer une classe :
+
+1. **Class new** ou **Class new: 'UnIdent'** : permettent de créer une
+  classe anonyme (new) ou nommée (new:) sans soucis de notion
+  de classe parente. MiniTalk, dans ce cas, force la classe
+  parente à "Object".
+
+2. **UneClasse subclass** ou **uneClasse subclass: 'UnIdent'** :
+  permettent de créer une sous-classe de la classe UneClasse, anonyme
+  ou nommée. Dans ce cas, la nouvelle classe héritera automatiquement
+  de toutes les méthodes de classe et d'instance de la classe parente.
+
+A noter que dans les deux cas, même si ce n'est pas imposé par
+miniTalk, il est, par convention, hautement recommandé de faire 
+commencer l'identifiant de la nouvelle classe par une majuscule.
+
 ### variables
 
+Il existe deux types de variables dans une classe : 
+
+- les variables de classe qui sont les propriétés uniquement
+  accessibles en s'adressant à la classe elle-même
+
+- les variables d'instances qui sont acessible en s'adressant 
+  directement à l'instance.
+  
 #### Variables d’instance
 
-On ajoute une variable d'instance grâce au mot-clé :  'addInstVar:' que l'on 
-fera suivre d'une chaine de caractères correspondant au nom de la variable à
+On ajoute une variable d'instance grâce au mot-clé :  'addInstVar:' 
+que l'on  fera suivre d'une chaine de caractères correspondant 
+au nom de la variable à
 créer.
 
 Dans la classe est alors créé automatiquement un getter
@@ -120,8 +145,9 @@ avec le même  identifiant que la variable,
 et un setter qui a pour identifiant
 l'identifiant de la variable suivi de ':'.
 
-le getter permet d'obtenir le contenu de la variable,
-le setter, de le mettre à jour.
+- le getter permet d'obtenir le contenu de la variable,
+
+- le setter, de le mettre à jour.
 
 ```smalltalk
 Person addInstVar: 'age'.

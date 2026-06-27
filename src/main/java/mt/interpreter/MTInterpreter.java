@@ -20,25 +20,31 @@ public class MTInterpreter {
         GLOBAL = globalEnv;
 
         // classes de base
-        MTClass objectClass = new MTClass("Object", null);
-        MTClass classClass  = new MTClass("Class", objectClass, true, objectClass);
-        MTClass arrayClass  = new MTClass("Array", objectClass);
-	MTClass stringClass = new MTClass("String", objectClass);
-	MTClass integerClass = new MTClass("Integer", objectClass);
-	MTClass floatClass   = new MTClass("Float", objectClass);
-	MTClass booleanClass = new MTClass("Boolean", objectClass);
-
+        MTClass objectClass     = new MTClass("Object", null);
+        MTClass classClass      = new MTClass("Class", objectClass, true, objectClass);
+        MTClass collectionClass = new MTClass("Collection", objectClass);
+        MTClass arrayClass      = new MTClass("Array", collectionClass);
+	MTClass listClass       = new MTClass("List", collectionClass);
+        MTClass setClass        = new MTClass("Set", collectionClass);
+	MTClass dictClass       = new MTClass("Dictionary", collectionClass);
+	MTClass stringClass     = new MTClass("String", objectClass);
+	MTClass integerClass    = new MTClass("Integer", objectClass);
+	MTClass floatClass      = new MTClass("Float", objectClass);
+	MTClass booleanClass    = new MTClass("Boolean", objectClass);
 
         globalEnv.define("Object", objectClass);
         globalEnv.define("Class", classClass);
+	globalEnv.define("Collection", collectionClass);
         globalEnv.define("Array", arrayClass);
+	globalEnv.define("List", listClass);
+	globalEnv.define("Set", setClass);
+	globalEnv.define("Dictionary", dictClass);
 	globalEnv.define("File", new MTFileClass());
         globalEnv.define("Process", new MTProcessClass());
         globalEnv.define("String", stringClass);
 	globalEnv.define("Integer", integerClass);
 	globalEnv.define("Float", floatClass);
 	globalEnv.define("Boolean", booleanClass);
-
     }
 
     // ✅ nécessaire pour Main

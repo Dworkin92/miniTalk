@@ -17,18 +17,20 @@ public class MTSystem implements MTObject {
 
     @Override
     public MTObject send(String selector, List<MTObject> args) {
+        //System.out.println("DEBUG selector=" + selector);
         return switch (selector) {
 
-	    case "print:" -> {
-    		if (!(args.get(0) instanceof MTObject obj)) {
-        		throw new RuntimeException("Argument invalide pour print:");
-    		}
+	    case "print", "print:" -> {
+		//System.out.println("DEBUG selector=" + selector);
+
+		MTObject obj = args.get(0);
 
 		MTObject ps = obj.send("printString", List.of());
+
 		if (ps instanceof MTString s) {
     			System.out.println(s.value());
 		} else {
-    		System.out.println(ps.toString());
+    			System.out.println(ps.toString());
 		}
 
     		yield MTNil.INSTANCE;

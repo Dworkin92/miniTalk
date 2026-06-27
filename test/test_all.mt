@@ -1,45 +1,45 @@
 "========================"
-" MiniTalk Test Suite "
+System print: ' MiniTalk Test Suite '.
 "========================"
 
 "--- Littéraux ---"
-'hello'.
-123.
-true.
-false.
+System print: 'hello'.
+System print: 123.
+System print: true.
+System print: false.
 
 "--- Opérations ---"
-1 + 2.
-5 * 3.
-10 - 4.
+System print: (1 + 2).
+System print: (5 * 3).
+System print: (10 - 4).
 
 "--- Variables ---"
 x := 10.
 y := 20.
-x + y.
+System print: (x + y).
 
 "--- Blocs simples ---"
 b := [ 'ok' ].
-b value.
+System print: (b value).
 
 "--- Blocs avec paramètre ---"
 inc := [ :x | x + 1 ].
-inc value: 5.
+System print: (inc value: 5).
 
 "--- Blocs avec 2 paramètres ---"
 sum := [ :a :b | a + b ].
-sum value: 3 value: 4.
+System print: (sum value: 3 value: 4).
 
 "--- Tableaux ---"
-#(1 2 3).
+System print: (#(1 2 3)).
 
-"--- Collection fonctionnelle (si implémenté) ---"
-#(1 2 3) collect: [ :x | x + 1 ].
-#(1 2 3) select: [ :x | x > 1 ].
-#(1 2 3) inject: 0 into: [ :a :x | a + x ].
+"--- Collection fonctionnelle ---"
+System print: (#(1 2 3) collect: [ :x | x + 1 ]).
+System print: (#(1 2 3) select: [ :x | x > 1 ]).
+System print: (#(1 2 3) inject: 0 into: [ :a :x | a + x ]).
 
 "========================"
-" CLASSES DYNAMIQUES "
+System print: ' CLASSES DYNAMIQUES '.
 "========================"
 
 c := Class new.
@@ -49,35 +49,31 @@ c addMethod: 'hello' with: [
 ].
 
 obj := c new.
-obj hello.
+System print: (obj hello).
 
 "--- Méthode avec paramètre ---"
-
 c addMethod: 'double:' with: [ :x |
     x + x
 ].
-
-obj double: 5.
+System print: (obj double: 5).
 
 "--- Méthode avec plusieurs arguments ---"
-
 c addMethod: 'sum:with:' with: [ :a :b |
     a + b
 ].
-
-obj sum: 3 with: 4.
-
-"========================"
-" CHAÎNAGE "
-"========================"
-
-1 + 2 + 3.
+System print: (obj sum: 3 with: 4).
 
 "========================"
-" HERITAGE ET SUPER "
+System print: ' CHAÎNAGE '.
 "========================"
 
-'--- Création classe A ---'.
+System print: (1 + 2 + 3).
+
+"========================"
+System print: ' HERITAGE ET SUPER '.
+"========================"
+
+System print: '--- Création classe A ---'.
 
 A := Class new: 'A'.
 
@@ -85,11 +81,11 @@ A addMethod: 'hello' with: [
   'A'
 ].
 
-'Test A:'.
+System print: 'Test A:'.
 objA := A new.
-objA hello.
+System print: (objA hello).
 
-'--- Création classe B (sous-classe de A) ---'.
+System print: '--- Création classe B (sous-classe de A) ---'.
 
 B := A subclassNamed: 'B'.
 
@@ -97,11 +93,11 @@ B addMethod: 'hello' with: [
   super hello , ' -> B'
 ].
 
-'Test B:'.
+System print: 'Test B:'.
 objB := B new.
-objB hello.
+System print: (objB hello).
 
-'--- Création classe C (sous-classe de B) ---'.
+System print: '--- Création classe C (sous-classe de B) ---'.
 
 C := B subclassNamed: 'C'.
 
@@ -109,52 +105,55 @@ C addMethod: 'hello' with: [
   super hello , ' -> C'
 ].
 
-'Test C:'.
+System print: 'Test C:'.
 objC := C new.
-objC hello.
-
+System print: (objC hello).
 
 "========================"
-" RETURN ^ "
+System print: ' RETURN ^ '.
 "========================"
 
-[ ^42 ] value.
-[
+System print: ([ ^42 ] value).
+
+System print: ([
   1 + 2.
   ^99.
   123
-] value.
-[
+] value).
+
+System print: ([
   [ ^42 ] value.
   100
-] value.
+] value).
 
 "========================"
-" Structures de contrôle "
+System print: ' Structures de contrôle '.
 "========================"
-true not.
-false not.
 
-false ifTrue: [ 'don\'t print' ].
-true  ifTrue: [ 'will print' ].
-false ifTrue: [ 'don\'t print' ] else: [ 'c\'est faux' ].
-true  ifFalse: [ 'don\'t print' ].
-false ifFalse: [ 'will print' ].
-true  ifFalse: [ 'don\'t print' ] else: [ 'c\'est vrai que c\'est faux' ].
+System print: (true not).
+System print: (false not).
+
+System print: (false ifTrue: [ 'don\'t print' ]).
+System print: (true  ifTrue: [ 'will print' ]).
+System print: (false ifTrue: [ 'don\'t print' ] else: [ 'c\'est faux' ]).
+System print: (true  ifFalse: [ 'don\'t print' ]).
+System print: (false ifFalse: [ 'will print' ]).
+System print: (true  ifFalse: [ 'don\'t print' ] else: [ 'c\'est vrai que c\'est faux' ]).
 
 x := 0.
 [ x < 3 ] whileTrue: [
   x := x + 1
 ].
+System print: x.
 
 y := 0.
 [ y = 3 ] whileFalse: [
   y := y + 1
 ].
+System print: y.
 
 "========================"
-" TEST FINAL "
+System print: ' TEST FINAL '.
 "========================"
 
-'OK - fin des tests'.
-
+System print: 'OK - fin des tests'.

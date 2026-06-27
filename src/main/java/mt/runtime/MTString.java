@@ -477,6 +477,19 @@ public final class MTString implements MTObject {
         };
     }
 
+
+    @Override
+    public boolean equals(Object obj) {
+    	if (this == obj) return true;
+    	if (!(obj instanceof MTString other)) return false;
+    	return value.equals(other.value);
+    }
+
+    @Override
+    public int hashCode() {
+    	return value.hashCode();
+    }
+
     private MTString requireString(List<MTObject> args, int index, String selector) {
         if (index >= args.size()) {
             throw new RuntimeException(selector + ": argument manquant à l’indice " + index);
