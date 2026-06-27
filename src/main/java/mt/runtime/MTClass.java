@@ -179,6 +179,7 @@ public class MTClass implements MTObject {
 	    //----------------------------------------------------------
 	    // introspection
 	    //----------------------------------------------------------
+/* *en preparation pour introspection*
 	    case "methods" -> {
     		List<MTObject> names = new ArrayList<>();
     		for (String name : methods.keySet()) {
@@ -186,13 +187,13 @@ public class MTClass implements MTObject {
     		}
     		yield new MTArray(names);
 	    }
+*/
 
             case "printString" -> {
                 //return new MTString("Class(" + name + ")");
 		new MTString(name);
             }
         }
-
         throw new RuntimeException("Message inconnu pour Class: " + selector);
     }
 
