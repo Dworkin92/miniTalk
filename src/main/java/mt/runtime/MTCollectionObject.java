@@ -1,5 +1,8 @@
 package mt.runtime;
 
+import mt.interpreter.MTInterpreter;
+import mt.util.MTDebug;
+import mt.util.MTConfig;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +17,10 @@ public abstract class MTCollectionObject implements MTObject {
 
     @Override
     public MTObject send(String selector, List<MTObject> args) {
+
+        if (MTConfig.DEBUG) {
+            System.out.println("[COLLECTION] send: " + selector);
+        }
 
         return switch (selector) {
 
@@ -37,73 +44,27 @@ public abstract class MTCollectionObject implements MTObject {
             case "do:" -> {
                 MTBlockObject block = requireBlock(args, 0);
 
-                for (MTObject each : delegate) {
-                    block.call(List.of(each));
-                }
+		/* --- vieux code ---
+		int size = delegate.size();
+
+		for (int i = 1; i <= size; i++) {
+    			MTObject each = this.send("at:", List.of(new MTInteger(i)));
+			block.send("value:", List.of(each));
+		}
+		*/
+
+
+
+		List<MTObject> snapshot = new ArrayList<>(delegate);
+
+		for (MTObject each : snapshot) {
+    			block.send("value:", List.of(each));
+		}
 
                 yield this;
             }
 
-            //--------------------------------------------------
-            // collect / map
-            //--------------------------------------------------
 
-            case "collect:", "map:" -> {
-                MTBlockObject block = requireBlock(args, 0);
-                List<MTObject> result = new ArrayList<>();
-
-                for (MTObject each : delegate) {
-                    result.add(block.call(List.of(each)));
-                }
-
-                yield new MTArray(result);
-            }
-
-            //--------------------------------------------------
-            // select / filter
-            //--------------------------------------------------
-
-            case "select:", "filter:" -> {
-                MTBlockObject block = requireBlock(args, 0);
-                List<MTObject> result = new ArrayList<>();
-
-                for (MTObject each : delegate) {
-                    MTObject cond = block.call(List.of(each));
-
-                    if (!(cond instanceof MTBoolean b)) {
-                        throw new RuntimeException("select: doit retourner Boolean");
-                    }
-
-                    if (b.value()) {
-                        result.add(each);
-                    }
-                }
-
-                yield new MTArray(result);
-            }
-
-            //--------------------------------------------------
-            // reject
-            //--------------------------------------------------
-
-            case "reject:" -> {
-                MTBlockObject block = requireBlock(args, 0);
-                List<MTObject> result = new ArrayList<>();
-
-                for (MTObject each : delegate) {
-                    MTObject cond = block.call(List.of(each));
-
-                    if (!(cond instanceof MTBoolean b)) {
-                        throw new RuntimeException("reject: doit retourner Boolean");
-                    }
-
-                    if (!b.value()) {
-                        result.add(each);
-                    }
-                }
-
-                yield new MTArray(result);
-            }
 
             //--------------------------------------------------
             // detect
@@ -155,20 +116,6 @@ public abstract class MTCollectionObject implements MTObject {
                 yield new MTBoolean(true);
             }
 
-            //--------------------------------------------------
-            // reduce
-            //--------------------------------------------------
-
-            case "inject:into:", "reduce:with:" -> {
-                MTObject acc = args.get(0);
-                MTBlockObject block = requireBlock(args, 1);
-
-                for (MTObject each : delegate) {
-                    acc = block.call(List.of(acc, each));
-                }
-
-                yield acc;
-            }
 
             //--------------------------------------------------
             // affichage
@@ -211,4 +158,56 @@ public abstract class MTCollectionObject implements MTObject {
         }
         return block;
     }
+
+    protected MTObject dispatchWithFallback(String selector, List<MTObject> args) {
+
+
+        // 1. essayer les méthodes Java de Collection
+        MTObject result = sendFromCollection(selector, args);
+        if (result != null) {
+            return result;
+        }
+
+        MTClass collectionClass = (MTClass) MTInterpreter.GLOBAL.lookup("Collection");
+        MTMethod method = collectionClass.lookup(selector);
+
+        if (method != null) {
+            return method.body().callWithReceiver(this, args, method.owner());
+        }
+
+        throw new RuntimeException("Message inconnu pour Collection: " + selector);
+    }
+
+    protected MTObject sendFromCollection(String selector, List<MTObject> args) {
+        return switch (selector) {
+            case "size" -> new MTInteger(delegate.size());
+            case "isEmpty" -> new MTBoolean(delegate.isEmpty());
+            case "remove:" -> {
+                delegate.remove(args.get(0));
+                yield this;
+            }
+            case "do:" -> {
+                MTBlockObject block = requireBlock(args, 0);
+                List<MTObject> snapshot = new ArrayList<>(delegate);
+                for (MTObject each : snapshot) {
+                    block.send("value:", List.of(each));
+                }
+                yield this;
+            }
+            case "printString" -> {
+                StringBuilder sb = new StringBuilder("#(");
+                boolean first = true;
+                for (MTObject obj : delegate) {
+                    if (!first) sb.append(" ");
+                    first = false;
+                    MTObject ps = obj.send("printString", List.of());
+                    sb.append(ps);
+                }
+                sb.append(")");
+                yield new MTString(sb.toString());
+            }
+            default -> null;
+        };
+    }
+
 }

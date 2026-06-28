@@ -4,6 +4,7 @@ import mt.interpreter.MTInterpreter;
 import mt.runtime.MTObject;
 import mt.runtime.MTSystem;
 import mt.runtime.MTString;
+import mt.util.MTConfig;
 import mt.util.MTLibraryLoader;
 
 import java.io.BufferedReader;
@@ -13,30 +14,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
 
-    List<String> cliPaths = parseLibraryPaths(args);
-    List<Path> searchRoots = MTLibraryLoader.resolveSearchRoots(cliPaths);
 
-    MTInterpreter interpreter = new MTInterpreter();
+        //  ajout debug
+        for (String arg : args) {
+            if ("-v".equals(arg) || "--debug".equals(arg)) {
+                MTConfig.DEBUG = true;
+            }
+        }
 
-    interpreter.getGlobalEnv().define(
+        List<String> cliPaths = parseLibraryPaths(args);
+        List<Path> searchRoots = MTLibraryLoader.resolveSearchRoots(cliPaths);
+
+        MTInterpreter interpreter = new MTInterpreter();
+
+        interpreter.getGlobalEnv().define(
             "System",
             new MTSystem(interpreter, searchRoots)
-    );
+        );
 
-    try {
-        MTLibraryLoader.loadAllAtStartup(interpreter, searchRoots);
-    } catch (RuntimeException e) {
-        System.err.println("[stdlib:error] " + e.getMessage());
-        System.exit(1);
+        try {
+            MTLibraryLoader.loadAllAtStartup(interpreter, searchRoots);
+        } catch (RuntimeException e) {
+            System.err.println("[stdlib:error] " + e.getMessage());
+            System.exit(1);
+        }
+
+        // NOUVEAU : exécution des fichiers passés en argument
+        runFilesFromCLI(args, interpreter);
+
+        runRepl(interpreter);
     }
-
-    // NOUVEAU : exécution des fichiers passés en argument
-    runFilesFromCLI(args, interpreter);
-
-    runRepl(interpreter);
-}
 
     private static List<String> parseLibraryPaths(String[] args) {
         List<String> cliPaths = new ArrayList<>();
@@ -48,71 +57,73 @@ public static void main(String[] args) throws Exception {
                 }
                 cliPaths.add(args[++i]);
             }
+            else if ("-v".equals(args[i]) || "--debug".equals(args[i]))
+                     continue;
         }
 
         return cliPaths;
     }
 
-private static void runRepl(MTInterpreter interpreter) throws Exception {
-    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    private static void runRepl(MTInterpreter interpreter) throws Exception {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-    System.out.println("miniTalk REPL");
-    System.out.println("Tape 'exit' pour quitter.");
+        System.out.println("miniTalk REPL");
+        System.out.println("Tape 'exit' pour quitter.");
 
-    StringBuilder buffer = new StringBuilder();
-    int parenDepth = 0;
-    int bracketDepth = 0;
+        StringBuilder buffer = new StringBuilder();
+        int parenDepth = 0;
+        int bracketDepth = 0;
 
-    while (true) {
-        System.out.print(buffer.isEmpty() ? "mt> " : "..> ");
-        String line = reader.readLine();
+        while (true) {
+            System.out.print(buffer.isEmpty() ? "mt> " : "..> ");
+            String line = reader.readLine();
 
-        if (line == null) {
-            System.out.println("Bye.");
-            break;
-        }
+            if (line == null) {
+                System.out.println("Bye.");
+                break;
+            }
 
-        if (buffer.isEmpty() && line.equals("exit")) {
-            System.out.println("Bye.");
-            break;
-        }
+            if (buffer.isEmpty() && line.equals("exit")) {
+                System.out.println("Bye.");
+                break;
+            }
 
-        buffer.append(line).append("\n");
+            buffer.append(line).append("\n");
 
-        parenDepth += count(line, '(');
-        parenDepth -= count(line, ')');
-        bracketDepth += count(line, '[');
-        bracketDepth -= count(line, ']');
+            parenDepth += count(line, '(');
+            parenDepth -= count(line, ')');
+            bracketDepth += count(line, '[');
+            bracketDepth -= count(line, ']');
 
-        boolean expressionClosed =
+            boolean expressionClosed =
                 parenDepth == 0 &&
                 bracketDepth == 0 &&
                 line.trim().endsWith(".");
 
-        if (!expressionClosed) {
-            continue;
-        }
-
-        String source = buffer.toString();
-        buffer.setLength(0);
-
-        try {
-            MTObject result = MTLibraryLoader.executeSource(source, interpreter);
-            if (result != null) {
-                //System.out.println(result);
-		MTObject printable = result.send("printString", List.of());
-
-		if (printable instanceof MTString s) {
-    			System.out.println(s.value());
-		} else {
-    			System.out.println(printable.toString());
-		}
+            if (!expressionClosed) {
+                continue;
             }
-        } catch (Exception e) {
-            System.out.println("Erreur: " + e.getMessage());
+
+            String source = buffer.toString();
+            buffer.setLength(0);
+
+            try {
+                MTObject result = MTLibraryLoader.executeSource(source, interpreter);
+                if (result != null) {
+                //System.out.println(result);
+                    MTObject printable = result.send("printString", List.of());
+
+                    if (printable instanceof MTString s) {
+                        System.out.println(s.value());
+                    } else {
+                        System.out.println(printable.toString());
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("Erreur: " + e.getMessage());
+            }
         }
     }
-}
 
 private static int count(String s, char c) {
     int n = 0;

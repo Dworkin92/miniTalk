@@ -27,27 +27,28 @@ Vous l'aurez compris : il s'agit d'un outil expérimental, que vous utiliserez �
 
 ### Compiler
 
-Avec l'aide de Maven, lancez :
-
-```bash
-mvn clean compile
-```
-
-ou, pour créer un jar exécutable :
+Si vous connaisez Maven, lancez :
 
 ```bash
 mvn clean package
 ```
+pour créer un jar exécutable
 
-troisième alternative : récupérer le jar depuis ce projet GitHub.
+sinon, récupérez la dernière version du fichier miniTalk*.jar depuis github. 
+
+1. Installez le jar dans un répertoire,
+
+2. créez un sous-répertoire stdlib dans lequel vous placerez tous les
+   fichiers stdlib/*.mt du projet. MiniTalk en a besoin pour son
+   fonctionnement
+   
+3. créez un sous-répertoire test dans lequel vous placerez tous les
+   fichiers test/test_*.mt du projet. Ces tests vous seront utiles
+   en tant qu'exemples pour apprendre les méthodes et leur utilisation
 
 ### Lancer le REPL
 
-```bash
-java -cp target/classes mt.Main
-```
-
-ou, si vous avez le fichier jar que vous avez placé dans un répertoire donné :
+La commande à lancer est la suivante :
 
 ```bash
 java -jar <répertoire>/miniTalk-1.0.jar

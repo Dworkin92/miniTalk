@@ -1,77 +1,172 @@
-# Bibliothèque standard
+# 📚 MiniTalk – Standard Library Usage Guide
 
-## Principe
+## 🧭 Overview
 
-La bibliothèque standard est chargée au démarrage depuis `stdlib/stdlib.mt`.
+This document summarizes the complete usage of the MiniTalk standard library (stdlib).
+It covers collections, blocks, and common message patterns.
 
-Ce fichier peut lui-même charger d’autres fichiers de la stdlib.
+---
 
-Exemple de `stdlib.mt` :
+## 🧱 Message Sending
 
-```smalltalk
-System load: 'array'.
+General form:
+
+```
+receiver selector: argument
 ```
 
-## Organisation conseillée
+Chaining requires parentheses:
 
-```text
-stdlib/
-  stdlib.mt
-  array.mt
-  process.mt
-  file.mt
+```
+(receiver message1: ...) message2: ...
 ```
 
-## Fonctions sur les tableaux
+---
 
-MiniTalk fournit des opérations fonctionnelles sur les tableaux.
+## 🧩 Blocks
 
-### Itération
+### Definition
 
-```smalltalk
-#(1 2 3) do: [ :x | x ].
+```
+[ :x | x + 1 ]
 ```
 
-### Transformation
+### Usage
 
-```smalltalk
-#(1 2 3) collect: [ :x | x * 2 ].
+```
+b := [ :x | x * 2 ].
+b value: 5. "→ 10"
 ```
 
-### Filtrage
+Multiple arguments:
 
-```smalltalk
+```
+[ :a :b | a + b ] value:value: 2 3.
+```
+
+---
+
+## 📦 Collections
+
+### Types
+
+| Type        | Creation            |
+|-------------|--------------------|
+| Array       | #(1 2 3) / Array new |
+| List        | List new           |
+| Set         | Set new            |
+| Dictionary  | Dictionary new     |
+
+---
+
+## 🔁 Iteration
+
+```
+collection do: [ :x | ... ].
+```
+
+Dictionary:
+
+```
+d do: [ :k :v | ... ].
+```
+
+---
+
+## 🔄 Transformation
+
+### collect / map
+
+```
+#(1 2 3) collect: [ :x | x + 1 ].
+```
+
+Dictionary:
+
+```
+d collect: [ :k :v | v + 1 ].
+```
+
+---
+
+## 🔍 Filtering
+
+```
 #(1 2 3 4) select: [ :x | x > 2 ].
-#(1 2 3 4) reject: [ :x | x > 2 ].
+#(1 2 3 4) reject: [ :x | x = 2 ].
 ```
 
-### Réduction
+Dictionary:
 
-```smalltalk
-#(1 2 3 4) inject: 0 into: [ :acc :x | acc + x ].
+```
+d select: [ :k :v | v > 10 ].
 ```
 
-## Helpers de haut niveau
+---
 
-Exemple d’extension dans `array.mt` :
+## ➕ Reduction
 
-```smalltalk
-Array addMethod: 'sum' with: [
-  self inject: 0 into: [ :acc :x | acc + x ]
-].
-
-Array addMethod: 'max' with: [
-  self size = 0 ifTrue: [ ^ nil ].
-  self inject: (self at: 1) into: [ :acc :x |
-    (x > acc) ifTrue: [ x ] else: [ acc ]
-  ]
-].
+```
+#(1 2 3) inject: 0 into: [ :acc :x | acc + x ].
 ```
 
-## Chargement explicite
+Dictionary:
 
-Le chargement d’un fichier de bibliothèque se fait avec :
-
-```smalltalk
-System load: 'array'.
 ```
+d inject: 0 into: [ :acc :k :v | acc + v ].
+```
+
+---
+
+## 🧪 Composition
+
+```
+(#(1 2 3)
+    collect: [ :x | x + 1 ])
+    select: [ :x | x > 2 ].
+```
+
+---
+
+## 📌 Dictionary specific
+
+### Insert
+
+```
+d put: 1 value: 10.
+```
+
+### Access
+
+```
+d at: 1.
+```
+
+### Keys / Values
+
+```
+d keys.
+d values.
+```
+
+---
+
+## ⚠️ Notes
+
+- Set order is NOT guaranteed
+- Dictionary blocks use two parameters (k, v)
+- Parentheses required for chaining
+
+---
+
+## ✅ Summary
+
+MiniTalk stdlib provides:
+
+- polymorphic collections
+- dynamic dispatch
+- functional-style operations
+
+---
+
+End of document

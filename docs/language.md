@@ -486,6 +486,92 @@ Les valeurs non renseignées sont obligatoirement à `nil`.
 L’indexation des tableaux commence toujours à 1 et non à 0 comme
 en C ou en Java.
 
+## les Dictionnaires
+
+Ce sont des tableaux dont les indices sont
+des clés qui peuvent être des objets.
+
+Bien que n'importe quel objet du langage
+puisse être utilisé comme clé, il est
+recommandé d'utiliser des chaines de
+caractères ou des nombres, de façon à pouvoir
+être comparées facilement lors des recherches.
+
+La classe parente de la classe des Dictionnaires
+étant Collection, elle a accès à toutes les
+méthodes de cette dernière, mais en réécrit quelques-unes.
+Les methodes d'instances
+disponibles pour cette classe sont les suivantes.
+
+1. `at:` : permet d'obtenir la valeur définie
+  pour la clé fournie en paramètre
+
+2. `put:value:` : permet d'ajouter une valeur
+  accessible avec la clé fournie
+  
+  ```smalltalk
+  d := Dictionary new.
+  d put: 'a' value: 1.
+  ```
+
+3. `containsKey:` : cette méthode permet de tester
+  si une clé donnée est présente dans le
+  dictionnaire.
+  
+4. `remove:` : cette méthode retire la clé fournie
+  en paramètre et la valeur associée du dictionnaire.
+
+5. `do:` : méthode magique qui à chaque paire clé/valeur
+  permet d'appliquer une closure dont les 2 arguments
+  sont, bien entendu, une variable pour la clé, et une
+  pour la valeur.
+  
+  Attention : cette méthode travaille directement
+  sur les entrées du dictionnaires
+
+6. `keys` : cette méthode génère un tableau contenant
+  l'ensemble des clés définies dans le dictionnaire.
+  
+7. `values` : cette méthodes génère un tableau contenant
+  l'ensemble des valeurs définies dans le dictionnaire.
+
+8. `size` : cette méthode permet d'obtenir le nombre
+  de paires clé/valeur présentes dans le dictionnaire
+  
+9. `collect:` ou `map:` : cette méthode permet de créer un nouveau
+  dictionnaire dont les entrées proviennent du traitement
+  des entrées par la closure fournie en paramètre.
+  
+  ```smalltalk
+  d := Dictionary new.
+  d put: 'a' value: 1.
+  d put: 'b' value: 2.
+
+  d2 := d collect: [ :k :v | v * 10 ].
+  System print: d2.
+  ```
+
+10. `select:` ou `filter:` : cette méthode applique une closure
+  testant chaque paire clé/valeur du dictionnaire et de créer
+  un nouveau dictionnaire avec celles satisfaisant aux conditions
+  exprimées dans le bloc.
+  
+  ```smalltalk
+  d select: [ :k :v | v > 1 ].
+  ```
+  
+11. `reject:` : c'est la méthode inverse de la précédente : seuls
+  les paires clé/valeur ne satisfaisant pas le bloc sont gardées
+  pour le nouveau dictionnaire
+
+12. `inject:into:`, `reduce:with:` : cette méthode permet de
+  générer un objet suite à un traitement de l'ensemble des
+  clés/valeurs du dictionnaire initial.
+  
+  ```smalltalk
+  d inject: 0 into: [ :acc :k :v | acc + v ].
+  ```
+  
 ## Nombres
 
 MiniTalk supporte les entiers et les réels.

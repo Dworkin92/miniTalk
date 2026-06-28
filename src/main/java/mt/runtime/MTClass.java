@@ -1,11 +1,8 @@
 package mt.runtime;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import mt.util.MTDebug;
+import mt.util.MTConfig;
+import java.util.*;
 
 public class MTClass implements MTObject {
 
@@ -16,9 +13,11 @@ public class MTClass implements MTObject {
 
     private final Map<String, MTMethod> methods = new HashMap<>();
     private final Map<String, MTMethod> classMethods = new HashMap<>();
-
     private final Set<String> instanceVariables = new HashSet<>();
     private final Map<String, MTObject> classVariables = new HashMap<>();
+
+    // ✅ introspection
+    private final List<MTClass> subclasses = new ArrayList<>();
 
     public MTClass(String name, MTClass superclass) {
         this(name, superclass, false, null);
@@ -29,6 +28,11 @@ public class MTClass implements MTObject {
         this.superclass = superclass;
         this.classFactory = classFactory;
         this.instanceSuperclass = instanceSuperclass;
+
+        // ✅ enregistrement automatique dans la hiérarchie
+        if (superclass != null) {
+            superclass.subclasses.add(this);
+        }
     }
 
     public void addMethod(String selector, MTBlockObject method) {
@@ -40,35 +44,20 @@ public class MTClass implements MTObject {
     }
 
     public MTMethod lookup(String selector) {
+
+        if (MTConfig.DEBUG) {
+            System.out.println("[LOOKUP] " + name + " -> " + selector);
+        }
+
         MTMethod method = methods.get(selector);
         if (method != null) return method;
         if (superclass != null) return superclass.lookup(selector);
         return null;
     }
 
-    public boolean hasMethod(String selector) {
-        if (methods.containsKey(selector)) return true;
-        if (superclass != null) return superclass.hasMethod(selector);
-        return false;
-    }
-
-    public void addInstanceVariable(String name) {
-        instanceVariables.add(name);
-    }
-
     public boolean hasInstVar(String name) {
         if (instanceVariables.contains(name)) return true;
         if (superclass != null) return superclass.hasInstVar(name);
-        return false;
-        }
-
-    public void addClassVariable(String name) {
-        classVariables.put(name, MTNil.INSTANCE);
-    }
-
-    public boolean hasClassVar(String name) {
-        if (classVariables.containsKey(name)) return true;
-        if (superclass != null) return superclass.hasClassVar(name);
         return false;
     }
 
@@ -83,7 +72,7 @@ public class MTClass implements MTObject {
             classVariables.put(name, value);
             return value;
         }
-        if (superclass != null && superclass.hasClassVar(name)) {
+        if (superclass != null && superclass.classVariables.containsKey(name)) {
             return superclass.setClassVar(name, value);
         }
         throw new RuntimeException("Variable de classe inconnue: " + name);
@@ -92,127 +81,160 @@ public class MTClass implements MTObject {
     @Override
     public MTObject send(String selector, List<MTObject> args) {
 
-        // automatic class var getter
-        if (args.isEmpty() && hasClassVar(selector)) {
+        // --- accès variable de classe ---
+        if (args.isEmpty() && classVariables.containsKey(selector)) {
             return getClassVar(selector);
         }
 
-        // automatic class var setter
-        if (selector.endsWith(":") && args.size() == 1) {
-            String fieldName = selector.substring(0, selector.length() - 1);
-            if (hasClassVar(fieldName)) {
-                return setClassVar(fieldName, args.get(0));
-            }
-        }
-
-        // class-side methods
+        // --- méthodes de classe ---
         MTMethod classMethod = classMethods.get(selector);
         if (classMethod != null) {
             return classMethod.body().callWithReceiver(this, args, classMethod.owner());
         }
 
         switch (selector) {
-            case "new" -> {
-		// creatiobn de classe (meta)
+
+            // --------------------------------------------------
+            // création
+            // --------------------------------------------------
+            case "new": {
+
                 if (classFactory) {
                     return new MTClass("Anonymous", instanceSuperclass);
                 }
 
+                if (name.equals("Array")) return new MTArray(new ArrayList<>());
+                if (name.equals("List")) return new MTListObject();
+                if (name.equals("Set")) return new MTSetObject();
+                if (name.equals("Dictionary")) return new MTDictionaryObject();
 
-    		// types natifs
-    		if (name.equals("List")) return new MTListObject();
-    		if (name.equals("Set"))  return new MTSetObject();
-		if (name.equals("Dictionary")) return new MTDictionaryObject();
-
-		// instance standard
                 return new MTInstance(this);
             }
 
-            case "new:" -> {
+            case "new:": {
                 String className = ((MTString) args.get(0)).value();
                 if (classFactory) {
                     return new MTClass(className, instanceSuperclass);
                 }
-                throw new RuntimeException("new: non supporté sur une classe normale");
+                throw new RuntimeException("new: non supporté");
             }
 
-            case "addMethod:with:" -> {
-                String methodName = ((MTString) args.get(0)).value();
-                MTBlockObject block = (MTBlockObject) args.get(1);
-                addMethod(methodName, block);
-                return this;
-            }
+	    // Class management
+	    case "addMethod:with:": {
+    		String methodName = ((MTString) args.get(0)).value();
+    		MTBlockObject block = (MTBlockObject) args.get(1);
+    		addMethod(methodName, block);
+    		return this;
+	    }
 
-            case "addClassMethod:with:" -> {
-                String methodName = ((MTString) args.get(0)).value();
-                MTBlockObject block = (MTBlockObject) args.get(1);
-                addClassMethod(methodName, block);
-                return this;
-            }
+	    case "addClassMethod:with:": {
+    		String methodName = ((MTString) args.get(0)).value();
+    		MTBlockObject block = (MTBlockObject) args.get(1);
+    		addClassMethod(methodName, block);
+    		return this;
+	    }
 
-            case "addInstVar:" -> {
-                String varName = ((MTString) args.get(0)).value();
-                addInstanceVariable(varName);
-                return this;
-            }
+	    case "addInstVar:": {
+    		String varName = ((MTString) args.get(0)).value();
+    		instanceVariables.add(varName);
+    		return this;
+	    }
 
-            case "addClassVar:" -> {
-                String varName = ((MTString) args.get(0)).value();
-                addClassVariable(varName);
-                return this;
-            }
+	    case "addClassVar:": {
+    		String varName = ((MTString) args.get(0)).value();
+    		classVariables.put(varName, MTNil.INSTANCE);
+    		return this;
+	    }
 
-            case "subclass" -> {
-                return new MTClass("Anonymous", this);
-            }
+            // --------------------------------------------------
+            // hiérarchie
+            // --------------------------------------------------
 
-            case "subclassNamed:", "subclass:" -> {
-                String childName = ((MTString) args.get(0)).value();
+            case "subclass":
+            case "subclass:": {
+                String childName = args.isEmpty()
+                        ? "Anonymous"
+                        : ((MTString) args.get(0)).value();
                 return new MTClass(childName, this);
             }
 
-            case "name" -> {
-                return new MTString(name);
-            }
-
-            case "named:", "name:" -> {
-                String newName = ((MTString) args.get(0)).value();
-                this.name = newName;
-                return this;
-            }
-
-            case "superclass" -> {
+            case "superclass": {
                 return superclass != null ? superclass : MTNil.INSTANCE;
             }
 
+            case "subclasses": {
+                return new MTArray(new ArrayList<>(subclasses));
+            }
 
-	    //----------------------------------------------------------
-	    // introspection
-	    //----------------------------------------------------------
-	    case "methods" -> {
-    		List<MTObject> names = new ArrayList<>();
-    		for (String name : methods.keySet()) {
-        		names.add(new MTString(name));
-    		}
-    		return new MTArray(names);
+
+	    case "allSubclasses": {
+    		List<MTObject> result = new ArrayList<>();
+    		collectAllSubclasses(this, result);
+   		return new MTArray(result);
 	    }
 
-            case "printString" -> {
-                //return new MTString("Class(" + name + ")");
-		new MTString(name);
-		return new MTString(name);
+            // --------------------------------------------------
+            // introspection
+            // --------------------------------------------------
+
+            case "methods": {
+                List<MTObject> list = new ArrayList<>();
+                for (String m : methods.keySet()) {
+                    list.add(new MTString(m));
+                }
+                return new MTArray(list);
+            }
+
+
+	    case "allMethods": {
+    		List<MTObject> list = new ArrayList<>();
+    		collectMethods(this, list);
+    		return new MTArray(list);
+	    }
+
+            case "name": {
+                return new MTString(name);
+            }
+
+            // --------------------------------------------------
+            // affichage
+            // --------------------------------------------------
+
+            case "printString": {
+                return new MTString(name);
             }
         }
 
         throw new RuntimeException("Message inconnu pour Class: " + selector);
     }
 
-    public MTClass superclass() {
-        return superclass;
-    }
-
     @Override
     public String toString() {
         return "Class(" + name + ")";
     }
+
+
+    public MTClass superclass() {
+    	return superclass;
+    }
+
+
+    private void collectAllSubclasses(MTClass cls, List<MTObject> result) {
+    	for (MTClass sub : cls.subclasses) {
+        	result.add(sub);
+        	collectAllSubclasses(sub, result);
+    	}
+    }
+
+
+    private void collectMethods(MTClass cls, List<MTObject> list) {
+    	for (String m : cls.methods.keySet()) {
+        	list.add(new MTString(m));
+    	}
+    	if (cls.superclass() != null) {
+        	collectMethods(cls.superclass(), list);
+    	}
+    }
+
+
 }

@@ -1,6 +1,9 @@
 package mt.runtime;
 
-import java.util.ArrayList;import mt.interpreter.MTInterpreter;
+import mt.util.MTDebug;
+import mt.util.MTConfig;
+import java.util.ArrayList;
+import mt.interpreter.MTInterpreter;
 import java.util.List;
 
 public final class MTArray extends MTCollectionObject {
@@ -14,6 +17,18 @@ public final class MTArray extends MTCollectionObject {
 
     @Override
     public MTObject send(String selector, List<MTObject> args) {
+
+        if (MTConfig.DEBUG) {
+            if (selector.equals("do:"))
+                System.out.println("[ARRAY] DO: RECEIVED");
+            else
+                System.out.println("[ARRAY] send: " + selector);
+        }
+
+
+if (MTConfig.DEBUG) {
+    System.out.println("[ARRAY] selector=" + selector);
+}
 
         return switch (selector) {
 
@@ -59,9 +74,40 @@ public final class MTArray extends MTCollectionObject {
                 yield this;
             }
 
+
+            case "class" -> {
+                MTClass arrayClass = (MTClass) MTInterpreter.GLOBAL.lookup("Array");
+                yield arrayClass;
+            }
+
             // tout le reste est factorisé
             default -> {
-                yield super.send(selector, args);
+
+                // 1. fallback Java → CollectionObject
+                MTObject result;
+                try {
+                    result = super.send(selector, args);
+                    yield result;
+                } catch (RuntimeException ignored) {
+                // continuer
+                }
+
+                // 2. fallback miniTalk -> Array
+                MTClass arrayClass = (MTClass) MTInterpreter.GLOBAL.lookup("Array");
+                MTMethod method = arrayClass.lookup(selector);
+
+                if (method != null) {
+                    yield method.body().callWithReceiver(this, args, method.owner());
+                }
+
+                // 3. fallback vers Collection
+                MTClass collectionClass = (MTClass) MTInterpreter.GLOBAL.lookup("Collection");
+                MTMethod collMethod = collectionClass.lookup(selector);
+                if (collMethod != null) {
+                    yield collMethod.body().callWithReceiver(this, args, collMethod.owner());
+                }
+
+                throw new RuntimeException("Message inconnu pour Array: " + selector);
             }
         };
     }

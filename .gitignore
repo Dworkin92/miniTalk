@@ -9,9 +9,14 @@ target/
 # Debug
 *.log
 
+
 # Editor
 .vscode/
 .idea/
+
+# code::block
+*.cbp
+miniTalk.layout
 
 # OS
 .DS_Store

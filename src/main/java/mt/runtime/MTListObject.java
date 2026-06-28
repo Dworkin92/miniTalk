@@ -1,5 +1,7 @@
 package mt.runtime;
 
+import mt.interpreter.MTInterpreter;
+import mt.runtime.MTCollectionObject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +26,9 @@ public final class MTListObject extends MTCollectionObject {
                 yield ((ArrayList<MTObject>) delegate).get(index);
             }
 
-            default -> super.send(selector, args);
+            default -> {
+                yield dispatchWithFallback(selector, args);
+            }
         };
     }
 }

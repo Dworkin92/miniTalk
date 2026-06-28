@@ -3,6 +3,8 @@ package mt.runtime;
 import mt.ast.MTExpr;
 import mt.interpreter.MTEnvironment;
 import mt.interpreter.MTInterpreter;
+import mt.util.MTDebug;
+import mt.util.MTConfig;
 
 import java.util.List;
 
@@ -80,26 +82,26 @@ public class MTBlockObject implements MTObject {
     		yield last;
 	    }
 
-            case "whileFalse:" -> {
-                MTBlockObject bodyBlock = requireBlock(args, 0);
-                MTObject last = MTNil.INSTANCE;
+        case "whileFalse:" -> {
+            MTBlockObject bodyBlock = requireBlock(args, 0);
+            MTObject last = MTNil.INSTANCE;
 
-                while (true) {
-                    MTObject cond = callWithReceiver(null, List.of(), null);
+            while (true) {
+                MTObject cond = callWithReceiver(null, List.of(), null);
 
-                    if (!(cond instanceof MTBoolean b)) {
-                        throw new RuntimeException("whileFalse: exige que le block receveur retourne un Boolean");
-                    }
-
-                    if (b.value()) {
-                        break;
-                    }
-
-                    last = bodyBlock.callWithReceiver(null, List.of(), null);
+                if (!(cond instanceof MTBoolean b)) {
+                    throw new RuntimeException("whileFalse: exige que le block receveur retourne un Boolean");
                 }
 
-                yield last;
+                if (b.value()) {
+                    break;
+                }
+
+                last = bodyBlock.callWithReceiver(null, List.of(), null);
             }
+
+            yield last;
+        }
 
 
 	    case "repeatUntil:" -> {
@@ -124,9 +126,9 @@ public class MTBlockObject implements MTObject {
 	    }
 
 
-	    case "repeat" -> {  
-    		while (true) {  
-        		callWithReceiver(null, List.of(), null);  
+	    case "repeat" -> {
+    		while (true) {
+        		callWithReceiver(null, List.of(), null);
     		}
     		//throw new RuntimeException("Boucle infinie");
 	    }
@@ -154,6 +156,10 @@ public class MTBlockObject implements MTObject {
     }
 
     public MTObject callWithReceiver(MTObject self, List<MTObject> args, MTClass ownerClass) {
+        if (MTConfig.DEBUG) {
+            System.out.println("[BLOCK] call with " + args);
+        }
+
         MTEnvironment local = new MTEnvironment(capturedEnv);
 
         MTReturnTarget returnTargetObj;

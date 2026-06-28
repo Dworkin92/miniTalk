@@ -37,12 +37,30 @@ public class MTSystem implements MTObject {
 	    }
 
             case "load:" -> {
-                String name = ((MTString) args.get(0)).value();
-                try {
-                    yield MTLibraryLoader.loadNamedLibrary(name, interpreter, searchRoots);
-                } catch (Exception e) {
-                    throw new RuntimeException("Erreur load: " + name + " -> " + e.getMessage(), e);
-                }
+
+    		String path = ((MTString) args.get(0)).value();
+
+    		try {
+        		Path p = Path.of(path);
+
+        		// si chemin explicite → charger direct
+        		if (p.toFile().exists()) {
+            			yield MTLibraryLoader.executeFile(p, interpreter);
+        		}
+
+        		// sinon fallback sur searchRoots
+        		for (Path root : searchRoots) {
+            			Path candidate = root.resolve(path);
+            			if (candidate.toFile().exists()) {
+                			yield MTLibraryLoader.executeFile(candidate, interpreter);
+            			}
+        		}
+
+        		throw new RuntimeException("Librairie introuvable: " + path);
+
+    		} catch (Exception e) {
+        		throw new RuntimeException("Erreur load: " + path + " -> " + e.getMessage());
+    		}
             }
             default -> throw new RuntimeException("Message inconnu pour System: " + selector);
         };
