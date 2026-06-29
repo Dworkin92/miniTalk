@@ -137,7 +137,20 @@ public class Main {
                     }
                 }
             } catch (Exception e) {
-                System.out.println("Erreur: " + e.getMessage());
+
+                System.out.println(" Erreur: " + e.getMessage());
+
+                // afficher le code
+                String[] lines = source.split("\n");
+                for (int i = 0; i < lines.length; i++) {
+                    System.out.printf("%3d | %s%n", i + 1, lines[i]);
+                }
+
+                // (optionnel) stack debug
+                if (MTConfig.DEBUG) {
+                    e.printStackTrace();
+                }
+
             }
         }
     }

@@ -1,18 +1,45 @@
 # 🔗 MiniTalk – Java Interoperability Guide
 
-## 🧭 Overview
 
-MiniTalk allows interaction with its Java runtime layer. This interoperability is limited but powerful: it enables access to Java-backed objects (Array, List, Set, Dictionary, etc.) and their native behaviors.
+## 🧭 Avant-propos
 
-This document explains how MiniTalk code interacts with Java classes, how objects are instantiated, and how message dispatch bridges the two worlds.
+MiniTalk n’expose pas directement l’API Java.
+
+Il implémente un modèle d’interopérabilité contrôlée, dans lequel :
+* Java agit comme moteur d’exécution
+* miniTalk fournit le modèle objet et l’expressivité
+
+```
+MiniTalk
+    ↓
+MTObject (runtime Java)
+    ↓
+Structures Java (ArrayList, HashMap, …)
+```
+
+👉 Le langage reste cohérent, prédictible et extensible.
+
+MiniTalk autorise à interagir avec le runtime Java. Cette interopérabilité est limité
+mais puissante : elle permet d'accéder à des objets écrits en Java
+(Array, List, Set, Dictionary, etc.) et à leurs comportements natifs.
+
+Le présent document explique comment le code de miniTalk intéragit avec les classes Java,
+comment les objets sont instanciés, et comment le traitement des messages relie
+les deux mondes.
 
 ---
 
-## 🧱 Core Principle
+## 🧱 Principes fondamentaux
 
-MiniTalk does NOT directly expose arbitrary Java classes.
+MiniTalk n'expose pas d'emblée des classes Java arbitraires.
+Ainsi, on ne peut pas écrire directement :
 
-Instead, it relies on **Java-backed runtime objects**:
+```smalltalk
+ArrayList new
+System currentTimeMillis
+```
+
+Au lieu de cela, miniTalk s'appuie sur un **runtime d'objets Java déjà préparés** :
 
 | MiniTalk Class | Java Implementation |
 |----------------|---------------------|
@@ -21,113 +48,183 @@ Instead, it relies on **Java-backed runtime objects**:
 | Set            | MTSetObject         |
 | Dictionary     | MTDictionaryObject  |
 
-👉 These classes act as a gateway between MiniTalk and Java.
+👉 Ces classes agissent comme des passerelles entre miniTalk et Java.
 
 ---
+
+## 🏗️ Architecture
+
+Le coeur du langage est donc construit autour de ces classes
+```
+MiniTalk Class (Array, List, …)
+        ↓
+MTClass (meta)
+        ↓
+Runtime Object
+   MTArray / MTListObject / MTSetObject / MTDictionaryObject
+        ↓
+Java delegate
+   ArrayList / HashSet / HashMap
+```
+
+---
+
 
 ## 🏗️ Object Creation
 
 ### MiniTalk side
 
+en miniTalk, on crée un objet de la façon suivante :
+
 ```smalltalk
 r := Array new.
 ```
 
+on adresse un message `new` à la classe souhaité, ce qui retourne ce qu'on appelle
+une instance : un objet dont le comportement est régie par les méthodes présentes
+dans la classe.
+
 ### Java side
 
+du côté Java, cela se traduit par une reconnaissance de la classe prédéfinie adressée
+(ici "Array") parmi toutes les classes prédéfinines, 
+et la création de l'objet correspondant.
+
 ```java
-if (name.equals("Array")) {
-    return new MTArray(new ArrayList<MTObject>());
-}
+if (name.equals("Array")) return new MTArray(new ArrayList<MTObject>());
+if (name.equals("List")) return new MTListObject();
+if (name.equals("Set")) return new MTSetObject();
+if (name.equals("Dictionary")) return new MTDictionaryObject();
 ```
 
-👉 This mapping is **explicit and mandatory**.
+👉 Cette recherche de correspondance est donc à la fois **explicite et obligatoire**.
 
 ---
 
 ## 🔄 Message Dispatch Pipeline
 
-When sending a message:
+Quand un message est envoyé a un objet :
 
 ```smalltalk
 r add: 1.
 ```
 
-Execution path:
+Le chemin parcouru par le message durant son exécution est le suivant :
 
-1. `MTArray.send("add:")`
-2. Java implementation (if exists)
-3. Otherwise → fallback to miniTalk (`Collection`)
+1. `MTArray.send("add:")` : envoie du message à la classe Java de l'instance
+2. exécution du code Java correspondant, s'il existe et est trouvé.
+3. s'il n'existe pas → `dispatchWithFallback`, un mécanisme de rattrapage
+   est activé dans miniTalk,
+4. lookup dans la classe parente, ici, `Collection`.
+
+L'odre de résolution est donc :
+
+| Niveau | Action |
+|--------|--------|
+| 1 | méthode Java |
+| 2 | fallback miniTalk |
+| 3 | erreur |
 
 ---
 
-## 🔁 Fallback Mechanism
+## 🔁 dispatchWithFallback
 
-Collections use a fallback system:
+La méthode centrale du runtime est donc :
 
 ```java
 dispatchWithFallback(selector, args)
 ```
 
-Steps:
+fonctionnement :
 
-1. Try Java implementation (MTCollectionObject)
-2. Lookup in MiniTalk class `Collection`
-3. Execute method via `callWithReceiver`
+1. tente les primitives Java (MTCollectionObject)
+2. recherche dans Collection (`Collection` miniTalk)
+3. exécute la méthode via  `callWithReceiver`
 
 ---
 
-## ✅ Example: Hybrid Behavior
+## ✅ Exécution hybride (clé du design)
 
-### MiniTalk
+### exemple MiniTalk
 
 ```smalltalk
 #(1 2 3) collect: [ :x | x + 1 ]
 ```
 
-### Execution
+### Pipeline réel
 
-- `collect:` → defined in MiniTalk
-- calls `do:` → implemented in Java
-
-👉 hybrid execution ✅
+ci après, le pipeline hybride complet :
+```
+collect: → miniTalk
+   ↓
+do: → Java
+   ↓
+block value: → miniTalk
+   ↓
+add: → Java
+```
 
 ---
 
-## 🧩 Blocks and Java
+## 🧩 Les Blocs et Java
 
-Blocks originate in MiniTalk but execute via Java:
+Les blocs viennent de miniTalk, mais sont exécuté via Java.
+
+Ainsi, le bloc suivant
 
 ```smalltalk
 l do: [ :x | x + 1 ]
 ```
 
-Java executes:
+sera exécuté en Java, comme ceci :
 
 ```java
 block.send("value:", List.of(each));
 ```
 
-👉 Blocks are invoked through message passing, not direct function calls.
+👉 Les blocs sont invoqués grâce à une utilisation via des messages,
+    et non via des appels directs aux fonction
 
----
+## ⚠️ Ne jamais faire
 
-## 📦 Dictionary Special Case
-
-Dictionary differs:
-
-- Java handles iteration
-- Blocks receive multiple arguments
-
-```smalltalk
-d do: [ :k :v | System print: (k + v) ]
+```java
+block.call(...)
 ```
 
+Pourquoi ?
+
+* cela casse le modèle objet
+* cela crée un bypass du dispatch
+* cela empêche le mécanisme de fallback miniTalk de fonctionner
+* cela introduit des bugs subtils dans tout le langage.
+
 ---
 
-## ⚠️ Important Constraints
+## 📦 Cas particulier : Dictionary
 
-### 1. No direct Java access
+Les "Dictionary" diffèrent de plusieurs façons différentes des autres classes Colections :
+
+- les blocs reçoivent plusieurs arguments
+  ```smalltak
+  [:k :v | ...]
+  ```
+  
+- on a une prise en charge directe par Java des itérations. Ainsi,
+  ```smalltalk
+  d do: [ :k :v | System print: (k + v) ]
+  ```
+  est traité de la façon suivante :
+  ```java
+  for (entry : map) {
+    block.call(List.of(key, value));
+  }
+  ```
+
+---
+
+## ⚠️ Constraintes importantes
+
+### 1. Aucun accès direct à Java
 
 You cannot do:
 

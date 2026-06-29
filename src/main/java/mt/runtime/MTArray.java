@@ -18,17 +18,13 @@ public final class MTArray extends MTCollectionObject {
     @Override
     public MTObject send(String selector, List<MTObject> args) {
 
-        if (MTConfig.DEBUG) {
-            if (selector.equals("do:"))
-                System.out.println("[ARRAY] DO: RECEIVED");
-            else
-                System.out.println("[ARRAY] send: " + selector);
-        }
+        if (selector.equals("do:"))
+            MTDebug.enter("[ARRAY] DO: RECEIVED");
+        else
+            MTDebug.enter("[ARRAY] send: " + selector);
 
-
-if (MTConfig.DEBUG) {
-    System.out.println("[ARRAY] selector=" + selector);
-}
+        MTDebug.log("[ARRAY] selector=" + selector);
+        try {
 
         return switch (selector) {
 
@@ -110,5 +106,9 @@ if (MTConfig.DEBUG) {
                 throw new RuntimeException("Message inconnu pour Array: " + selector);
             }
         };
+        } finally {
+            MTDebug.exit("[ARRAY] END " + selector);
+        }
+
     }
 }

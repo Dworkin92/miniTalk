@@ -18,10 +18,9 @@ public abstract class MTCollectionObject implements MTObject {
     @Override
     public MTObject send(String selector, List<MTObject> args) {
 
-        if (MTConfig.DEBUG) {
-            System.out.println("[COLLECTION] send: " + selector);
-        }
+        MTDebug.enter("[COLLECTION] send:" + selector);
 
+        try {
         return switch (selector) {
 
             //--------------------------------------------------
@@ -44,22 +43,12 @@ public abstract class MTCollectionObject implements MTObject {
             case "do:" -> {
                 MTBlockObject block = requireBlock(args, 0);
 
-		/* --- vieux code ---
-		int size = delegate.size();
 
-		for (int i = 1; i <= size; i++) {
-    			MTObject each = this.send("at:", List.of(new MTInteger(i)));
-			block.send("value:", List.of(each));
-		}
-		*/
+                List<MTObject> snapshot = new ArrayList<>(delegate);
 
-
-
-		List<MTObject> snapshot = new ArrayList<>(delegate);
-
-		for (MTObject each : snapshot) {
-    			block.send("value:", List.of(each));
-		}
+                for (MTObject each : snapshot) {
+                    block.send("value:", List.of(each));
+                }
 
                 yield this;
             }
@@ -143,6 +132,10 @@ public abstract class MTCollectionObject implements MTObject {
 
             default -> throw new RuntimeException("Message inconnu pour Collection: " + selector);
         };
+        } finally {
+            MTDebug.exit("[COLLECTION] end " + selector);
+        }
+
     }
 
     //--------------------------------------------------
