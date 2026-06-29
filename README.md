@@ -51,13 +51,13 @@ sinon, récupérez la dernière version du fichier miniTalk*.jar depuis github.
 La commande à lancer est la suivante :
 
 ```bash
-java -jar <répertoire>/miniTalk-1.0.jar
+java -jar <répertoire>/miniTalk-1.5.jar
 ```
 
 
 ### Charger la bibliothèque standard
 
-Par défaut, le runtime cherche etcharge tous les fichiers `stdlib/*.mt` dans le répertoire courant.
+Par défaut, le runtime cherche et charge tous les fichiers `stdlib/*.mt` dans le répertoire courant.
 
 Vous pouvez ajouter des chemins de recherche de fichiers minitalk en définissant une variable d'environnement :
 
@@ -89,10 +89,15 @@ code = 0 ifTrue: [ 'OK' ] ifFalse: [ 'KO' ].
 
 La documentation détaillée est disponible dans le dossier [`docs/`](docs/language.md) :
 
+
 - [`docs/language.md`](docs/language.md) — syntaxe et concepts du langage ;
 - [`docs/stdlib.md`](docs/stdlib.md) — bibliothèque standard et chargement ;
 - [`docs/process.md`](docs/process.md) — exécution de commandes et gestion des flux ;
+- [`docs/interop.md`](docs/interop.md) — comment inclure des
+  classes java dans miniTalk;
 - [`docs/architecture.md`](docs/architecture.md) — vue d’ensemble du runtime Java + MiniTalk ;
+- [`docs/design.md`](docs/design.md) — vue d’ensemble de la conception en Java de MiniTalk ;
+
 - [`docs/examples.md`](docs/examples.md) — exemples pratiques et idiomes.
 
 ## État du projet
