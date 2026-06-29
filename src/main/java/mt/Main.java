@@ -65,6 +65,10 @@ public class Main {
     }
 
     private static void runRepl(MTInterpreter interpreter) throws Exception {
+
+        boolean inString = false;
+        boolean inComment = false;
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
         System.out.println("miniTalk REPL");
@@ -90,15 +94,28 @@ public class Main {
 
             buffer.append(line).append("\n");
 
-            parenDepth += count(line, '(');
-            parenDepth -= count(line, ')');
-            bracketDepth += count(line, '[');
-            bracketDepth -= count(line, ']');
+
+            boolean[] states = updateStates(line, inString, inComment);
+            inString = states[0];
+            inComment = states[1];
+
+            if (!inString && !inComment) {
+                parenDepth += count(line, '(');
+                parenDepth -= count(line, ')');
+
+                bracketDepth += count(line, '[');
+                bracketDepth -= count(line, ']');
+            }
+
+
 
             boolean expressionClosed =
+                !inString &&
+                !inComment &&
                 parenDepth == 0 &&
                 bracketDepth == 0 &&
                 line.trim().endsWith(".");
+
 
             if (!expressionClosed) {
                 continue;
@@ -125,49 +142,65 @@ public class Main {
         }
     }
 
-private static int count(String s, char c) {
-    int n = 0;
-    for (int i = 0; i < s.length(); i++) {
-        if (s.charAt(i) == c) {
-            n++;
+    private static boolean[] updateStates(String line, boolean inString, boolean inComment) {
+
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+
+            if (c == '\'' && !inComment) {
+                inString = !inString;
+            }
+            else if (c == '\"' && !inString) {
+                inComment = !inComment;
+            }
         }
+
+        return new boolean[]{inString, inComment};
     }
-    return n;
-}
 
-
-private static void runFilesFromCLI(String[] args, MTInterpreter interpreter) {
-    for (int i = 0; i < args.length; i++) {
-
-        if ("-L".equals(args[i])) {
-            i++;
-            continue;
+    private static int count(String s, char c) {
+        int n = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == c) {
+                n++;
+            }
         }
+        return n;
+    }
 
-        String arg = args[i];
 
-        if (arg.endsWith(".mt")) {
-            try {
-                System.out.println("[exec] " + arg);
+    private static void runFilesFromCLI(String[] args, MTInterpreter interpreter) {
+        for (int i = 0; i < args.length; i++) {
 
-                MTObject result = MTLibraryLoader.executeFile(Path.of(arg), interpreter);
+            if ("-L".equals(args[i])) {
+                i++;
+                continue;
+            }
 
-                if (result != null && result != mt.runtime.MTNil.INSTANCE) {
-                    MTObject printable = result.send("printString", List.of());
+            String arg = args[i];
 
-                    if (printable instanceof MTString s) {
-                        System.out.println(s.value());
-                    } else {
-                        System.out.println(printable.toString());
+            if (arg.endsWith(".mt")) {
+                try {
+                    System.out.println("[exec] " + arg);
+
+                    MTObject result = MTLibraryLoader.executeFile(Path.of(arg), interpreter);
+
+                    if (result != null && result != mt.runtime.MTNil.INSTANCE) {
+                        MTObject printable = result.send("printString", List.of());
+
+                        if (printable instanceof MTString s) {
+                            System.out.println(s.value());
+                        } else {
+                            System.out.println(printable.toString());
+                        }
                     }
-                }
 
-            } catch (Exception e) {
-                System.err.println("Erreur exécution fichier : " + arg);
-                System.err.println(e.getMessage());
-                System.exit(1);
+                } catch (Exception e) {
+                    System.err.println("Erreur exécution fichier : " + arg);
+                    System.err.println(e.getMessage());
+                    System.exit(1);
+                }
             }
         }
     }
-}
 }
