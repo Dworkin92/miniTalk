@@ -107,6 +107,7 @@ public class MTClass implements MTObject {
                 if (name.equals("List")) return new MTListObject();
                 if (name.equals("Set")) return new MTSetObject();
                 if (name.equals("Dictionary")) return new MTDictionaryObject();
+                if (name.equals("Database")) return new MTDatabase();
 
                 return new MTInstance(this);
             }

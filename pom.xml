@@ -7,14 +7,22 @@
 
   <groupId>mt</groupId>
   <artifactId>miniTalk</artifactId>
-  <version>1.5.0</version>
+  <version>1.6.0</version>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.xerial</groupId>
+      <artifactId>sqlite-jdbc</artifactId>
+      <version>3.53.2.0</version>
+    </dependency>
+  </dependencies>
 
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
-<build>
+  <build>
     <plugins>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -28,7 +36,20 @@
                 </archive>
             </configuration>
         </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals><goal>shade</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
-</build>
+  </build>
 
 </project>
