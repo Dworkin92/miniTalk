@@ -1,5 +1,6 @@
-"@module String"
-
+/*
+@module String
+*/
 
 String addMethod: 'print' with: [
   System print: self.

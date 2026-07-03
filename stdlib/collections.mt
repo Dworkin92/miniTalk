@@ -1,15 +1,19 @@
-"@module Collections"
+/*
+@module Collections
+*/
 
-"Common collection utilities"
+/* Common collection utilities */
 
 Array addMethod: 'average' with: [
   self size = 0 ifTrue: [ ^ nil ].
   self sum / self size
 ].
 
-"============================="
-" Collection core methods "
-"============================="
+/*
+=============================
+ Collection core methods
+=============================
+*/
 
 Collection addMethod: 'collect:' with: [ :block |
     result := Array new.

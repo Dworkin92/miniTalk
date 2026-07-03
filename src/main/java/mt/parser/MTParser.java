@@ -24,26 +24,33 @@ public final class MTParser {
         this.tokens = tokens;
     }
 
-    public MTSequence parseProgram() {
-        List<MTExpr> statements = new ArrayList<>();
+public MTSequence parseProgram() {
+    List<MTExpr> statements = new ArrayList<>();
 
-        while (!check(MTTokenType.EOF)) {
-            statements.add(parse());
+    while (!check(MTTokenType.EOF)) {
 
-            if (match(MTTokenType.PERIOD)) {
-                continue;
-            }
+        skipMetaDirectives();
 
-            if (!check(MTTokenType.EOF)) {
-                throw new MTParseException(
-                        "Expected '.' or EOF, found " + peek().text(),
-                        peek().position()
-                );
-            }
+        if (check(MTTokenType.EOF)) {
+            break;
         }
 
-        return new MTSequence(statements);
+        statements.add(parse());
+
+        if (match(MTTokenType.PERIOD)) {
+            continue;
+        }
+
+        if (!check(MTTokenType.EOF)) {
+            throw new MTParseException(
+                    "Expected '.' or EOF, found " + peek().text(),
+                    peek().position()
+            );
+        }
     }
+
+    return new MTSequence(statements);
+}
 
     public MTExpr parse() {
         return parseExpression();
@@ -236,6 +243,43 @@ public final class MTParser {
         consume(MTTokenType.RBRACKET);
 
         return new MTBlock(params, body);
+    }
+
+
+    private void skipMetaDirectives() {
+
+        int commentDepth = 0;
+
+        while (true) {
+
+            if (match(MTTokenType.LCOMMENT)) {
+                commentDepth++;
+                continue;
+            }
+
+            if (match(MTTokenType.RCOMMENT)) {
+                commentDepth--;
+                continue;
+            }
+
+            if (commentDepth > 0) {
+                advance();
+                continue;
+            }
+
+            if (check(MTTokenType.META)) {
+                advance();
+
+                if (check(MTTokenType.IDENTIFIER)
+                    || check(MTTokenType.STRING)) {
+                    advance();
+                }
+
+                continue;
+            }
+
+            break;
+        }
     }
 
     private boolean match(MTTokenType type) {

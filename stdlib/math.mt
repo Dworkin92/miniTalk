@@ -1,6 +1,8 @@
-"@module Math"
+/*
+@module Math
+*/
 
-"Math helpers"
+/* Math helpers */
 
 Math := Class new: 'Math'.
 

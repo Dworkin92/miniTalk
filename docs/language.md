@@ -26,17 +26,21 @@ name := 'Andy'.
 
 ## Commentaires
 
-Les commentaires sont des zones de textes délimités par des doubles guillemets.
+Les commentaires sont des zones de textes délimités par des `/*` et `*/`,
+comme en C ou en Java.
 
 ```smalltalk
-" ceci est un commentaire "
+/* ceci est un commentaire */
 ```
+
+Les commentaires peuvent être étendus sur plusieurs lignes.
 
 ## Affectation
 
-L’affectation se fait avec `:=`, ou `<-`, au choix. Personnellement je
-trouve la seconde alternative plus parlante, mais je comprends que l'on
-puisse préférer l'affectation à la mode Pascal.
+L’affectation se fait avec `:=`, ou `<-`, au choix. La forme alternative sera peut-être plus parlante, mais il est tout aussi compréhensible
+de préférer l'affectation à la mode Pascal.
+
+MiniTalk vous laisse libre d'employer les deux formes indifféremment.
 
 ```smalltalk
 x := 10.
@@ -44,6 +48,12 @@ p <- 19.0 + 23.
 ```
 
 ## Messages
+
+Les messages sont en fait des actions, des opérations, qui s'appliquent
+à un objet receveur. Le receveur peut être un nombre, une chaîne, un
+bloc, une classe.
+
+Un message peut être accompagné ou non d'un argument.
 
 ### Messages unaires
 
@@ -94,7 +104,8 @@ Nous verrons cela dans le chapitre des méthodes.
 
 ## Classes
 
-Les classes sont des objets spéciaux.
+Les classes sont des objets spéciaux qui portent un modèle
+permettant de créer des instances.
 
 ```smalltalk
 Person := Class new: 'Person'.
@@ -115,11 +126,13 @@ Il existe plusieurs méthodes pour créer une classe :
   parente à "Object".
 
 2. **UneClasse subclass** ou **uneClasse subclass: 'UnIdent'** :
-  permettent de créer une sous-classe de la classe UneClasse, anonyme
-  ou nommée. Dans ce cas, la nouvelle classe héritera automatiquement
-  de toutes les méthodes de classe et d'instance de la classe parente.
+  permettent de créer une sous-classe d'une classe particulière, dans
+  notre exemple *UneClasse*. La classe, ainsi créée, peut être anonyme
+  ou nommée. Dans tous les cas, la nouvelle classe héritera
+  automatiquement de toutes les méthodes de classe et d'instance
+  de la classe parente.
 
-A noter que dans les deux cas, même si ce n'est pas imposé par
+Il est à noter que, même si ce n'est pas imposé par
 miniTalk, il est, par convention, hautement recommandé de faire 
 commencer l'identifiant de la nouvelle classe par une majuscule.
 
@@ -127,23 +140,22 @@ commencer l'identifiant de la nouvelle classe par une majuscule.
 
 Il existe deux types de variables dans une classe : 
 
-- les variables de classe qui sont les propriétés uniquement
+- les variables de classe qui sont des propriétés uniquement
   accessibles en s'adressant à la classe elle-même
 
-- les variables d'instances qui sont acessible en s'adressant 
-  directement à l'instance.
+- les variables d'instances qui sont acessibles en s'adressant 
+  à l'instance.
   
 #### Variables d’instance
 
-On ajoute une variable d'instance grâce au mot-clé :  'addInstVar:' 
+On ajoute une variable d'instance à l'aide du mot-clé :  `addInstVar:` 
 que l'on  fera suivre d'une chaine de caractères correspondant 
-au nom de la variable à
-créer.
+au nom de la variable à créer.
 
-Dans la classe est alors créé automatiquement un getter
+Dans la classe, est alors créé automatiquement un getter
 avec le même  identifiant que la variable,
 et un setter qui a pour identifiant
-l'identifiant de la variable suivi de ':'.
+l'identifiant de la variable suivi de '`:`'.
 
 - le getter permet d'obtenir le contenu de la variable,
 
@@ -165,8 +177,8 @@ caractères correspondant au nom de la variable à
 créer.
 
 Comme pour la variable d'instance, un getter et un setter
-sont automatiquement créés en s'appuyant sur l'identifant
-de la variable.
+sont automatiquement créés pour accéder et modifier le
+contenu de cette variable en s'appuyant sur son identifant.
 
 ```smalltalk
 Person addClassVar: 'species'.

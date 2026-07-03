@@ -64,6 +64,26 @@ public final class MTLexer {
             }
 
             // ========================
+            // META DIRECTIVES
+            // ========================
+            if (c == '@') {
+                pos++; // skip @
+
+                while (pos < input.length() &&
+                    Character.isLetterOrDigit(input.charAt(pos))) {
+                    pos++;
+                }
+
+                tokens.add(new MTToken(
+                    MTTokenType.META,
+                    input.substring(start, pos),
+                    start
+                ));
+
+                continue;
+            }
+
+            // ========================
             // IDENTIFIERS / KEYWORDS
             // ========================
             if (Character.isLetter(c)) {
@@ -91,7 +111,7 @@ public final class MTLexer {
             switch (c) {
 
                 // opérateurs
-                case '+', '-', '*', '%', '=', ',' -> {
+                case '+', '-', '%', '=', ',' -> {
                     pos++;
                     tokens.add(new MTToken(
                             MTTokenType.BINARY_SELECTOR,
@@ -104,9 +124,22 @@ public final class MTLexer {
                     if (pos + 1 < input.length() && input.charAt(pos + 1) == '/') {
                         pos += 2;
                         tokens.add(new MTToken(MTTokenType.BINARY_SELECTOR, "//", start));
+                    } else if (pos + 1 < input.length() && input.charAt(pos + 1) == '*') {
+                        pos += 2;
+                        tokens.add(new MTToken(MTTokenType.LCOMMENT, "/*", start));
                     } else {
                         pos++;
                         tokens.add(new MTToken(MTTokenType.BINARY_SELECTOR, "/", start));
+                    }
+                }
+
+                case '*' -> {
+                    if (pos + 1 < input.length() && input.charAt(pos + 1) == '/') {
+                        pos += 2;
+                        tokens.add(new MTToken(MTTokenType.RCOMMENT, "*/", start));
+                    } else {
+                        pos++;
+                        tokens.add(new MTToken(MTTokenType.BINARY_SELECTOR, "*", start));
                     }
                 }
 
@@ -119,7 +152,7 @@ public final class MTLexer {
                     }
                 }
 
-		case '<' -> {
+                case '<' -> {
     		        if (pos + 1 < input.length() && input.charAt(pos + 1) == '-') {
         		        pos += 2;
         		        tokens.add(new MTToken(MTTokenType.ASSIGN, "<-", start));
@@ -133,7 +166,7 @@ public final class MTLexer {
         		        pos++;
         		        tokens.add(new MTToken(MTTokenType.BINARY_SELECTOR, "<", start));
     		        }
-		}
+                }
 
                 case '>' -> {
                     if (pos + 1 < input.length() && input.charAt(pos + 1) == '=') {

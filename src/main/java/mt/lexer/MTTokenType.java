@@ -16,6 +16,9 @@ public enum MTTokenType {
     SEMICOLON,
     LBRACKET,
     RBRACKET,
+    LCOMMENT,
+    RCOMMENT,
     PIPE,
-    COLON
+    COLON,
+    META
 }

@@ -101,30 +101,59 @@ public final class MTModuleDependencyResolver {
             String module = null;
             List<String> imports = new ArrayList<>();
 
+            boolean inHeader = false;
+
             for (String line : lines) {
+
                 String t = line.trim();
 
-                if (t.startsWith("\"@") && t.endsWith("\"")) {
-                    String content = t.substring(2, t.length() - 1);
-                    String[] parts = content.split("\\s+");
-
-                    switch (parts[0]) {
-                        case "module" -> module = parts[1];
-                        case "import" -> imports.add(parts[1]);
+                if (!inHeader) {
+                    if (t.equals("/*")) {
+                        inHeader = true;
+                        continue;
                     }
-                } else if (!t.isEmpty()) {
+
+                    if (!t.isEmpty()) {
+                        break;
+                    }
+
+                    continue;
+                }
+
+                if (t.equals("*/")) {
                     break;
+                }
+
+                if (t.startsWith("@module ")) {
+                    String[] parts = t.split("\\s+");
+                    if (parts.length >= 2) {
+                        module = parts[1];
+                    }
+                    continue;
+                }
+
+                if (t.startsWith("@import ")) {
+                    String[] parts = t.split("\\s+");
+                    if (parts.length >= 2) {
+                        imports.add(parts[1]);
+                    }
+                    continue;
                 }
             }
 
             if (module == null) {
-                throw new RuntimeException("Pas de @module dans " + file);
+                throw new RuntimeException(
+                    "Pas de @module dans " + file
+                );
             }
 
             return new Module(module, imports, file);
 
         } catch (Exception e) {
-            throw new RuntimeException("Erreur parsing " + file + ": " + e.getMessage(), e);
+            throw new RuntimeException(
+                "Erreur parsing " + file + ": " + e.getMessage(),
+                e
+            );
         }
     }
 

@@ -1,6 +1,8 @@
-"@module Array"
+/*
+@module Array
+*/
 
-"Array helpers"
+/* Array helpers */
 
 Array addMethod: 'sum' with: [
   self inject: 0 into: [ :acc :x | acc + x ]
