@@ -1,0 +1,29 @@
+# Build
+*.o
+*.out
+*.exe
+*.class
+build/
+target/
+
+# Debug
+*.log
+
+
+# Editor
+.vscode/
+.idea/
+
+# code::block
+*.cbp
+miniTalk.layout
+
+# OS
+.DS_Store
+
+# Temp files
+*~
+*.bak
+*.old
+minitalk_sources.txt
+*.tgz

@@ -1,0 +1,499 @@
+specification:
+  name: MiniTalk
+  version: 0.1
+
+##############################################################################
+# LEXICAL MODEL
+##############################################################################
+
+lexical:
+
+  whitespace:
+
+    significance: none
+
+    characters:
+      - space
+      - tab
+      - cr
+      - lf
+
+  strings:
+
+    delimiters:
+      - "'"
+      - '"'
+
+    multiline: true
+
+    escaping:
+
+      character: "\\"
+
+      sequences:
+        - "\\\\"
+        - "\\'"
+        - "\\\""
+        - "\\n"
+        - "\\r"
+        - "\\t"
+
+    eofBeforeTerminator:
+      error: UnterminatedStringLiteral
+
+  assignment:
+
+    operators:
+      - ":="
+      - "<-"
+
+##############################################################################
+# COMMENTS
+##############################################################################
+
+comments:
+
+  delimiters:
+
+    open: "/*"
+    close: "*/"
+
+  nesting:
+    enabled: true
+
+  parserVisibility:
+    preserveTokens: true
+
+  lexer:
+
+    emits:
+      - LCOMMENT
+      - RCOMMENT
+
+    responsibilities:
+      - "Reconnaître les délimiteurs de commentaires."
+      - "Maintenir correctement les niveaux d'imbrication."
+      - "Produire les tokens LCOMMENT et RCOMMENT."
+      - "Détecter les métadirectives."
+
+    forbidden:
+      - "Supprimer les commentaires."
+      - "Interpréter les métadirectives."
+      - "Éliminer des tokens."
+
+##############################################################################
+# META DIRECTIVES
+##############################################################################
+
+meta:
+
+  allowedOnlyInsideComments: true
+
+  prefix: "@"
+
+  terminator: ";"
+
+  lexer:
+
+    emits:
+      - META
+
+  examples:
+
+    - "@module Core;"
+    - "@import Collections;"
+    - "@import UI;"
+    - "@author 'Philippe';"
+
+##############################################################################
+# META GRAMMAR
+##############################################################################
+
+metaGrammar:
+
+  MetaDirective:
+    - "META MetaArgument* SEMICOLON"
+
+  MetaArgument:
+    - IDENTIFIER
+    - STRING
+    - INTEGER
+    - SYMBOL
+
+##############################################################################
+# META PARSING
+##############################################################################
+
+metaParsing:
+
+  parserResponsibilities:
+
+    - "Reconnaître les directives META."
+    - "Valider leur syntaxe."
+    - "Construire les nœuds AST associés."
+    - "Ignorer les commentaires ordinaires."
+
+  example:
+
+    source: |
+      /*
+          @module Core;
+          @import Collections;
+      */
+
+    tokenStream:
+
+      - LCOMMENT
+
+      - META("@module")
+      - IDENTIFIER("Core")
+      - SEMICOLON
+
+      - META("@import")
+      - IDENTIFIER("Collections")
+      - SEMICOLON
+
+      - RCOMMENT
+
+##############################################################################
+# MODULE SYSTEM
+##############################################################################
+
+modules:
+
+  directives:
+
+    module:
+
+      syntax:
+        - "@module ModuleName;"
+
+      cardinality:
+        max: 1
+
+      scope:
+        sourceFile
+
+    import:
+
+      syntax:
+        - "@import ModuleName;"
+
+      cardinality:
+        unlimited
+
+      scope:
+        sourceFile
+
+##############################################################################
+# TOKENS
+##############################################################################
+
+tokens:
+
+  literals:
+    - INTEGER
+    - STRING
+    - SYMBOL
+
+  pseudoVariables:
+    - SELF
+    - SUPER
+    - NIL
+    - TRUE
+    - FALSE
+
+  identifiers:
+    - IDENTIFIER
+
+  operators:
+    - ASSIGN
+    - BINARY_SELECTOR
+
+  punctuation:
+    - DOT
+    - SEMICOLON
+    - COLON
+    - PIPE
+    - LPAREN
+    - RPAREN
+    - LBRACKET
+    - RBRACKET
+
+  comments:
+    - LCOMMENT
+    - RCOMMENT
+    - META
+
+##############################################################################
+# LANGUAGE GRAMMAR
+##############################################################################
+
+grammar:
+
+  Program:
+    - "Statement* EOF"
+
+  Statement:
+    - "Expression DOT"
+
+  Expression:
+    - ReturnExpression
+    - AssignmentExpression
+
+  ReturnExpression:
+    - "RETURN Expression"
+
+  AssignmentExpression:
+    - "Assignable ASSIGN AssignmentExpression"
+    - CascadeExpression
+
+  Assignable:
+    - IDENTIFIER
+
+  CascadeExpression:
+    - "KeywordExpression (';' CascadeMessage)*"
+
+  CascadeMessage:
+    - UnaryCascadeMessage
+    - BinaryCascadeMessage
+    - KeywordCascadeMessage
+
+  UnaryCascadeMessage:
+    - IDENTIFIER
+
+  BinaryCascadeMessage:
+    - "BINARY_SELECTOR UnaryExpression"
+
+  KeywordCascadeMessage:
+    - "KeywordPart+"
+
+  KeywordExpression:
+    - BinaryExpression
+    - "BinaryExpression KeywordMessage"
+
+  KeywordMessage:
+    - "KeywordPart+"
+
+  KeywordPart:
+    - "IDENTIFIER ':' BinaryExpression"
+
+  BinaryExpression:
+    - "UnaryExpression (BINARY_SELECTOR UnaryExpression)*"
+
+  UnaryExpression:
+    - "PrefixExpression UnaryMessage*"
+
+  UnaryMessage:
+    - IDENTIFIER
+
+  PrefixExpression:
+    - MinusExpression
+    - Primary
+
+  MinusExpression:
+    - "'-' PrefixExpression"
+
+  Primary:
+    - INTEGER
+    - STRING
+    - SYMBOL
+    - NIL
+    - TRUE
+    - FALSE
+    - SELF
+    - SUPER
+    - IDENTIFIER
+    - Block
+    - "'(' Expression ')'"
+
+  Block:
+    - "'[' BlockParameters? TemporaryVariables? BlockBody ']'"
+
+  BlockParameters:
+    - "( ':' IDENTIFIER )+ '|'"
+
+  TemporaryVariables:
+    - "'|' IDENTIFIER* '|'"
+
+  BlockBody:
+    - "Statement* Expression?"
+
+##############################################################################
+# MESSAGE PRECEDENCE
+##############################################################################
+
+messagePrecedence:
+
+  1: unary
+  2: binary
+  3: keyword
+  4: cascade
+
+##############################################################################
+# OBJECT MODEL
+##############################################################################
+
+metamodel:
+
+  everythingIsAnObject: true
+
+  classesAreObjects: true
+
+  inheritance:
+
+    multipleInheritance: false
+
+    rootClass: Object
+
+##############################################################################
+# BOOTSTRAP
+##############################################################################
+
+bootstrap:
+
+  Object:
+
+    kind: Class
+
+    superclass: null
+
+    class: Class
+
+  Class:
+
+    kind: Class
+
+    superclass: Object
+
+    class: Class
+
+##############################################################################
+# KERNEL CLASSES
+##############################################################################
+
+kernelClasses:
+
+  - Object
+  - Class
+  - String
+  - Symbol
+  - Integer
+  - Boolean
+  - Block
+
+##############################################################################
+# SINGLETONS
+##############################################################################
+
+singletons:
+
+  nil:
+    class: Object
+
+  true:
+    class: Boolean
+
+  false:
+    class: Boolean
+
+##############################################################################
+# PSEUDO VARIABLES
+##############################################################################
+
+pseudoVariables:
+
+  self:
+    token: SELF
+
+  super:
+    token: SUPER
+
+  nil:
+    token: NIL
+
+  true:
+    token: TRUE
+
+  false:
+    token: FALSE
+
+##############################################################################
+# SYMBOLS
+##############################################################################
+
+symbols:
+
+  prefix: "#"
+
+  interned: true
+
+  examples:
+    - "#size"
+    - "#+"
+    - "#at:put:"
+    - "#fullName"
+
+##############################################################################
+# CLASS CREATION PROTOCOL
+##############################################################################
+
+classCreation:
+
+  anonymousClass:
+
+    expression:
+      - "Class new"
+
+    superclass:
+      default: Object
+
+  namedClass:
+
+    expression:
+      - "Class new: 'ClassName'"
+
+    superclass:
+      default: Object
+
+  anonymousSubclass:
+
+    expression:
+      - "Class subclass: ParentClass new"
+
+  namedSubclass:
+
+    expression:
+      - "Class subclass: ParentClass new: 'ClassName'"
+
+##############################################################################
+# CLOSURES
+##############################################################################
+
+closures:
+
+  lexicalScoping: true
+
+  nestedBlocks: true
+
+  capturesOuterVariables: true
+
+scopeModel:
+
+  chain:
+
+    - GlobalScope
+    - MethodScope
+    - BlockScope
+    - NestedBlockScope
+
+##############################################################################
+# RETURNS
+##############################################################################
+
+returns:
+
+  operator: "^"
+
+  semantics:
+    nonLocalReturn: true

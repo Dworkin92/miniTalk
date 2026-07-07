@@ -1,0 +1,546 @@
+ast:
+
+  version: 1.1
+
+##############################################################################
+# ROOT
+##############################################################################
+
+  MTNode:
+
+    abstract: true
+
+    properties:
+
+      sourcePosition:
+        type: MTSourcePosition
+        required: false
+
+##############################################################################
+# SOURCE POSITION
+##############################################################################
+
+  MTSourcePosition:
+
+    properties:
+
+      line:
+        type: Integer
+
+      column:
+        type: Integer
+
+##############################################################################
+# COMPILATION UNIT
+##############################################################################
+
+  MTCompilationUnitNode:
+
+    extends: MTNode
+
+    properties:
+
+      comments:
+        type: List<MTCommentNode>
+
+      program:
+        type: MTProgramNode
+
+##############################################################################
+# PROGRAM
+##############################################################################
+
+  MTProgramNode:
+
+    extends: MTNode
+
+    properties:
+
+      statements:
+        type: List<MTStatementNode>
+
+##############################################################################
+# COMMENTS
+##############################################################################
+
+  MTCommentNode:
+
+    extends: MTNode
+
+    properties:
+
+      text:
+        type: String
+
+      nestingLevel:
+        type: Integer
+
+      directives:
+        type: List<MTMetaDirectiveNode>
+
+##############################################################################
+# STATEMENTS
+##############################################################################
+
+  MTStatementNode:
+
+    abstract: true
+
+    extends: MTNode
+
+  MTExpressionStatementNode:
+
+    extends: MTStatementNode
+
+    properties:
+
+      expression:
+        type: MTExpressionNode
+
+##############################################################################
+# EXPRESSIONS
+##############################################################################
+
+  MTExpressionNode:
+
+    abstract: true
+
+    extends: MTNode
+
+##############################################################################
+# ASSIGNMENTS
+##############################################################################
+
+  MTAssignmentNode:
+
+    extends: MTExpressionNode
+
+    properties:
+
+      variable:
+        type: MTVariableNode
+
+      value:
+        type: MTExpressionNode
+
+##############################################################################
+# NON LOCAL RETURNS
+##############################################################################
+
+  MTNonLocalReturnNode:
+
+    extends: MTExpressionNode
+
+    properties:
+
+      value:
+        type: MTExpressionNode
+
+##############################################################################
+# MESSAGE SENDS
+##############################################################################
+
+  MTMessageSendNode:
+
+    extends: MTExpressionNode
+
+    properties:
+
+      receiver:
+        type: MTExpressionNode
+
+      selector:
+        type: String
+
+      arguments:
+        type: List<MTExpressionNode>
+
+      messageKind:
+        type: MTMessageKind
+
+##############################################################################
+# MESSAGE KIND
+##############################################################################
+
+  MTMessageKind:
+
+    enum:
+
+      - UNARY
+      - BINARY
+      - KEYWORD
+
+##############################################################################
+# CASCADES
+##############################################################################
+
+  MTCascadeNode:
+
+    extends: MTExpressionNode
+
+    properties:
+
+      receiver:
+        type: MTExpressionNode
+
+      messages:
+        type: List<MTCascadeMessageNode>
+
+  MTCascadeMessageNode:
+
+    extends: MTNode
+
+    properties:
+
+      selector:
+        type: String
+
+      messageKind:
+        type: MTMessageKind
+
+      arguments:
+        type: List<MTExpressionNode>
+
+##############################################################################
+# BLOCKS / CLOSURES
+##############################################################################
+
+  MTBlockNode:
+
+    extends: MTExpressionNode
+
+    properties:
+
+      parameters:
+        type: List<MTParameterNode>
+
+      temporaries:
+        type: List<MTTemporaryNode>
+
+      statements:
+        type: List<MTStatementNode>
+
+      resultExpression:
+        type: MTExpressionNode
+        required: false
+
+      containsNonLocalReturn:
+        type: Boolean
+
+      lexicalDepth:
+        type: Integer
+        required: false
+
+      capturedVariables:
+        type: List<String>
+        required: false
+
+##############################################################################
+# PARAMETERS
+##############################################################################
+
+  MTParameterNode:
+
+    extends: MTNode
+
+    properties:
+
+      name:
+        type: String
+
+##############################################################################
+# TEMPORARY VARIABLES
+##############################################################################
+
+  MTTemporaryNode:
+
+    extends: MTNode
+
+    properties:
+
+      name:
+        type: String
+
+##############################################################################
+# VARIABLES
+##############################################################################
+
+  MTVariableNode:
+
+    extends: MTExpressionNode
+
+    properties:
+
+      name:
+        type: String
+
+      kind:
+        type: MTVariableKind
+
+##############################################################################
+# VARIABLE KIND
+##############################################################################
+
+  MTVariableKind:
+
+    enum:
+
+      - UNKNOWN
+
+      - PARAMETER
+
+      - TEMPORARY
+
+      - LOCAL
+
+      - GLOBAL
+
+##############################################################################
+# PSEUDO VARIABLES
+##############################################################################
+
+  MTSelfNode:
+
+    extends: MTExpressionNode
+
+  MTSuperNode:
+
+    extends: MTExpressionNode
+
+  MTNilNode:
+
+    extends: MTExpressionNode
+
+  MTTrueNode:
+
+    extends: MTExpressionNode
+
+  MTFalseNode:
+
+    extends: MTExpressionNode
+
+##############################################################################
+# LITERALS
+##############################################################################
+
+  MTLiteralNode:
+
+    abstract: true
+
+    extends: MTExpressionNode
+
+  MTIntegerLiteralNode:
+
+    extends: MTLiteralNode
+
+    properties:
+
+      value:
+        type: Long
+
+  MTStringLiteralNode:
+
+    extends: MTLiteralNode
+
+    properties:
+
+      value:
+        type: String
+
+  MTSymbolLiteralNode:
+
+    extends: MTLiteralNode
+
+    properties:
+
+      value:
+        type: String
+
+##############################################################################
+# META DIRECTIVES
+##############################################################################
+
+  MTMetaDirectiveNode:
+
+    abstract: true
+
+    extends: MTNode
+
+    properties:
+
+      directive:
+        type: String
+
+      arguments:
+        type: List<MTMetaArgumentNode>
+
+##############################################################################
+# META ARGUMENTS
+##############################################################################
+
+  MTMetaArgumentNode:
+
+    abstract: true
+
+    extends: MTNode
+
+  MTMetaIdentifierArgumentNode:
+
+    extends: MTMetaArgumentNode
+
+    properties:
+
+      value:
+        type: String
+
+  MTMetaStringArgumentNode:
+
+    extends: MTMetaArgumentNode
+
+    properties:
+
+      value:
+        type: String
+
+  MTMetaIntegerArgumentNode:
+
+    extends: MTMetaArgumentNode
+
+    properties:
+
+      value:
+        type: Long
+
+  MTMetaSymbolArgumentNode:
+
+    extends: MTMetaArgumentNode
+
+    properties:
+
+      value:
+        type: String
+
+##############################################################################
+# STANDARD META DIRECTIVES
+##############################################################################
+
+  MTModuleDirectiveNode:
+
+    extends: MTMetaDirectiveNode
+
+    properties:
+
+      moduleName:
+        type: String
+
+  MTImportDirectiveNode:
+
+    extends: MTMetaDirectiveNode
+
+    properties:
+
+      importedModule:
+        type: String
+
+##############################################################################
+# CONDITIONAL COMPILATION DIRECTIVES
+##############################################################################
+
+  MTIfDirectiveNode:
+
+    extends: MTMetaDirectiveNode
+
+    properties:
+
+      condition:
+        type: String
+
+  MTElseDirectiveNode:
+
+    extends: MTMetaDirectiveNode
+
+  MTEndIfDirectiveNode:
+
+    extends: MTMetaDirectiveNode
+
+##############################################################################
+# DOCUMENTATION DIRECTIVES
+##############################################################################
+
+  MTDocumentationDirectiveNode:
+
+    extends: MTMetaDirectiveNode
+
+    properties:
+
+      text:
+        type: String
+
+##############################################################################
+# COMPILED METHODS
+##############################################################################
+
+  MTMethodNode:
+
+    extends: MTNode
+
+    properties:
+
+      selector:
+        type: String
+
+      ownerClass:
+        type: String
+
+      parameters:
+        type: List<MTParameterNode>
+
+      body:
+        type: MTBlockNode
+
+##############################################################################
+# AST RULES
+##############################################################################
+
+rules:
+
+  commentsPreservedInAst: true
+
+  metaDirectivesPreservedInAst: true
+
+  conditionalCompilationSupported: true
+
+  cascadesRepresentedExplicitly: true
+
+  unaryMinusRepresentedAsMessageSend:
+
+    selector: "negated"
+
+  pseudoVariablesHaveDedicatedNodes: true
+
+  nestedBlocksRepresentedRecursively: true
+
+  selectorsRepresentedAsStringsInAst: true
+
+  selectorsInternedAsSymbolsInRuntime: true
+
+  blockResultExpressionOptional: true
+
+  methodsBelongToMop: true
+
+  compiledMethodsRepresentedByMTMethodNode: true
+
+##############################################################################
+# DESIGN NOTES
+##############################################################################
+
+notes:
+
+  - "Les classes ne sont pas des nœuds AST."
+  - "Les propriétés ne sont pas des nœuds AST."
+  - "Les classes sont créées via des envois de messages à Class."
+  - "Les propriétés sont créées via addProperty:."
+  - "Les méthodes sont créées via addMethod:."
+  - "Le compilateur peut produire des MTMethodNode."
+  - "Les métadirectives peuvent modifier ou filtrer l'AST avant interprétation."
+  - "Les commentaires sont conservés pour la documentation et les traitements META."

@@ -1,0 +1,556 @@
+mop:
+
+  name: MiniTalk Meta Object Protocol
+  version: 0.1
+
+##############################################################################
+# PRINCIPLES
+##############################################################################
+
+principles:
+
+  everythingIsAnObject: true
+
+  classesAreObjects: true
+
+  metaclassesAreObjects: true
+
+  singleInheritance: true
+
+  lexicalClosures: true
+
+  nonLocalReturns: true
+
+##############################################################################
+# BOOTSTRAP
+##############################################################################
+
+bootstrap:
+
+  Object:
+
+    type: Class
+
+    superclass: null
+
+    class: ObjectClass
+
+  Class:
+
+    type: Class
+
+    superclass: Object
+
+    class: ClassClass
+
+  ObjectClass:
+
+    type: Metaclass
+
+    superclass: ClassClass
+
+    class: ClassClass
+
+  ClassClass:
+
+    type: Metaclass
+
+    superclass: ObjectClass
+
+    class: ClassClass
+
+##############################################################################
+# KERNEL CLASSES
+##############################################################################
+
+kernelClasses:
+
+  - Object
+  - Class
+  - Method
+  - Property
+
+  - Collection
+  - SequenceableCollection
+
+  - Array
+  - Set
+  - Dictionary
+
+  - String
+  - Symbol
+
+  - Magnitude
+  - Integer
+
+  - Boolean
+
+  - Block
+
+##############################################################################
+# INHERITANCE TREE
+##############################################################################
+
+inheritance:
+
+  Collection:
+
+    superclass: Object
+
+  SequenceableCollection:
+
+    superclass: Collection
+
+  Array:
+
+    superclass: SequenceableCollection
+
+  String:
+
+    superclass: SequenceableCollection
+
+  Set:
+
+    superclass: Collection
+
+  Dictionary:
+
+    superclass: Collection
+
+  Magnitude:
+
+    superclass: Object
+
+  Integer:
+
+    superclass: Magnitude
+
+  Symbol:
+
+    superclass: String
+
+  Boolean:
+
+    superclass: Object
+
+  Block:
+
+    superclass: Object
+
+##############################################################################
+# SINGLETONS
+##############################################################################
+
+singletons:
+
+  nil:
+
+    class: Object
+
+    unique: true
+
+  true:
+
+    class: Boolean
+
+    unique: true
+
+  false:
+
+    class: Boolean
+
+    unique: true
+
+##############################################################################
+# CLASSES
+##############################################################################
+
+classes:
+
+  everyClassHasAMetaclass: true
+
+  metaclassInheritanceFollowsClassInheritance: true
+
+  examples:
+
+    - |
+      Person <- Class new: #Person.
+
+    - |
+      Employee <- Class
+          subclass: Person
+          new: #Employee.
+
+##############################################################################
+# CLASS CREATION PROTOCOL
+##############################################################################
+
+classProtocol:
+
+  classMethods:
+
+    - new
+    - new:
+
+    - subclass:new
+    - subclass:new:
+
+    - addMethod:
+    - addProperty:
+
+##############################################################################
+# METHODS
+##############################################################################
+
+methods:
+
+  representation:
+
+    class: Method
+
+  properties:
+
+    - selector
+    - ownerClass
+    - parameters
+    - ast
+
+  inheritance:
+
+    enabled: true
+
+  overriding:
+
+    enabled: true
+
+  superCalls:
+
+    enabled: true
+
+##############################################################################
+# PROPERTIES
+##############################################################################
+
+properties:
+
+  representation:
+
+    class: Property
+
+  properties:
+
+    - name
+    - ownerClass
+    - defaultValue
+
+##############################################################################
+# PROPERTY INHERITANCE
+##############################################################################
+
+propertyInheritance:
+
+  enabled: true
+
+  instanceLayoutIncludesInheritedProperties: true
+
+  lookupStrategy:
+
+    - currentClass
+    - superclass
+    - superclass.superclass
+
+##############################################################################
+# PROPERTY ACCESSORS
+##############################################################################
+
+propertyAccessors:
+
+  generatedAutomatically: true
+
+  getter:
+
+    selectorPattern: "<propertyName>"
+
+  setter:
+
+    selectorPattern: "<propertyName>:"
+
+  examples:
+
+    - |
+      Person addProperty: #age.
+
+    - |
+      p <- Person new.
+
+      p age: 38.
+
+      p age.
+
+##############################################################################
+# PROPERTY CONFLICTS
+##############################################################################
+
+propertyConflicts:
+
+  sameClass:
+
+    allowed: false
+
+    error: PropertyAlreadyDefinedException
+
+  inheritedRedefinition:
+
+    allowed: false
+
+    error: PropertyAlreadyDefinedException
+
+##############################################################################
+# EXPLICIT ACCESSOR OVERRIDE
+##############################################################################
+
+accessorOverrides:
+
+  explicitMethodWins: true
+
+  example: |
+
+    Person addProperty: #age.
+
+    Person addMethod:
+      #age:
+      body:
+      [
+          :value |
+
+          value < 0 ifTrue:
+          [
+              self error: 'Invalid age'
+          ].
+      ].
+
+##############################################################################
+# CLASS VS INSTANCE MEMBERS
+##############################################################################
+
+memberSemantics:
+
+  instanceProperty:
+
+    createdBy: "Person addProperty: #age"
+
+    appliesTo: "instances of Person"
+
+  classProperty:
+
+    createdBy: "Person class addProperty: #species"
+
+    appliesTo: "Person object"
+
+  instanceMethod:
+
+    createdBy: "Person addMethod: ..."
+
+    appliesTo: "instances of Person"
+
+  classMethod:
+
+    createdBy: "Person class addMethod: ..."
+
+    appliesTo: "Person object"
+
+##############################################################################
+# SYMBOLS
+##############################################################################
+
+symbols:
+
+  syntax:
+
+    prefix: "#"
+
+  interned: true
+
+  examples:
+
+    - "#age"
+    - "#name"
+    - "#at:put:"
+    - "#size"
+    - "#+"
+
+##############################################################################
+# MESSAGE DISPATCH
+##############################################################################
+
+messageDispatch:
+
+  lookup:
+
+    - receiver.class
+    - receiver.class.superclass
+    - receiver.class.superclass.superclass
+
+  stopAt:
+
+    - Object
+
+##############################################################################
+# SUPER
+##############################################################################
+
+super:
+
+  isObject: false
+
+  isPseudoVariable: true
+
+  behavior: >
+
+    Envoie un message à self en démarrant
+    la recherche dans la superclasse
+    de la classe courante.
+
+##############################################################################
+# SELF
+##############################################################################
+
+self:
+
+  isObjectReference: true
+
+  isPseudoVariable: true
+
+##############################################################################
+# BLOCKS
+##############################################################################
+
+blocks:
+
+  representation:
+
+    class: Block
+
+  properties:
+
+    - ast
+    - lexicalScope
+
+  nestedBlocks:
+
+    enabled: true
+
+##############################################################################
+# SCOPES
+##############################################################################
+
+scopes:
+
+  lexical: true
+
+  hierarchy:
+
+    - GlobalScope
+    - MethodScope
+    - BlockScope
+    - NestedBlockScope
+
+##############################################################################
+# RETURNS
+##############################################################################
+
+returns:
+
+  operator: "^"
+
+  semantics:
+
+    nonLocal: true
+
+##############################################################################
+# COMMENTS
+##############################################################################
+
+comments:
+
+  startDelimiter: "/*"
+
+  endDelimiter: "*/"
+
+  nested: true
+
+  preservedByLexer: true
+
+  lexerEmits:
+
+    - LCOMMENT
+    - RCOMMENT
+
+##############################################################################
+# META DIRECTIVES
+##############################################################################
+
+meta:
+
+  allowedOnlyInsideComments: true
+
+  prefix: "@"
+
+  terminator: ";"
+
+  examples:
+
+    - "@module Core;"
+    - "@import Collections;"
+
+  parserResponsibleForInterpretation: true
+
+##############################################################################
+# VALIDATION CRITERIA
+##############################################################################
+
+validation:
+
+  scenarios:
+
+    - |
+      Person <- Class new: #Person.
+
+      Person addProperty: #age.
+
+      p <- Person new.
+
+      p age: 38.
+
+      p age.
+
+    - |
+      Employee <- Class
+          subclass: Person
+          new: #Employee.
+
+      e <- Employee new.
+
+      e age: 42.
+
+    - |
+      Person class
+          addProperty: #species.
+
+      Person species: 'Human'.
+
+    - |
+      Person addMethod:
+          #fullName
+          body:
+          [
+              ^name
+          ].
+
+    - |
+      Employee addMethod:
+          #fullName
+          body:
+          [
+              ^super fullName
+          ].
