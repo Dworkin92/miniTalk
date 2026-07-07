@@ -251,20 +251,73 @@ System.out.println(
          * Boolean
          */
 
-        System.out.println(
-                "=== Boolean test ===");
+System.out.println(
+        "=== Boolean operations ===");
+
+MTClass booleanClass =
+        MTKernelBootstrap
+                .createBooleanClass();
+
+MTBoolean t =
+        MTBoolean.TRUE;
+
+t.setClazz(
+        booleanClass);
+
+MTBoolean f =
+        MTBoolean.FALSE;
+
+f.setClazz(
+        booleanClass);
 
         System.out.println(
-                MTBoolean.TRUE);
+        t.send(
+                MTSymbol.intern("not")));
 
-        System.out.println(
-                MTBoolean.FALSE);
+System.out.println(
+        f.send(
+                MTSymbol.intern("not")));
 
-        System.out.println(
-                MTBoolean.valueOf(true));
 
-        System.out.println(
-                MTBoolean.valueOf(false));
+MTArray andArgs =
+        new MTArray();
+
+andArgs.add(f);
+
+System.out.println(
+        t.send(
+                MTSymbol.intern("and:"),
+                andArgs));
+
+
+MTArray orArgs =
+        new MTArray();
+
+orArgs.add(f);
+
+System.out.println(
+        t.send(
+                MTSymbol.intern("or:"),
+                orArgs));
+
+                MTArray xorArgs =
+        new MTArray();
+
+xorArgs.add(t);
+
+System.out.println(
+        t.send(
+                MTSymbol.intern("xor:"),
+                xorArgs));
+
+xorArgs = new MTArray();
+
+xorArgs.add(t);
+
+System.out.println(
+        f.send(
+                MTSymbol.intern("xor:"),
+                xorArgs));
 
         /*
          * Method invocation
