@@ -471,6 +471,24 @@ System.out.println(
 MTRuntime runtime =
         MTRuntimeBootstrap.bootstrap();
 
+System.out.println(runtime.classCount());
+
+System.out.println(
+        runtime.classNamed("Integer")
+               .getName());
+
+System.out.println(
+        runtime.classNamed("Boolean")
+               .getName());
+
+System.out.println(
+        runtime.classNamed("String")
+               .getName());
+
+System.out.println(
+        runtime.classNamed("Dictionary")
+               .getName());
+
 System.out.println(
         runtime.getObjectClass().getName());
 
@@ -574,5 +592,28 @@ System.out.println(
                 MTSymbol.intern("includesKey:"),
                 includesArgs));
 
+System.out.println(
+        "=== Runtime registry ===");
+
+//MTRuntime runtime =
+//        MTRuntimeBootstrap.bootstrap();
+
+integerClass =
+        MTKernelBootstrap.createIntegerClass();
+
+runtime.registerClass(
+        integerClass);
+
+System.out.println(
+        runtime.includesClass(
+                "Integer"));
+
+System.out.println(
+        runtime.classCount());
+
+System.out.println(
+        runtime.classNamed(
+                "Integer")
+                .getName());
 }
 }

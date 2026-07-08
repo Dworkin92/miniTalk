@@ -12,7 +12,6 @@ public final class MTRuntimeBootstrap {
         /*
          * Construction brute
          */
-
         MTClass objectClass =
                 new MTClass(
                         MTSymbol.intern("Object"));
@@ -28,6 +27,14 @@ public final class MTRuntimeBootstrap {
         MTMetaclass classMetaclass =
                 new MTMetaclass(
                         MTSymbol.intern("ClassClass"));
+
+
+        MTRuntime runtime =
+                new MTRuntime(
+                    objectClass,
+                    classClass,
+                    objectMetaclass,
+                    classMetaclass);
 
         /*
          * Relier la hierarchie
@@ -61,10 +68,36 @@ public final class MTRuntimeBootstrap {
         classMetaclass.setClazz(
                 classMetaclass);
 
+
+        runtime.registerClass(objectClass);
+
+        runtime.registerClass(classClass);
+
+        runtime.registerClass(objectMetaclass);
+
+        runtime.registerClass(classMetaclass);
+
+
+        runtime.registerClass(
+            MTKernelBootstrap.createIntegerClass());
+
+        runtime.registerClass(
+            MTKernelBootstrap.createBooleanClass());
+
+        runtime.registerClass(
+            MTKernelBootstrap.createStringClass());
+
+        runtime.registerClass(
+            MTKernelBootstrap.createDictionaryClass());
+
+
+        /*
         return new MTRuntime(
                 objectClass,
                 classClass,
                 objectMetaclass,
                 classMetaclass);
+        */
+        return runtime;
     }
 }

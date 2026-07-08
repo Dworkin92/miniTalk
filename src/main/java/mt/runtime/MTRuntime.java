@@ -69,4 +69,13 @@ public final class MTRuntime {
 
         return clazz;
     }
+
+    public int classCount() {
+        return classes.size();
+    }
+
+    public boolean includesClass(String name) {
+        return classes.includesKey(
+            MTSymbol.intern(name));
+    }
 }
