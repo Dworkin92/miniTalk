@@ -48,7 +48,11 @@ public final class MTKernelBootstrap {
     public static MTClass createStringClass() {
         MTClass stringClass =
                 new MTClass(MTSymbol.intern("String"));
-        installStringMethods(stringClass);
+        //installStringMethods(stringClass);
+        PrimitiveInstaller.install(
+            stringClass,
+            StringPrimitives.class);
+
         return stringClass;
     }
 
@@ -57,7 +61,10 @@ public final class MTKernelBootstrap {
                 new MTClass(
                         MTSymbol.intern("Dictionary"));
 
-        installDictionaryMethods(dictionaryClass);
+        //installDictionaryMethods(dictionaryClass);
+        PrimitiveInstaller.install(
+            dictionaryClass,
+            DictionaryPrimitives.class);
 
         return dictionaryClass;
     }
@@ -76,105 +83,4 @@ public final class MTKernelBootstrap {
                 body));
     }
 
-
-    private static void installStringMethods(MTClass stringClass){
-        stringClass.addMethod(
-            new MTMethod(
-                MTSymbol.intern("+"),
-                stringClass,
-                (receiver, arguments) -> {
-                    MTString left = (MTString) receiver;
-                    MTString right = (MTString) arguments.at(0);
-
-                    return new MTString(
-                        left.getValue()
-                        + right.getValue());
-            }));
-
-
-        stringClass.addMethod(
-            new MTMethod(
-                MTSymbol.intern("size"),
-                stringClass,
-                (receiver, arguments) -> {
-                    MTString self = (MTString) receiver;
-
-                    return new MTInteger(self.getValue().length());
-            }));
-
-        stringClass.addMethod(
-            new MTMethod(
-                MTSymbol.intern("="),
-                stringClass,
-                (receiver, arguments) -> {
-                    MTString self = (MTString) receiver;
-                    MTString other =
-                        (MTString) arguments.at(0);
-
-                    return MTBoolean.valueOf(
-                        self.getValue().equals(
-                                other.getValue()));
-                }));
-    }
-
-    private static void installDictionaryMethods(MTClass dictionaryClass){
-        dictionaryClass.addMethod(
-            new MTMethod(
-                MTSymbol.intern("at:"),
-                dictionaryClass,
-                (receiver, arguments) -> {
-                    MTDictionary self = (MTDictionary) receiver;
-                    MTObject     key =  (MTObject) arguments.at(0);
-
-                    return self.at(key);
-                }));
-
-        dictionaryClass.addMethod(
-            new MTMethod(
-                MTSymbol.intern("at:put:"),
-                dictionaryClass,
-                (receiver, arguments) -> {
-
-                    MTDictionary self =
-                            (MTDictionary) receiver;
-
-                    MTObject key =
-                            arguments.at(0);
-
-                    MTObject value =
-                            arguments.at(1);
-
-                    self.atPut(
-                            key,
-                            value);
-
-                    return value;
-                }));
-
-
-        dictionaryClass.addMethod(
-            new MTMethod(
-                MTSymbol.intern("includesKey:"),
-                dictionaryClass,
-                (receiver, arguments) -> {
-                    MTDictionary self =
-                            (MTDictionary) receiver;
-                    MTObject key =
-                            arguments.at(0);
-                    return MTBoolean.valueOf(
-                            self.includesKey(key));
-                }));
-
-        dictionaryClass.addMethod(
-            new MTMethod(
-                MTSymbol.intern("size"),
-                dictionaryClass,
-                (receiver, arguments) -> {
-
-                    MTDictionary self = (MTDictionary) receiver;
-
-                    return new MTInteger(self.size());
-                }));
-
-    }
 }
