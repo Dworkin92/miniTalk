@@ -45,6 +45,8 @@ public final class StringPrimitives {
                 + other.getValue());
 
         result.setClazz(receiver.getClazz());
+
+        return result;
     }
 
     @Primitive("=")

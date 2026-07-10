@@ -88,6 +88,9 @@ public final class MTRuntimeBootstrap {
             MTKernelBootstrap.createStringClass());
 
         runtime.registerClass(
+            MTKernelBootstrap.createArrayClass());
+
+        runtime.registerClass(
             MTKernelBootstrap.createDictionaryClass());
 
 

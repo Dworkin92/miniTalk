@@ -22,6 +22,8 @@ public final class RuntimeRegressionTests {
 
         testStrings();
 
+        testArray();
+
         testDictionary();
 
         testRuntime();
@@ -305,6 +307,61 @@ System.out.println(
                 MTSymbol.intern("="),
                 eqArgs3));
 
+    }
+
+    private static void testArray(){
+System.out.println(
+        "=== Array test ===");
+
+MTClass arrayClass =
+        MTKernelBootstrap
+                .createArrayClass();
+
+MTArray array =
+        new MTArray();
+
+array.setClazz(
+        arrayClass);
+
+MTClass integerClass =
+        MTKernelBootstrap
+                .createIntegerClass();
+
+MTInteger one =
+        new MTInteger(1);
+
+one.setClazz(
+        integerClass);
+
+MTInteger two =
+        new MTInteger(2);
+
+two.setClazz(
+        integerClass);
+
+array.add(one);
+array.add(two);
+
+System.out.println(
+        array.send(
+                MTSymbol.intern("size"),
+                new MTArray()));
+
+MTArray atArgs =
+        new MTArray();
+
+MTInteger zero =
+        new MTInteger(0);
+
+zero.setClazz(
+        integerClass);
+
+atArgs.add(zero);
+
+System.out.println(
+        array.send(
+                MTSymbol.intern("at:"),
+                atArgs));
     }
 
     private static void testDictionary() {

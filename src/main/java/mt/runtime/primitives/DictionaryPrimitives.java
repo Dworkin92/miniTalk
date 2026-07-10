@@ -19,8 +19,18 @@ public final class DictionaryPrimitives {
         MTDictionary self =
                 (MTDictionary) receiver;
 
-        return new MTInteger(
+        MTInteger result =
+            new MTInteger(
                 self.size());
+
+        /*
+         * Temporaire.
+         * Plus tard, recuperer la classe Integer
+         * depuis le runtime.
+         */
+        result.setClazz(receiver.getClazz());
+
+        return result;
     }
 
     @Primitive("at:")

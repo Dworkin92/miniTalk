@@ -69,6 +69,18 @@ public final class MTKernelBootstrap {
         return dictionaryClass;
     }
 
+    public static MTClass createArrayClass() {
+
+        MTClass arrayClass =
+            new MTClass(
+                    MTSymbol.intern("Array"));
+
+        PrimitiveInstaller.install(
+            arrayClass,
+            ArrayPrimitives.class);
+
+        return arrayClass;
+    }
 
     private static void install(
         MTClass clazz,
