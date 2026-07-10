@@ -16,31 +16,56 @@ public final class MTInteger
     }
 
     public MTInteger add(
-            MTInteger other) {
+        MTInteger other) {
 
-        return new MTInteger(
-                value + other.value);
+        MTInteger result =
+            new MTInteger(
+                    value + other.value);
+
+        result.setClazz(
+            getClazz());
+
+        return result;
     }
+
 
     public MTInteger subtract(
             MTInteger other) {
 
-        return new MTInteger(
-                value - other.value);
+        MTInteger result =
+            new MTInteger(
+                    value - other.value);
+
+        result.setClazz(
+            getClazz());
+
+        return result;
     }
 
     public MTInteger multiply(
             MTInteger other) {
 
-        return new MTInteger(
-                value * other.value);
+        MTInteger result =
+            new MTInteger(
+                    value * other.value);
+
+        result.setClazz(
+            getClazz());
+
+        return result;
     }
 
     public MTInteger divide(
             MTInteger other) {
 
-        return new MTInteger(
-                value / other.value);
+        MTInteger result =
+            new MTInteger(
+                    value / other.value);
+
+        result.setClazz(
+            getClazz());
+
+        return result;
     }
 
     public MTBoolean equalsTo(

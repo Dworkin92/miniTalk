@@ -19,8 +19,13 @@ public final class StringPrimitives {
         MTString self =
                 (MTString) receiver;
 
-        return new MTInteger(
+        MTInteger result =
+            new MTInteger(
                 self.getValue().length());
+
+        result.setClazz(receiver.getClazz());
+
+        return result;
     }
 
     @Primitive("+")
@@ -34,9 +39,12 @@ public final class StringPrimitives {
         MTString other =
                 (MTString) arguments.at(0);
 
-        return new MTString(
+        MTString result =
+            new MTString(
                 self.getValue()
                 + other.getValue());
+
+        result.setClazz(receiver.getClazz());
     }
 
     @Primitive("=")
