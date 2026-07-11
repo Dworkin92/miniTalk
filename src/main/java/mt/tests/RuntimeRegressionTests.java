@@ -32,7 +32,15 @@ public final class RuntimeRegressionTests {
 
         testBlock();
 
-        testNonLocalReturn();
+        testNonLocalReturnException();
+
+        testNonLocalReturnBlock();
+
+        testNonLocalReturnStopsExecution();
+
+        testNonLocalReturnSkipsAssignment();
+
+        testNonLocalReturnCapturedVariable();
 
         testInterpreter();
 
@@ -43,6 +51,8 @@ public final class RuntimeRegressionTests {
         testSequence();
 
         testBlockNode();
+
+        testClosureMutation();
     }
 
     private static void testSymbols() {
@@ -661,22 +671,22 @@ arguments.add(
                 MTSymbol.intern("z")));
 
         MTInterpreter interpreter = new MTInterpreter();
-
+ /*
         System.out.println(
             interpreter.evaluate(
                 blockNode.getBody(),
                 activation));
-
+*/
         System.out.println(
             block.value(
                 arguments));
         // ton code ac*uel
     }
 
-    private static void testNonLocalReturn() {
+    private static void testNonLocalReturnException() {
 
         System.out.println(
-                "=== Non Local Return test ===");
+                "=== Non Local Return exception test ===");
 
         try {
             throw new MTNonLocalReturnException(
@@ -685,8 +695,181 @@ arguments.add(
         catch(MTNonLocalReturnException ex) {
             System.out.println(ex.getValue());
         }
-        // ton code actuel
+
     }
+
+    private static void testNonLocalReturnBlock() {
+
+    System.out.println(
+            "=== Non Local Return Block test ===");
+
+    MTSequenceNode body =
+            new MTSequenceNode();
+
+    body.add(
+            new MTNonLocalReturnNode(
+                    new MTIntegerLiteralNode(
+                            42)));
+
+    MTBlockNode blockNode =
+            new MTBlockNode(
+                    new MTArray(),
+                    body);
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    MTBlock block =
+            (MTBlock)
+            interpreter.evaluate(
+                    blockNode,
+                    new MTScope(null));
+
+    System.out.println(
+            block.value());
+}
+
+private static void testNonLocalReturnStopsExecution() {
+
+    System.out.println(
+            "=== Non Local Return Stops Execution test ===");
+
+    MTSequenceNode body =
+            new MTSequenceNode();
+
+    body.add(
+            new MTNonLocalReturnNode(
+                    new MTIntegerLiteralNode(
+                            42)));
+
+    body.add(
+            new MTIntegerLiteralNode(
+                    99));
+
+    MTBlockNode blockNode =
+            new MTBlockNode(
+                    new MTArray(),
+                    body);
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    MTBlock block =
+            (MTBlock)
+            interpreter.evaluate(
+                    blockNode,
+                    new MTScope(null));
+
+    System.out.println(
+            block.value());
+}
+
+private static void testNonLocalReturnSkipsAssignment() {
+
+    System.out.println(
+            "=== Non Local Return Skips Assignment test ===");
+
+    MTClass integerClass =
+            MTKernelBootstrap
+                    .createIntegerClass();
+
+    MTScope global =
+            new MTScope(
+                    null);
+
+    MTInteger zero =
+            new MTInteger(0);
+
+    zero.setClazz(
+            integerClass);
+
+    global.define(
+            MTSymbol.intern("x"),
+            zero);
+
+    MTSequenceNode body =
+            new MTSequenceNode();
+
+    body.add(
+            new MTNonLocalReturnNode(
+                    new MTIntegerLiteralNode(
+                            42)));
+
+    body.add(
+            new MTAssignmentNode(
+                    MTSymbol.intern("x"),
+                    new MTIntegerLiteralNode(
+                            999)));
+
+    MTBlockNode blockNode =
+            new MTBlockNode(
+                    new MTArray(),
+                    body);
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    MTBlock block =
+            (MTBlock)
+            interpreter.evaluate(
+                    blockNode,
+                    global);
+
+    System.out.println(
+            block.value());
+
+    System.out.println(
+            global.lookup(
+                    MTSymbol.intern("x")));
+}
+
+private static void testNonLocalReturnCapturedVariable() {
+
+    System.out.println(
+            "=== Non Local Return Captured Variable test ===");
+
+    MTClass integerClass =
+            MTKernelBootstrap
+                    .createIntegerClass();
+
+    MTScope global =
+            new MTScope(null);
+
+    MTInteger value =
+            new MTInteger(123);
+
+    value.setClazz(
+            integerClass);
+
+    global.define(
+            MTSymbol.intern("x"),
+            value);
+
+    MTSequenceNode body =
+            new MTSequenceNode();
+
+    body.add(
+            new MTNonLocalReturnNode(
+                    new MTVariableNode(
+                            MTSymbol.intern("x"))));
+
+    MTBlockNode blockNode =
+            new MTBlockNode(
+                    new MTArray(),
+                    body);
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    MTBlock block =
+            (MTBlock)
+            interpreter.evaluate(
+                    blockNode,
+                    global);
+
+    System.out.println(
+            block.value());
+}
 
     private static void testInterpreter() {
 
@@ -953,4 +1136,126 @@ catch (RuntimeException ex) {
             "Argument count error OK");
 }
     }
+
+    private static void testClosureMutation() {
+
+    System.out.println(
+            "=== Closure mutation test ===");
+
+    MTClass integerClass =
+            MTKernelBootstrap
+                    .createIntegerClass();
+
+    /*
+     * Scope exterieur
+     */
+
+    MTScope global =
+            new MTScope(
+                    null);
+
+    MTInteger ten =
+            new MTInteger(10);
+
+    ten.setClazz(
+            integerClass);
+
+    global.define(
+            MTSymbol.intern("x"),
+            ten);
+
+    /*
+     * x
+     */
+
+    MTVariableNode x1 =
+            new MTVariableNode(
+                    MTSymbol.intern("x"));
+
+    /*
+     * 1
+     */
+
+    MTInteger one =
+            new MTInteger(1);
+
+    one.setClazz(
+            integerClass);
+
+    MTObjectLiteralNode oneNode =
+            new MTObjectLiteralNode(
+                    one);
+
+    /*
+     * x + 1
+     */
+
+    MTArrayNode plusArgs =
+            new MTArrayNode();
+
+    plusArgs.add(
+            oneNode);
+
+    MTMessageSendNode plusNode =
+            new MTMessageSendNode(
+                    x1,
+                    MTSymbol.intern("+"),
+                    plusArgs);
+
+    /*
+     * x := x + 1
+     */
+
+    MTAssignmentNode assignNode =
+            new MTAssignmentNode(
+                    MTSymbol.intern("x"),
+                    plusNode);
+
+    /*
+     * Corps du block
+     */
+
+    MTSequenceNode body =
+            new MTSequenceNode();
+
+    body.add(
+            assignNode);
+
+    /*
+     * Block sans parametres
+     */
+
+    MTArray params =
+            new MTArray();
+
+    MTBlockNode blockNode =
+            new MTBlockNode(
+                    params,
+                    body);
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    MTBlock block =
+            (MTBlock)
+            interpreter.evaluate(
+                    blockNode,
+                    global);
+
+    /*
+     * Execution
+     */
+
+    block.value();
+
+    block.value();
+
+    /*
+     * Verification
+     */
+
+    System.out.println(
+            global.lookup(
+                    MTSymbol.intern("x")));
+}
 }

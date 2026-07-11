@@ -56,6 +56,7 @@ public class MTInterpreter {
                         scope));
             }
 
+            /*
 System.out.println(
         "receiver = " + receiver);
 
@@ -66,7 +67,7 @@ System.out.println(
 System.out.println(
         "selector = "
         + n.getSelector());
-
+*/
             return receiver.send(
                 n.getSelector(),
                 arguments);
@@ -97,6 +98,16 @@ System.out.println(
                 n
                 //n.getBody()
                 );
+        }
+
+        if (node instanceof MTNonLocalReturnNode n) {
+
+            MTObject value =
+                evaluate(
+                    n.getExpression(),
+                    scope);
+
+            throw new MTNonLocalReturnException(value);
         }
 
         throw new RuntimeException(

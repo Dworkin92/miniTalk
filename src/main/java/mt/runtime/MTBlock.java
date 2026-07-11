@@ -1,6 +1,7 @@
 package mt.runtime;
 
 import mt.ast.MTBlockNode;
+import mt.interpreter.MTInterpreter;
 
 public class MTBlock
         extends MTObject {
@@ -103,6 +104,8 @@ public class MTBlock
             createActivationScope(
                     arguments);
 
+        MTInterpreter interpreter = new MTInterpreter();
+
         /*
          * L'AST n'est pas encore execute.
          *
@@ -116,7 +119,21 @@ public class MTBlock
                 "Activation scope creation failed");
         }
 
-        return MTNil.instance();
+        // return MTNil.instance();
+        /*
+        return interpreter.evaluate(
+            ast.getBody(),
+            activationScope);
+        */
+        try {
+
+            return interpreter.evaluate(
+                ast.getBody(),
+                activationScope);
+        }
+        catch (MTNonLocalReturnException ex) {
+            return ex.getValue();
+        }
     }
 
     @Override
