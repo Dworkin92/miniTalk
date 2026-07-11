@@ -1,0 +1,310 @@
+package mt.parser;
+
+import java.util.List;
+
+
+import mt.ast.*;
+import mt.lexer.MTToken;
+import mt.lexer.MTTokenType;
+import mt.runtime.MTSymbol;
+import mt.runtime.MTArray;
+
+public final class MTParser {
+
+    private final List<MTToken> tokens;
+
+    private int current;
+
+    public MTParser(
+            List<MTToken> tokens) {
+
+        this.tokens = tokens;
+
+        this.current = 0;
+    }
+
+    public MTNode parse() {
+
+        return parseSequence();
+    }
+
+    /*
+     * sequence
+     *
+     * expr .
+     * expr .
+     * expr
+     */
+    private MTNode parseSequence() {
+
+        MTSequenceNode sequence =
+                new MTSequenceNode();
+
+        sequence.add(
+                parseExpression());
+
+        while (match(
+                MTTokenType.DOT)) {
+
+            if (isAtEnd()) {
+
+                break;
+            }
+
+            sequence.add(
+                    parseExpression());
+        }
+
+        if (sequence.getStatements()
+                .size() == 1) {
+
+            return sequence
+                    .getStatements()
+                    .get(0);
+        }
+
+        return sequence;
+    }
+
+    private MTNode parseExpression() {
+
+        return parseAssignment();
+    }
+
+    /*
+     * x := expr
+     */
+    private MTNode parseAssignment() {
+
+        if (check(
+                MTTokenType.IDENTIFIER)
+
+                && lookAhead(
+                        MTTokenType.ASSIGN)) {
+
+            MTToken variable =
+                    advance();
+
+            consume(
+                    MTTokenType.ASSIGN,
+                    "Expected :=");
+
+            MTNode value =
+                    parseExpression();
+
+            return new MTAssignmentNode(
+                    MTSymbol.intern(
+                            variable.text()),
+                    value);
+        }
+
+        return parseBinaryMessage();
+    }
+
+    private MTNode parsePrimary() {
+
+        if (match(
+                MTTokenType.INTEGER)) {
+
+            return new MTIntegerLiteralNode(
+                    Long.parseLong(
+                            previous()
+                                    .text()));
+        }
+
+        if (match(
+                MTTokenType.IDENTIFIER)) {
+
+            return new MTVariableNode(
+                    MTSymbol.intern(
+                            previous()
+                                    .text()));
+        }
+
+        if (match(MTTokenType.RETURN)) {
+            MTNode expression = parseExpression();
+
+            return new MTNonLocalReturnNode(expression);
+        }
+
+        if (match(MTTokenType.LBRACKET)) {
+            return parseBlock();
+        }
+
+        if (match(MTTokenType.LPAREN)) {
+            MTNode expression = parseExpression();
+
+            consume(MTTokenType.RPAREN,"Expected ')'");
+
+            return expression;
+        }
+
+        throw new IllegalStateException(
+                "Expected expression at token "
+                        + peek().text());
+    }
+
+    private MTNode parseBinaryMessage() {
+
+        MTNode left =
+            parsePrimary();
+
+        while (match(
+            MTTokenType.BINARY_SELECTOR)) {
+
+            MTToken selector =
+                previous();
+
+            MTNode right =
+                parsePrimary();
+
+            MTArrayNode arguments =
+                new MTArrayNode();
+
+            arguments.add(right);
+
+            left = new MTMessageSendNode(
+                       left,
+                       MTSymbol.intern(
+                               selector.text()),
+                       arguments);
+        }
+
+        return left;
+    }
+
+    private MTBlockNode parseBlock() {
+        MTArray parameters = new MTArray();
+
+        /*
+         * Parametres eventuels
+         *
+         * [:x :y |
+         */
+
+        if (check(MTTokenType.COLON)) {
+            while (match(MTTokenType.COLON)) {
+                MTToken parameter =
+                    consume(
+                            MTTokenType.IDENTIFIER,
+                            "Expected parameter name");
+
+                parameters.add(
+                    MTSymbol.intern(
+                            parameter.text()));
+            }
+
+            consume(
+                MTTokenType.PIPE,
+                "Expected '|'");
+        }
+
+        MTNode node = parseSequence();
+        MTSequenceNode body;
+
+        if (node instanceof MTSequenceNode seq) {
+            body = seq;
+        } else {
+            body = new MTSequenceNode();
+            body.add(node);
+        }
+
+        consume(
+            MTTokenType.RBRACKET,
+            "Expected ']'");
+
+        return new MTBlockNode(
+            parameters,
+            body);
+    }
+
+    /*
+     * Helpers
+     */
+
+    private boolean match(
+            MTTokenType type) {
+
+        if (check(type)) {
+
+            advance();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private MTToken consume(
+            MTTokenType type,
+            String message) {
+
+        if (check(type)) {
+
+            return advance();
+        }
+
+        //throw new IllegalStateException(
+        //        message);
+        throw new IllegalStateException(
+            message + " at line "
+            + peek().line()
+            + ", column "
+            + peek().column());
+    }
+
+    private boolean check(
+            MTTokenType type) {
+
+        if (isAtEnd()) {
+
+            return false;
+        }
+
+        return peek().type()
+                == type;
+    }
+
+    private boolean lookAhead(
+            MTTokenType type) {
+
+        if (current + 1
+                >= tokens.size()) {
+
+            return false;
+        }
+
+        return tokens.get(
+                current + 1)
+                .type()
+                == type;
+    }
+
+    private MTToken advance() {
+
+        if (!isAtEnd()) {
+
+            current++;
+        }
+
+        return previous();
+    }
+
+    private boolean isAtEnd() {
+
+        return peek().type()
+                == MTTokenType.EOF;
+    }
+
+    private MTToken peek() {
+
+        return tokens.get(
+                current);
+    }
+
+    private MTToken previous() {
+
+        return tokens.get(
+                current - 1);
+    }
+}

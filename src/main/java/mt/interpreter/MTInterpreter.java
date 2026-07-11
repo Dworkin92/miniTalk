@@ -2,6 +2,7 @@ package mt.interpreter;
 
 import mt.ast.*;
 import mt.runtime.*;
+import mt.runtime.bootstrap.*;
 
 public class MTInterpreter {
 
@@ -10,9 +11,16 @@ public class MTInterpreter {
             MTScope scope) {
 
         if (node instanceof MTIntegerLiteralNode n) {
+            MTClass integerClass =
+                MTKernelBootstrap.createIntegerClass();
 
-            return new MTInteger(
-                    n.getValue());
+            MTInteger value = new MTInteger(n.getValue());
+
+            value.setClazz(integerClass);
+
+            return value;
+            //return new MTInteger(
+            //        n.getValue());
         }
 
         if (node instanceof MTSymbolLiteralNode n) {

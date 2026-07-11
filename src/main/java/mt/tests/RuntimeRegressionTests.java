@@ -6,6 +6,7 @@ import mt.runtime.bootstrap.*;
 import mt.ast.*;
 import mt.interpreter.*;
 import mt.lexer.*;
+import mt.parser.*;
 
 public final class RuntimeRegressionTests {
 
@@ -53,6 +54,25 @@ public final class RuntimeRegressionTests {
         testBlockNode();
 
         testClosureMutation();
+
+        testParserInteger();
+
+        testParserVariable();
+
+        testParserAssignment();
+
+        testParserSequence();
+
+        testParserBinaryMessage();
+
+        testParserParentheses();
+
+        testParserReturn();
+
+        testParserBlock();
+
+        testParserBlockParameters();
+
     }
 
     private static void testSymbols() {
@@ -1258,4 +1278,385 @@ catch (RuntimeException ex) {
             global.lookup(
                     MTSymbol.intern("x")));
 }
+
+private static void testParserInteger() {
+
+    System.out.println(
+            "=== Parser Integer test ===");
+
+    String source =
+            "42";
+
+    MTLexer lexer =
+            new MTLexer(
+                    source);
+
+    System.out.println(
+        lexer.tokenize());
+
+    MTParser parser =
+            new MTParser(
+                    lexer.tokenize());
+
+    MTNode ast =
+            parser.parse();
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    System.out.println(
+            interpreter.evaluate(
+                    ast,
+                    null));
+}
+
+private static void testParserVariable() {
+
+    System.out.println(
+            "=== Parser Variable test ===");
+
+    String source =
+            "x";
+
+    MTLexer lexer =
+            new MTLexer(
+                    source);
+
+    System.out.println(
+        lexer.tokenize());
+
+    MTParser parser =
+            new MTParser(
+                    lexer.tokenize());
+
+    MTNode ast =
+            parser.parse();
+
+    MTScope scope =
+            new MTScope(null);
+
+    scope.define(
+            MTSymbol.intern("x"),
+            new MTInteger(123));
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    System.out.println(
+            interpreter.evaluate(
+                    ast,
+                    scope));
+}
+
+private static void testParserAssignment() {
+
+    System.out.println(
+            "=== Parser Assignment test ===");
+
+    String source =
+            "x := 42";
+
+    MTLexer lexer =
+            new MTLexer(source);
+
+    System.out.println(
+        lexer.tokenize());
+
+    MTParser parser =
+            new MTParser(
+                    lexer.tokenize());
+
+    MTNode ast =
+            parser.parse();
+
+    MTScope scope =
+            new MTScope(null);
+
+    scope.define(
+            MTSymbol.intern("x"),
+            new MTInteger(0));
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    System.out.println(
+            interpreter.evaluate(
+                    ast,
+                    scope));
+
+    System.out.println(
+            scope.lookup(
+                    MTSymbol.intern("x")));
+}
+
+private static void testParserSequence() {
+
+    System.out.println(
+            "=== Parser Sequence test ===");
+
+    String source =
+            """
+            x := 10.
+            x
+            """;
+
+    MTLexer lexer =
+            new MTLexer(
+                    source);
+
+    System.out.println(
+        lexer.tokenize());
+
+    MTParser parser =
+            new MTParser(
+                    lexer.tokenize());
+
+    MTNode ast =
+            parser.parse();
+
+    MTScope scope =
+            new MTScope(null);
+
+    scope.define(
+            MTSymbol.intern("x"),
+            new MTInteger(0));
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    System.out.println(
+            interpreter.evaluate(
+                    ast,
+                    scope));
+}
+
+private static void testParserBinaryMessage() {
+
+    System.out.println(
+            "=== Parser Binary Message test ===");
+
+    String source =
+            "3 + 4";
+
+    MTLexer lexer =
+            new MTLexer(
+                    source);
+
+    System.out.println(
+            lexer.tokenize());
+
+    MTParser parser =
+            new MTParser(
+                    lexer.tokenize());
+
+    MTNode ast =
+            parser.parse();
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    MTClass integerClass =
+            MTKernelBootstrap
+                    .createIntegerClass();
+
+    System.out.println(
+            interpreter.evaluate(
+                    ast,
+                    null));
+}
+
+private static void testParserParentheses() {
+
+    System.out.println(
+            "=== Parser Parentheses test ===");
+
+    String source =
+            "(3 + 4)";
+
+    MTLexer lexer =
+            new MTLexer(
+                    source);
+
+    System.out.println(
+            lexer.tokenize());
+
+    MTParser parser =
+            new MTParser(
+                    lexer.tokenize());
+
+    MTNode ast =
+            parser.parse();
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    System.out.println(
+            interpreter.evaluate(
+                    ast,
+                    null));
+
+    source = "(3 + 4) + 5";
+    lexer = new MTLexer(source);
+    System.out.println(lexer.tokenize());
+    parser = new MTParser(lexer.tokenize());
+    ast = parser.parse();
+    System.out.println(
+            interpreter.evaluate(ast,null));
+
+    source = "3 + (4 + 5)";
+    lexer = new MTLexer(source);
+    System.out.println(lexer.tokenize());
+    parser = new MTParser(lexer.tokenize());
+    ast = parser.parse();
+    System.out.println(
+            interpreter.evaluate(ast,null));
+}
+
+    private static void testParserReturn() {
+
+    System.out.println(
+            "=== Parser Return test ===");
+
+    String source =
+            "^42";
+
+    MTLexer lexer =
+            new MTLexer(
+                    source);
+
+    System.out.println(
+            lexer.tokenize());
+
+    MTParser parser =
+            new MTParser(
+                    lexer.tokenize());
+
+    MTNode ast =
+            parser.parse();
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    try {
+
+        interpreter.evaluate(
+                ast,
+                null);
+
+        System.out.println(
+                "FAILED");
+
+    }
+    catch (MTNonLocalReturnException ex) {
+
+        System.out.println(
+                ex.getValue());
+    }
+}
+
+private static void testParserBlock() {
+
+    System.out.println(
+            "=== Parser Block test ===");
+
+    String source =
+            "[ 42 ]";
+
+    MTLexer lexer =
+            new MTLexer(
+                    source);
+
+    System.out.println(
+            lexer.tokenize());
+
+    MTParser parser =
+            new MTParser(
+                    lexer.tokenize());
+
+    MTNode ast =
+            parser.parse();
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    MTBlock block =
+            (MTBlock)
+            interpreter.evaluate(
+                    ast,
+                    new MTScope(null));
+
+    System.out.println(
+            block.value());
+}
+
+private static void testParserBlockParameters() {
+
+    System.out.println(
+            "=== Parser Block Parameters test ===");
+
+    String source =
+            "[:x | x]";
+
+    MTLexer lexer =
+            new MTLexer(source);
+
+    System.out.println(
+            lexer.tokenize());
+
+    MTParser parser =
+            new MTParser(
+                    lexer.tokenize());
+
+    MTNode ast =
+            parser.parse();
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    MTBlock block =
+            (MTBlock)
+            interpreter.evaluate(
+                    ast,
+                    new MTScope(null));
+
+    System.out.println(
+            block.parameterCount());
+
+    MTClass integerClass =
+            MTKernelBootstrap
+                    .createIntegerClass();
+
+    MTInteger value =
+            new MTInteger(123);
+
+    value.setClazz(
+            integerClass);
+
+    MTArray arguments =
+            new MTArray();
+
+    arguments.add(value);
+
+    System.out.println(
+            block.value(arguments));
+
+    source = "[:x :y | x + y]";
+    lexer = new MTLexer(source);
+    System.out.println(lexer.tokenize());
+    parser = new MTParser(lexer.tokenize());
+    ast = parser.parse();
+    block = (MTBlock)interpreter.evaluate(
+        ast,
+        new MTScope(null));
+    System.out.println(block.parameterCount());
+    MTInteger ten = new MTInteger(10);
+    ten.setClazz(integerClass);
+    MTInteger twentythree = new MTInteger(23);
+    twentythree.setClazz(integerClass);
+    arguments = new MTArray();
+    arguments.add(ten);
+    arguments.add(twentythree);
+    System.out.println(block.value(arguments));
+}
+
 }
