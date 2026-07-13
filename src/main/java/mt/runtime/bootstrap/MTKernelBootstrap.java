@@ -82,6 +82,18 @@ public final class MTKernelBootstrap {
         return arrayClass;
     }
 
+    public static MTClass createBlockClass() {
+
+        MTClass blockClass = new MTClass(
+            MTSymbol.intern("Block"));
+
+        PrimitiveInstaller.install(
+            blockClass,
+            BlockPrimitives.class);
+
+        return blockClass;
+    }
+
     private static void install(
         MTClass clazz,
         String selector,

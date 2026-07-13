@@ -19,4 +19,9 @@ public class MTArrayNode
 
         return elements;
     }
+
+    public int size() {
+
+        return elements.size();
+    }
 }

@@ -5,14 +5,26 @@ public class MTNonLocalReturnException
 
     private final MTObject value;
 
+    private final MTBlock targetBlock;
+
+    public MTNonLocalReturnException(MTObject value) {
+
+        this(value, null);
+    }
+
     public MTNonLocalReturnException(
-            MTObject value) {
+            MTObject value, MTBlock targetBlock) {
 
         this.value = value;
+        this.targetBlock = targetBlock;
     }
 
     public MTObject getValue() {
 
         return value;
+    }
+
+    public MTBlock getTargetBlock() {
+        return targetBlock;
     }
 }

@@ -7,14 +7,29 @@ public class MTBlockNode
 
     private final MTArray parameters;
 
+    private final MTArray temporaries;
+
     private final MTSequenceNode body;
 
     public MTBlockNode(
+        MTArray parameters,
+        MTSequenceNode body) {
+        this(
+            parameters,
+            new MTArray(),
+            body);
+    }
+
+    public MTBlockNode(
             MTArray parameters,
+            MTArray temporaries,
             MTSequenceNode body) {
 
         this.parameters =
                 parameters;
+
+        this.temporaries =
+                temporaries;
 
         this.body =
                 body;
@@ -23,6 +38,11 @@ public class MTBlockNode
     public MTArray getParameters() {
 
         return parameters;
+    }
+
+    public MTArray getTemporaries() {
+
+        return temporaries;
     }
 
     public MTSequenceNode getBody() {

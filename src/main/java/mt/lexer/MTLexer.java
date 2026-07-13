@@ -229,12 +229,37 @@ public final class MTLexer {
             }
         }
 
+        /*
         tokens.add(
                 new MTToken(
                         MTTokenType.IDENTIFIER,
                         source.substring(start, position),
                         startLine,
                         startColumn));
+        */
+        String text = source.substring(start, position);
+        MTTokenType type;
+
+        switch (text) {
+            case "nil" -> type = MTTokenType.NIL;
+
+            case "true" -> type = MTTokenType.TRUE;
+
+            case "false" -> type = MTTokenType.FALSE;
+
+            case "self" -> type = MTTokenType.SELF;
+
+            case "super" -> type = MTTokenType.SUPER;
+
+            default -> type = MTTokenType.IDENTIFIER;
+        }
+
+        tokens.add(
+            new MTToken(
+                type,
+                text,
+                startLine,
+                startColumn));
     }
 
     private void readInteger() {

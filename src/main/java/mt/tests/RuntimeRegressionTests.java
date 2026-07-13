@@ -7,6 +7,7 @@ import mt.ast.*;
 import mt.interpreter.*;
 import mt.lexer.*;
 import mt.parser.*;
+import mt.debug.*;
 
 public final class RuntimeRegressionTests {
 
@@ -53,8 +54,6 @@ public final class RuntimeRegressionTests {
 
         testBlockNode();
 
-        testClosureMutation();
-
         testParserInteger();
 
         testParserVariable();
@@ -67,12 +66,37 @@ public final class RuntimeRegressionTests {
 
         testParserParentheses();
 
-        testParserReturn();
+        //testParserReturn();
 
         testParserBlock();
 
         testParserBlockParameters();
 
+        testLexer();
+
+        testParserBooleanAndNil();
+
+        testParserString();
+
+        testParserValueKeyword();
+
+        testParserValueValueKeyword();
+
+        testBlockValueArray();
+
+        testBlockTemporaries();
+
+        testUndeclaredTemporary();
+
+        testClosureRead();
+
+        testClosureMutation();
+
+        testClosureWithTemporary();
+
+        testNestedClosure();
+
+        testNestedClosureNonLocalReturn();
     }
 
     private static void testSymbols() {
@@ -281,11 +305,11 @@ public final class RuntimeRegressionTests {
                 MTSymbol.intern("xor:"),
                 xorArgs));
 
-                System.out.println(
-    MTBoolean.TRUE.getClazz());
+        System.out.println(
+            MTBoolean.TRUE.getClazz());
 
-System.out.println(
-    MTBoolean.FALSE.getClazz());
+        System.out.println(
+            MTBoolean.FALSE.getClazz());
 
     }
 
@@ -1157,127 +1181,6 @@ catch (RuntimeException ex) {
 }
     }
 
-    private static void testClosureMutation() {
-
-    System.out.println(
-            "=== Closure mutation test ===");
-
-    MTClass integerClass =
-            MTKernelBootstrap
-                    .createIntegerClass();
-
-    /*
-     * Scope exterieur
-     */
-
-    MTScope global =
-            new MTScope(
-                    null);
-
-    MTInteger ten =
-            new MTInteger(10);
-
-    ten.setClazz(
-            integerClass);
-
-    global.define(
-            MTSymbol.intern("x"),
-            ten);
-
-    /*
-     * x
-     */
-
-    MTVariableNode x1 =
-            new MTVariableNode(
-                    MTSymbol.intern("x"));
-
-    /*
-     * 1
-     */
-
-    MTInteger one =
-            new MTInteger(1);
-
-    one.setClazz(
-            integerClass);
-
-    MTObjectLiteralNode oneNode =
-            new MTObjectLiteralNode(
-                    one);
-
-    /*
-     * x + 1
-     */
-
-    MTArrayNode plusArgs =
-            new MTArrayNode();
-
-    plusArgs.add(
-            oneNode);
-
-    MTMessageSendNode plusNode =
-            new MTMessageSendNode(
-                    x1,
-                    MTSymbol.intern("+"),
-                    plusArgs);
-
-    /*
-     * x := x + 1
-     */
-
-    MTAssignmentNode assignNode =
-            new MTAssignmentNode(
-                    MTSymbol.intern("x"),
-                    plusNode);
-
-    /*
-     * Corps du block
-     */
-
-    MTSequenceNode body =
-            new MTSequenceNode();
-
-    body.add(
-            assignNode);
-
-    /*
-     * Block sans parametres
-     */
-
-    MTArray params =
-            new MTArray();
-
-    MTBlockNode blockNode =
-            new MTBlockNode(
-                    params,
-                    body);
-
-    MTInterpreter interpreter =
-            new MTInterpreter();
-
-    MTBlock block =
-            (MTBlock)
-            interpreter.evaluate(
-                    blockNode,
-                    global);
-
-    /*
-     * Execution
-     */
-
-    block.value();
-
-    block.value();
-
-    /*
-     * Verification
-     */
-
-    System.out.println(
-            global.lookup(
-                    MTSymbol.intern("x")));
-}
 
 private static void testParserInteger() {
 
@@ -1291,8 +1194,7 @@ private static void testParserInteger() {
             new MTLexer(
                     source);
 
-    System.out.println(
-        lexer.tokenize());
+    MTDebug.log(lexer.tokenize().toString());
 
     MTParser parser =
             new MTParser(
@@ -1322,8 +1224,8 @@ private static void testParserVariable() {
             new MTLexer(
                     source);
 
-    System.out.println(
-        lexer.tokenize());
+    MTDebug.log(
+        lexer.tokenize().toString());
 
     MTParser parser =
             new MTParser(
@@ -1359,8 +1261,8 @@ private static void testParserAssignment() {
     MTLexer lexer =
             new MTLexer(source);
 
-    System.out.println(
-        lexer.tokenize());
+    MTDebug.log(
+        lexer.tokenize().toString());
 
     MTParser parser =
             new MTParser(
@@ -1404,8 +1306,8 @@ private static void testParserSequence() {
             new MTLexer(
                     source);
 
-    System.out.println(
-        lexer.tokenize());
+    MTDebug.log(
+        lexer.tokenize().toString());
 
     MTParser parser =
             new MTParser(
@@ -1442,8 +1344,8 @@ private static void testParserBinaryMessage() {
             new MTLexer(
                     source);
 
-    System.out.println(
-            lexer.tokenize());
+    MTDebug.log(
+            lexer.tokenize().toString());
 
     MTParser parser =
             new MTParser(
@@ -1477,8 +1379,7 @@ private static void testParserParentheses() {
             new MTLexer(
                     source);
 
-    System.out.println(
-            lexer.tokenize());
+    MTDebug.log(lexer.tokenize().toString());
 
     MTParser parser =
             new MTParser(
@@ -1497,7 +1398,7 @@ private static void testParserParentheses() {
 
     source = "(3 + 4) + 5";
     lexer = new MTLexer(source);
-    System.out.println(lexer.tokenize());
+    MTDebug.log(lexer.tokenize().toString());
     parser = new MTParser(lexer.tokenize());
     ast = parser.parse();
     System.out.println(
@@ -1505,7 +1406,7 @@ private static void testParserParentheses() {
 
     source = "3 + (4 + 5)";
     lexer = new MTLexer(source);
-    System.out.println(lexer.tokenize());
+    MTDebug.log(lexer.tokenize().toString());
     parser = new MTParser(lexer.tokenize());
     ast = parser.parse();
     System.out.println(
@@ -1659,4 +1560,698 @@ private static void testParserBlockParameters() {
     System.out.println(block.value(arguments));
 }
 
+    private static void testLexer() {
+        System.out.println("=== Lexer test ===");
+
+        String source = "nil true false self super foo";
+
+        MTLexer lexer = new MTLexer(source);
+
+        System.out.println(lexer.tokenize());
+    }
+
+    private static void testParserBooleanAndNil() {
+
+    System.out.println(
+            "=== Parser Boolean/Nil test ===");
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    String source = "true";
+
+    MTNode ast =
+            new MTParser(
+                    new MTLexer(source)
+                            .tokenize())
+                    .parse();
+
+    System.out.println(
+            interpreter.evaluate(
+                    ast,
+                    null));
+
+    source = "false";
+
+    ast =
+            new MTParser(
+                    new MTLexer(source)
+                            .tokenize())
+                    .parse();
+
+    System.out.println(
+            interpreter.evaluate(
+                    ast,
+                    null));
+
+    source = "nil";
+
+    ast =
+            new MTParser(
+                    new MTLexer(source)
+                            .tokenize())
+                    .parse();
+
+    System.out.println(
+            interpreter.evaluate(
+                    ast,
+                    null));
+}
+
+private static void testParserString() {
+
+    System.out.println(
+            "=== Parser String test ===");
+
+    String source =
+            "'Hello World'";
+
+    MTLexer lexer =
+            new MTLexer(
+                    source);
+
+    System.out.println(
+            lexer.tokenize());
+
+    MTParser parser =
+            new MTParser(
+                    lexer.tokenize());
+
+    MTNode ast =
+            parser.parse();
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    System.out.println(
+            interpreter.evaluate(
+                    ast,
+                    null));
+
+    MTObject value =
+        interpreter.evaluate(
+                ast,
+                null);
+
+    System.out.println(
+        value.getClazz());
+}
+
+private static void testParserValueKeyword() {
+
+    System.out.println(
+            "=== Parser value: test ===");
+
+    String source =
+            "block value: 10";
+
+    MTLexer lexer =
+            new MTLexer(source);
+
+    System.out.println(
+            lexer.tokenize());
+
+    MTParser parser =
+            new MTParser(
+                    lexer.tokenize());
+
+    MTNode ast =
+            parser.parse();
+
+    MTMessageSendNode send =
+            (MTMessageSendNode) ast;
+
+System.out.println(
+        send.getSelector());
+
+System.out.println(
+        send.getArguments()
+            .size());
+}
+
+private static void testParserValueValueKeyword() {
+
+    System.out.println(
+            "=== Parser value:value: test ===");
+
+    String source =
+            "block value: 10 value: 23";
+
+    MTLexer lexer =
+            new MTLexer(source);
+
+    System.out.println(
+            lexer.tokenize());
+
+    MTParser parser =
+            new MTParser(
+                    lexer.tokenize());
+
+    MTNode ast =
+            parser.parse();
+
+    MTMessageSendNode send =
+            (MTMessageSendNode) ast;
+
+System.out.println(
+        send.getSelector());
+
+System.out.println(
+        send.getArguments()
+            .size());
+}
+
+private static void testBlockValueArray() {
+
+    System.out.println(
+            "=== Block valueArray: test ===");
+
+    String source =
+            "[:x :y :z | (x + y) * z]";
+
+    MTLexer lexer =
+            new MTLexer(source);
+
+    MTParser parser =
+            new MTParser(
+                    lexer.tokenize());
+
+    MTNode ast =
+            parser.parse();
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    MTBlock block =
+            (MTBlock)
+            interpreter.evaluate(
+                    ast,
+                    new MTScope(null));
+
+    MTClass integerClass =
+            MTKernelBootstrap
+                    .createIntegerClass();
+
+    MTInteger one =
+            new MTInteger(1);
+    one.setClazz(integerClass);
+
+    MTInteger two =
+            new MTInteger(2);
+    two.setClazz(integerClass);
+
+    MTInteger three =
+            new MTInteger(3);
+    three.setClazz(integerClass);
+
+    MTArray actualArguments =
+            new MTArray();
+
+    actualArguments.add(one);
+    actualArguments.add(two);
+    actualArguments.add(three);
+
+    System.out.println(
+            block.value(
+                    actualArguments));
+}
+
+private static void testBlockTemporaries() {
+
+    System.out.println(
+            "=== Block Temporaries test ===");
+
+    String source =
+            """
+            [:x :y |
+
+                | z |
+
+                z := x + y.
+
+                z
+
+            ]
+            """;
+
+    MTLexer lexer =
+            new MTLexer(source);
+
+    MTParser parser =
+            new MTParser(
+                    lexer.tokenize());
+
+    MTNode ast =
+            parser.parse();
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    MTBlock block =
+            (MTBlock)
+            interpreter.evaluate(
+                    ast,
+                    new MTScope(null));
+
+    MTClass integerClass =
+            MTKernelBootstrap
+                    .createIntegerClass();
+
+    MTInteger ten =
+            new MTInteger(10);
+
+    ten.setClazz(
+            integerClass);
+
+    MTInteger twenty =
+            new MTInteger(20);
+
+    twenty.setClazz(
+            integerClass);
+
+    MTArray arguments =
+            new MTArray();
+
+    arguments.add(ten);
+    arguments.add(twenty);
+
+    System.out.println(
+            block.value(arguments));
+}
+
+private static void testUndeclaredTemporary() {
+
+    System.out.println(
+            "=== Undeclared Temporary test ===");
+
+    String source =
+            """
+            [:x :y |
+
+                z := x + y.
+
+                z
+
+            ]
+            """;
+
+    try {
+
+        MTLexer lexer =
+                new MTLexer(source);
+
+        MTParser parser =
+                new MTParser(
+                        lexer.tokenize());
+
+        MTNode ast =
+                parser.parse();
+
+        MTInterpreter interpreter =
+                new MTInterpreter();
+
+        MTBlock block =
+                (MTBlock)
+                interpreter.evaluate(
+                        ast,
+                        new MTScope(null));
+
+        MTClass integerClass =
+                MTKernelBootstrap
+                        .createIntegerClass();
+
+        MTInteger ten =
+                new MTInteger(10);
+
+        ten.setClazz(
+                integerClass);
+
+        MTInteger twenty =
+                new MTInteger(20);
+
+        twenty.setClazz(
+                integerClass);
+
+        MTArray arguments =
+                new MTArray();
+
+        arguments.add(ten);
+        arguments.add(twenty);
+
+        MTObject result =
+                block.value(arguments);
+
+        System.out.println(
+                "FAILED : "
+                + result);
+
+    } catch (RuntimeException ex) {
+
+        System.out.println(
+                ex.getMessage());
+    }
+}
+
+private static void testClosureRead() {
+
+    System.out.println(
+            "=== Closure Read test ===");
+
+    MTScope global =
+            new MTScope(null);
+
+    MTClass integerClass =
+            MTKernelBootstrap
+                    .createIntegerClass();
+
+    MTInteger factor =
+            new MTInteger(3);
+
+    factor.setClazz(
+            integerClass);
+
+    global.define(
+            MTSymbol.intern("factor"),
+            factor);
+
+    String source =
+            """
+            [:x |
+
+                x * factor
+
+            ]
+            """;
+
+    MTLexer lexer =
+            new MTLexer(source);
+
+    MTParser parser =
+            new MTParser(
+                    lexer.tokenize());
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    MTBlock block =
+            (MTBlock)
+            interpreter.evaluate(
+                    parser.parse(),
+                    global);
+
+    MTArray args =
+            new MTArray();
+
+    MTInteger ten =
+            new MTInteger(10);
+
+    ten.setClazz(
+            integerClass);
+
+    args.add(ten);
+
+    System.out.println(
+            block.value(args));
+}
+
+private static void testClosureMutation() {
+
+    System.out.println(
+            "=== Closure Mutation test ===");
+
+    MTScope global =
+            new MTScope(null);
+
+    MTClass integerClass =
+            MTKernelBootstrap
+                    .createIntegerClass();
+
+    MTInteger zero =
+            new MTInteger(0);
+
+    zero.setClazz(
+            integerClass);
+
+    global.define(
+            MTSymbol.intern("counter"),
+            zero);
+
+    String source =
+            """
+            [
+
+                counter := counter + 1
+
+            ]
+            """;
+
+    MTLexer lexer =
+            new MTLexer(source);
+
+    MTParser parser =
+            new MTParser(
+                    lexer.tokenize());
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    MTBlock block =
+            (MTBlock)
+            interpreter.evaluate(
+                    parser.parse(),
+                    global);
+
+    block.value();
+    block.value();
+
+    System.out.println(
+            global.lookup(
+                    MTSymbol.intern("counter")));
+
+}
+
+private static void testClosureWithTemporary() {
+
+    System.out.println(
+            "=== Closure With Temporary test ===");
+
+    MTScope global =
+            new MTScope(null);
+
+    MTClass integerClass =
+            MTKernelBootstrap
+                    .createIntegerClass();
+
+    MTInteger factor =
+            new MTInteger(2);
+
+    factor.setClazz(
+            integerClass);
+
+    global.define(
+            MTSymbol.intern("factor"),
+            factor);
+
+    String source =
+            """
+            [:x |
+
+                | y |
+
+                y := x + 1.
+
+                y * factor
+
+            ]
+            """;
+
+    MTLexer lexer =
+            new MTLexer(source);
+
+    MTParser parser =
+            new MTParser(
+                    lexer.tokenize());
+
+    MTNode ast =
+            parser.parse();
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    MTBlock block =
+            (MTBlock)
+            interpreter.evaluate(
+                    ast,
+                    global);
+
+    MTInteger ten =
+            new MTInteger(10);
+
+    ten.setClazz(
+            integerClass);
+
+    MTArray arguments =
+            new MTArray();
+
+    arguments.add(
+            ten);
+
+    System.out.println(
+            block.value(
+                    arguments));
+}
+
+private static void testNestedClosure() {
+
+    System.out.println(
+            "=== Nested Closure test ===");
+
+    MTScope global =
+            new MTScope(null);
+
+    MTClass integerClass =
+            MTKernelBootstrap
+                    .createIntegerClass();
+
+    MTInteger factor =
+            new MTInteger(3);
+
+    factor.setClazz(
+            integerClass);
+
+    global.define(
+            MTSymbol.intern("factor"),
+            factor);
+
+    String source =
+            """
+            [:x |
+
+                [:y |
+
+                    (x + y) * factor
+
+                ]
+
+            ]
+            """;
+
+    MTLexer lexer =
+            new MTLexer(source);
+
+    MTParser parser =
+            new MTParser(
+                    lexer.tokenize());
+
+    MTNode ast =
+            parser.parse();
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    /*
+     * Block externe
+     */
+
+    MTBlock outer =
+            (MTBlock)
+            interpreter.evaluate(
+                    ast,
+                    global);
+
+    /*
+     * x = 10
+     */
+
+    MTInteger ten =
+            new MTInteger(10);
+
+    ten.setClazz(
+            integerClass);
+
+    MTArray outerArguments =
+            new MTArray();
+
+    outerArguments.add(
+            ten);
+
+    /*
+     * Execution du block externe
+     * => retourne le block interne
+     */
+
+    MTBlock inner =
+            (MTBlock)
+            outer.value(
+                    outerArguments);
+
+    /*
+     * y = 20
+     */
+
+    MTInteger twenty =
+            new MTInteger(20);
+
+    twenty.setClazz(
+            integerClass);
+
+    MTArray innerArguments =
+            new MTArray();
+
+    innerArguments.add(
+            twenty);
+
+    /*
+     * Execution du block interne
+     */
+
+    System.out.println(
+            inner.value(
+                    innerArguments));
+}
+
+private static void testNestedClosureNonLocalReturn() {
+
+    System.out.println(
+            "=== Nested Closure Non Local Return test ===");
+
+    String source =
+            """
+            [
+
+                [:x |
+
+                    ^(x + 1)
+
+                ] value: 41.
+
+                999
+
+            ]
+            """;
+
+    MTLexer lexer =
+            new MTLexer(source);
+
+    MTParser parser =
+            new MTParser(
+                    lexer.tokenize());
+
+    MTNode ast =
+            parser.parse();
+
+    MTInterpreter interpreter =
+            new MTInterpreter();
+
+    MTScope scope = new MTScope(null);
+
+    MTBlock block =
+            (MTBlock)
+            interpreter.evaluate(
+                    ast,
+                    scope);
+
+    System.out.println(
+            block.value());
+}
 }

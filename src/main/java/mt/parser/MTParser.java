@@ -98,7 +98,8 @@ public final class MTParser {
                     value);
         }
 
-        return parseBinaryMessage();
+        //return parseBinaryMessage();
+        return parseKeywordMessage();
     }
 
     private MTNode parsePrimary() {
@@ -110,6 +111,18 @@ public final class MTParser {
                     Long.parseLong(
                             previous()
                                     .text()));
+        }
+
+        if (match(MTTokenType.NIL)) {
+            return new MTNilLiteralNode();
+        }
+
+        if (match(MTTokenType.TRUE)) {
+            return new MTBooleanLiteralNode(true);
+        }
+
+        if (match(MTTokenType.FALSE)) {
+            return new MTBooleanLiteralNode(false);
         }
 
         if (match(
@@ -137,6 +150,10 @@ public final class MTParser {
             consume(MTTokenType.RPAREN,"Expected ')'");
 
             return expression;
+        }
+
+        if (match(MTTokenType.STRING)) {
+            return new MTStringLiteralNode(previous().text());
         }
 
         throw new IllegalStateException(
@@ -173,8 +190,44 @@ public final class MTParser {
         return left;
     }
 
+    private MTNode parseKeywordMessage() {
+        MTNode receiver = parseBinaryMessage();
+
+        if (!isKeywordStart()) {
+            return receiver;
+        }
+
+        StringBuilder selector = new StringBuilder();
+
+        MTArrayNode arguments = new MTArrayNode();
+
+        while (isKeywordStart()) {
+
+            MTToken keyword = advance();
+
+            selector.append(keyword.text());
+
+            consume(
+                MTTokenType.COLON,
+                "Expected ':'");
+
+            selector.append(":");
+
+            arguments.add(
+                parseBinaryMessage());
+        }
+
+        return new MTMessageSendNode(
+            receiver,
+            MTSymbol.intern(
+                    selector.toString()),
+            arguments);
+    }
+
     private MTBlockNode parseBlock() {
         MTArray parameters = new MTArray();
+
+        MTArray temporaries = new MTArray();
 
         /*
          * Parametres eventuels
@@ -199,6 +252,18 @@ public final class MTParser {
                 "Expected '|'");
         }
 
+        if (match(MTTokenType.PIPE)) {
+            while (!check(MTTokenType.PIPE)) {
+                MTToken name =consume(
+                        MTTokenType.IDENTIFIER,
+                        "Expected temporary name");
+
+                temporaries.add(MTSymbol.intern(name.text()));
+            }
+
+            consume(MTTokenType.PIPE,"Expected '|'");
+        }
+
         MTNode node = parseSequence();
         MTSequenceNode body;
 
@@ -215,6 +280,7 @@ public final class MTParser {
 
         return new MTBlockNode(
             parameters,
+            temporaries,
             body);
     }
 
@@ -294,6 +360,13 @@ public final class MTParser {
 
         return peek().type()
                 == MTTokenType.EOF;
+    }
+
+    private boolean isKeywordStart() {
+        return check(
+            MTTokenType.IDENTIFIER)
+            &&
+            lookAhead(MTTokenType.COLON);
     }
 
     private MTToken peek() {

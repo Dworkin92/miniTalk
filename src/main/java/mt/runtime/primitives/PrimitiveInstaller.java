@@ -9,6 +9,9 @@ import mt.runtime.MTMethodBody;
 import mt.runtime.MTObject;
 import mt.runtime.MTSymbol;
 
+import java.lang.reflect.InvocationTargetException;
+import mt.runtime.MTNonLocalReturnException;
+
 public final class PrimitiveInstaller {
 
     private PrimitiveInstaller() {
@@ -45,7 +48,15 @@ public final class PrimitiveInstaller {
                                             receiver,
                                             arguments);
 
-                        } catch (Exception e) {
+                        }
+                        catch (InvocationTargetException ex) {
+                            Throwable cause = ex.getCause();
+                            if (cause instanceof MTNonLocalReturnException nlr) {
+                                throw nlr;
+                            }
+                            throw new RuntimeException(cause);
+                        }
+                        catch (Exception e) {
 
                             throw new RuntimeException(
                                     e);

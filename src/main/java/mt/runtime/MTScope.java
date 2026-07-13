@@ -7,6 +7,8 @@ public class MTScope
 
     private final MTDictionary bindings;
 
+    private MTBlock homeBlock;
+
     public MTScope(
             MTScope parent) {
 
@@ -89,5 +91,13 @@ public class MTScope
     public MTDictionary getBindings() {
 
         return bindings;
+    }
+
+    public MTBlock getHomeBlock() {
+        return homeBlock;
+    }
+
+    public void setHomeBlock(MTBlock homeBlock) {
+        this.homeBlock = homeBlock;
     }
 }

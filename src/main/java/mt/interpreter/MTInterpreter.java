@@ -3,6 +3,7 @@ package mt.interpreter;
 import mt.ast.*;
 import mt.runtime.*;
 import mt.runtime.bootstrap.*;
+import mt.debug.MTDebug;
 
 public class MTInterpreter {
 
@@ -24,13 +25,31 @@ public class MTInterpreter {
         }
 
         if (node instanceof MTSymbolLiteralNode n) {
-
             return n.getSymbol();
         }
 
-        if (node instanceof MTVariableNode n) {
+        if (node instanceof MTNilLiteralNode) {
+            return MTNil.instance();
+        }
 
+        if (node instanceof MTBooleanLiteralNode n) {
+            return MTBoolean.valueOf(n.getValue());
+        }
+
+        if (node instanceof MTVariableNode n) {
             return scope.lookup(n.getName());
+        }
+
+        if (node instanceof MTStringLiteralNode n) {
+
+            MTClass stringClass =
+                MTKernelBootstrap.createStringClass();
+
+            MTString result = new MTString(n.getValue());
+
+            result.setClazz(stringClass);
+
+            return result;
         }
 
         if (node instanceof MTAssignmentNode n) {
@@ -64,18 +83,15 @@ public class MTInterpreter {
                         scope));
             }
 
-            /*
-System.out.println(
-        "receiver = " + receiver);
 
-System.out.println(
-        "receiver class = "
-        + receiver.getClazz());
+            MTDebug.log("receiver = " + receiver);
 
-System.out.println(
-        "selector = "
-        + n.getSelector());
-*/
+            MTDebug.log("receiver class = "
+                + receiver.getClazz());
+
+            MTDebug.log("selector = "
+                + n.getSelector());
+
             return receiver.send(
                 n.getSelector(),
                 arguments);
@@ -99,13 +115,17 @@ System.out.println(
         }
 
         if (node instanceof MTBlockNode n) {
+            MTClass blockClass =
+                MTKernelBootstrap.createBlockClass();
 
-            return new MTBlock(
-                scope,          // scope capture
-                n.getParameters(),
-                n
-                //n.getBody()
-                );
+            MTBlock block = new MTBlock(
+                scope, n.getParameters(), n);
+
+            block.setClazz(blockClass);
+
+            MTDebug.log("created block class = " + block.getClazz());
+
+            return block;
         }
 
         if (node instanceof MTNonLocalReturnNode n) {
@@ -115,7 +135,7 @@ System.out.println(
                     n.getExpression(),
                     scope);
 
-            throw new MTNonLocalReturnException(value);
+            throw new MTNonLocalReturnException(value, scope.getHomeBlock());
         }
 
         throw new RuntimeException(

@@ -440,6 +440,55 @@ blocks:
 
     enabled: true
 
+  parameters:
+    description: >
+      Les paramètres sont déclarés dans l'en-tête du block.
+
+  temporaries:
+    description: >
+      Les variables temporaires sont déclarées explicitement
+      entre deux caractères '|'.
+
+    example: |
+      [:x :y |
+
+          | z |
+
+          z := x + y.
+          z
+
+      ]
+
+  variable_resolution:
+    description: >
+      Une variable référencée dans un block doit être :
+      - un paramètre du block ;
+      - une variable temporaire déclarée ;
+      - une variable visible dans un scope englobant.
+
+  assignment:
+    description: >
+      Une affectation ne crée jamais implicitement une variable.
+
+      L'affectation à une variable non déclarée constitue
+      une erreur.
+
+    valid: |
+      [:x |
+
+          | y |
+
+          y := x + 1.
+          y
+
+      ]
+
+    invalid: |
+      [:x |
+
+          y := x + 1.
+
+      ]
 ##############################################################################
 # SCOPES
 ##############################################################################

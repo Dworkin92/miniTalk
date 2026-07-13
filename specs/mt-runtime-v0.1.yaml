@@ -429,6 +429,21 @@ MTScope:
     - lookup
     - assign
 
+  assign:
+    description: >
+      assign(name,value) ne crée jamais de nouvelle variable.
+
+      Le nom doit déjà exister dans le scope courant
+      ou dans un scope ancêtre.
+
+  activation_scope:
+    description: >
+      Lors de l'activation d'un block :
+      - les paramètres sont définis ;
+      - les variables temporaires sont créées ;
+      - les variables capturées restent accessibles
+        via les scopes ancêtres.
+
 ##############################################################################
 # CLOSURES
 ##############################################################################
@@ -602,4 +617,3 @@ validation:
           [
               ^super fullName
           ].
-		  
