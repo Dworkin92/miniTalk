@@ -68,11 +68,31 @@ public final class MTInteger
         return result;
     }
 
+    public MTInteger modulo(
+            MTInteger other) {
+
+        MTInteger result =
+            new MTInteger(
+                    value % other.value);
+
+        result.setClazz(
+            getClazz());
+
+        return result;
+    }
+
     public MTBoolean equalsTo(
             MTInteger other) {
 
         return MTBoolean.valueOf(
                 value == other.value);
+    }
+
+    public MTBoolean differentFrom(
+            MTInteger other) {
+
+        return MTBoolean.valueOf(
+                value != other.value);
     }
 
     public MTBoolean lessThan(

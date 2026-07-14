@@ -17,51 +17,40 @@ public final class PrimitiveInstaller {
     private PrimitiveInstaller() {
     }
 
-    public static void install(
-            MTClass clazz,
-            Class<?> primitiveClass) {
+    public static void install(MTClass clazz, Class<?> primitiveClass) {
+        for (Method method : primitiveClass.getDeclaredMethods()) {
 
-        for (Method method :
-                primitiveClass.getDeclaredMethods()) {
+            Primitive[] annotations = method.getAnnotationsByType(Primitive.class);
 
-            Primitive annotation =
-                    method.getAnnotation(
-                            Primitive.class);
-
-            if (annotation == null) {
+            if (annotations.length == 0) {
                 continue;
             }
 
-            clazz.addMethod(
+            for (Primitive annotation : annotations) {
+                clazz.addMethod(
+                    new MTMethod(
+                        MTSymbol.intern(annotation.value()),
+                        clazz,
+                        (receiver, arguments) -> {
 
-                new MTMethod(
-                    MTSymbol.intern(
-                            annotation.value()),
-                    clazz,
-                    (receiver, arguments) -> {
+                            try {
+                                return (MTObject)method.invoke(null,receiver,arguments);
 
-                        try {
-
-                            return (MTObject)
-                                    method.invoke(
-                                            null,
-                                            receiver,
-                                            arguments);
-
-                        }
-                        catch (InvocationTargetException ex) {
-                            Throwable cause = ex.getCause();
-                            if (cause instanceof MTNonLocalReturnException nlr) {
-                                throw nlr;
                             }
-                            throw new RuntimeException(cause);
+                            catch (InvocationTargetException ex) {
+                                Throwable cause = ex.getCause();
+                                if (cause instanceof MTNonLocalReturnException nlr) {
+                                    throw nlr;
+                                }
+                                throw new RuntimeException(cause);
+                            }
+                            catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
                         }
-                        catch (Exception e) {
-
-                            throw new RuntimeException(
-                                    e);
-                        }
-                    }));
+                    )
+                );
+            }
         }
     }
 }

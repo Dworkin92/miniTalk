@@ -3,6 +3,8 @@ package mt.runtime.primitives;
 import mt.runtime.MTArray;
 import mt.runtime.MTBlock;
 import mt.runtime.MTObject;
+import mt.runtime.MTBoolean;
+import mt.runtime.MTNil;
 
 public final class BlockPrimitives {
 
@@ -67,5 +69,40 @@ public final class BlockPrimitives {
 
         return self.value(
                 actualArguments);
+    }
+
+    @Primitive("whileTrue:")
+    public static MTObject whileTrue(
+        MTObject receiver,
+        MTArray arguments) {
+
+        MTBlock condition = (MTBlock) receiver;
+
+        MTBlock body = (MTBlock) arguments.at(0);
+
+        MTObject result = MTNil.instance();
+
+        while (((MTBoolean)condition.value()).getValue()) {
+            result = body.value();
+        }
+
+        return result;
+    }
+
+    @Primitive("whileFalse:")
+    public static MTObject whileFalse(
+        MTObject receiver,
+        MTArray arguments) {
+
+        MTBlock condition = (MTBlock) receiver;
+
+        MTBlock body = (MTBlock) arguments.at(0);
+
+        MTObject result = MTNil.instance();
+
+        while (!((MTBoolean)condition.value()).getValue()) {
+            result = body.value();
+        }
+        return result;
     }
 }

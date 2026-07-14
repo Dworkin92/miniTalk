@@ -2,11 +2,9 @@ package mt.runtime.primitives;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Repeatable;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(Primitives.class)
-public @interface Primitive {
+public @interface Primitives {
 
-    String value();
+    Primitive[] value();
 }

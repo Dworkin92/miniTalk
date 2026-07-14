@@ -161,22 +161,34 @@ public final class MTParser {
                         + peek().text());
     }
 
-    private MTNode parseBinaryMessage() {
+    private MTNode parseUnaryMessage() {
+        MTNode receiver = parsePrimary();
 
-        MTNode left =
-            parsePrimary();
+        while (check(MTTokenType.IDENTIFIER) &&
+                !lookAhead(MTTokenType.COLON)) {
+
+            MTToken selector = advance();
+
+            receiver = new MTMessageSendNode(
+                receiver,
+                MTSymbol.intern(selector.text()),
+                new MTArrayNode());
+        }
+
+        return receiver;
+    }
+
+    private MTNode parseBinaryMessage() {
+        MTNode left = parseUnaryMessage();
 
         while (match(
             MTTokenType.BINARY_SELECTOR)) {
 
-            MTToken selector =
-                previous();
+            MTToken selector = previous();
 
-            MTNode right =
-                parsePrimary();
+            MTNode right = parseUnaryMessage();
 
-            MTArrayNode arguments =
-                new MTArrayNode();
+            MTArrayNode arguments = new MTArrayNode();
 
             arguments.add(right);
 
