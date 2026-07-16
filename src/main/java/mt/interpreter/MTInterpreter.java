@@ -4,6 +4,7 @@ import mt.ast.*;
 import mt.runtime.*;
 import mt.runtime.bootstrap.*;
 import mt.debug.MTDebug;
+import mt.exceptions.MTRuntimeException;
 
 public class MTInterpreter {
 
@@ -138,7 +139,7 @@ public class MTInterpreter {
             throw new MTNonLocalReturnException(value, scope.getHomeBlock());
         }
 
-        throw new RuntimeException(
+        throw new MTRuntimeException(
                 "Unsupported node: "
                 + node.getClass().getName());
     }

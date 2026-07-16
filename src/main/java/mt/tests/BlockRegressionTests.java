@@ -11,6 +11,7 @@ import mt.debug.*;
 import mt.tests.*;
 
 import static mt.tests.TestUtils.assertResult;
+import mt.exceptions.MTRuntimeException;
 
 public final class BlockRegressionTests {
 
@@ -260,7 +261,7 @@ public final class BlockRegressionTests {
             MTObject result = block.value(arguments);
 
             System.out.println("FAILED : " + result);
-        } catch (RuntimeException ex) {
+        } catch (MTRuntimeException ex) {
             System.out.println(source + " value: 10 value: 20\n" + ex.getMessage());
         }
     }

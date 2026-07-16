@@ -1,6 +1,7 @@
 package mt.runtime.bootstrap;
 
 import mt.runtime.*;
+import mt.runtime.primitives.*;
 
 public final class MTRuntimeBootstrap {
 
@@ -93,6 +94,11 @@ public final class MTRuntimeBootstrap {
         runtime.registerClass(
             MTKernelBootstrap.createDictionaryClass());
 
+
+        /* installer les primitives pour MTObject */
+        PrimitiveInstaller.install(
+            objectClass,
+            ObjectPrimitives.class);
 
         /*
         return new MTRuntime(

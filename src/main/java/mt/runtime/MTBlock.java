@@ -3,6 +3,7 @@ package mt.runtime;
 import mt.ast.MTBlockNode;
 import mt.interpreter.MTInterpreter;
 import mt.debug.MTDebug;
+import mt.exceptions.MTRuntimeException;
 
 public class MTBlock
         extends MTObject {
@@ -70,7 +71,7 @@ public class MTBlock
         if (arguments.size()
                 != parameters.size()) {
 
-            throw new RuntimeException(
+            throw new MTRuntimeException(
                     "Expected "
                     + parameters.size()
                     + " arguments but got "
@@ -127,7 +128,7 @@ public class MTBlock
 
         if (activationScope == null) {
 
-            throw new RuntimeException(
+            throw new MTRuntimeException(
                 "Activation scope creation failed");
         }
 

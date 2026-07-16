@@ -2,6 +2,7 @@ package mt.runtime;
 
 import java.util.HashMap;
 import java.util.Map;
+import mt.exceptions.MTRuntimeException;
 
 public class MTObject {
 
@@ -33,7 +34,7 @@ public class MTObject {
         MTMethod method = clazz.lookupMethod(selector);
 
         if (method == null) {
-            throw new RuntimeException(
+            throw new MTRuntimeException(
                 "Unknown selector: " + selector);
         }
 

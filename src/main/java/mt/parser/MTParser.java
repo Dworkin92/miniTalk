@@ -1,6 +1,7 @@
 package mt.parser;
 
 import java.util.List;
+import java.util.ArrayList;
 
 
 import mt.ast.*;
@@ -9,14 +10,20 @@ import mt.lexer.MTTokenType;
 import mt.runtime.MTSymbol;
 import mt.runtime.MTArray;
 
+import mt.exceptions.MTRuntimeException;
+import mt.exceptions.MTParseException;
+
 public final class MTParser {
 
     private final List<MTToken> tokens;
 
     private int current;
 
-    public MTParser(
-            List<MTToken> tokens) {
+    private String moduleName;
+
+    private final List<String> imports = new ArrayList<>();
+
+    public MTParser(List<MTToken> tokens) {
 
         this.tokens = tokens;
 
@@ -24,6 +31,8 @@ public final class MTParser {
     }
 
     public MTNode parse() {
+
+        parseMetaDirectives();
 
         return parseSequence();
     }
@@ -43,16 +52,14 @@ public final class MTParser {
         sequence.add(
                 parseExpression());
 
-        while (match(
-                MTTokenType.DOT)) {
+        while (match(MTTokenType.DOT)) {
 
-            if (isAtEnd()) {
-
+            if (isAtEnd()
+                || check(MTTokenType.RBRACKET)
+                || check(MTTokenType.RPAREN)) {
                 break;
             }
-
-            sequence.add(
-                    parseExpression());
+            sequence.add(parseExpression());
         }
 
         if (sequence.getStatements()
@@ -156,9 +163,16 @@ public final class MTParser {
             return new MTStringLiteralNode(previous().text());
         }
 
+        /*
         throw new IllegalStateException(
                 "Expected expression at token "
                         + peek().text());
+         */
+         throw new MTParseException(
+                "Expected expression at token "
+                        + peek().text(),
+                peek().line(),
+                peek().column());
     }
 
     private MTNode parseUnaryMessage() {
@@ -296,6 +310,48 @@ public final class MTParser {
             body);
     }
 
+    public String getModuleName() {
+
+        return moduleName;
+    }
+
+    public List<String> getImports() {
+
+        return imports;
+    }
+
+    private void parseMetaDirectives() {
+
+        while (match(MTTokenType.LCOMMENT)) {
+
+            while (!check(MTTokenType.RCOMMENT)) {
+
+                if (match(MTTokenType.META)) {
+                    String directive = previous().text();
+
+                    if (directive.equals("@module")) {
+                        MTToken name = consume(MTTokenType.IDENTIFIER, "Expected module name");
+                        moduleName = name.text();
+                        consume(MTTokenType.SEMICOLON, "Expected ';'");
+                    }
+
+                    else if (directive.equals("@import")) {
+
+                        MTToken name = consume(MTTokenType.IDENTIFIER,"Expected module name");
+
+                        imports.add(name.text());
+
+                        consume(MTTokenType.SEMICOLON, "Expected ';'");
+                    }
+                }
+                else {
+                    advance();
+                }
+            }
+
+            consume(MTTokenType.RCOMMENT, "Expected */");
+        }
+    }
     /*
      * Helpers
      */
@@ -322,13 +378,18 @@ public final class MTParser {
             return advance();
         }
 
-        //throw new IllegalStateException(
-        //        message);
+        throw new MTParseException(
+            message,
+            peek().line(),
+            peek().column());
+
+        /*
         throw new IllegalStateException(
             message + " at line "
             + peek().line()
             + ", column "
             + peek().column());
+        */
     }
 
     private boolean check(

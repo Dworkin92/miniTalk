@@ -219,6 +219,7 @@ public final class PrimitiveRegressionTests {
         leArgs.add(b);
 
         assertResult("10 ~< 3", a.send(MTSymbol.intern("~<"), leArgs));
+        assertResult("10 <= 3", a.send(MTSymbol.intern("<="), leArgs));
     }
 
     private static void testIntegerGreaterOrEqual() {
@@ -236,6 +237,7 @@ public final class PrimitiveRegressionTests {
         geArgs.add(b);
 
         assertResult("10 >~ 3", a.send(MTSymbol.intern(">~"), geArgs));
+        assertResult("10 >= 3", a.send(MTSymbol.intern(">="), geArgs));
     }
 
     private static void testBooleanOperations() {

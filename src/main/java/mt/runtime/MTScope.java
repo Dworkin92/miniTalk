@@ -1,5 +1,7 @@
 package mt.runtime;
 
+import mt.exceptions.MTRuntimeException;
+
 public class MTScope
         extends MTObject {
 
@@ -48,7 +50,7 @@ public class MTScope
                     name);
         }
 
-        throw new RuntimeException(
+        throw new MTRuntimeException(
                 "Unknown variable: "
                         + name);
     }
@@ -76,7 +78,7 @@ public class MTScope
             return;
         }
 
-        throw new RuntimeException(
+        throw new MTRuntimeException(
                 "Unknown variable: "
                         + name);
     }

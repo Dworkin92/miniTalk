@@ -14,14 +14,6 @@ public final class MTKernelBootstrap {
                 new MTClass(
                         MTSymbol.intern("Integer"));
 
-
-        /*
-        MTClass integerClass =
-            runtime.createClass("Integer", runtime.getObjectClass());
-
-        runtime.registerClass(integerClass);
-        */
-
         PrimitiveInstaller.install(
             integerClass,
             IntegerPrimitives.class);

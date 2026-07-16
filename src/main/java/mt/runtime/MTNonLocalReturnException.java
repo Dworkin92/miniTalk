@@ -1,5 +1,7 @@
 package mt.runtime;
 
+import mt.exceptions.MTRuntimeException;
+
 public class MTNonLocalReturnException
         extends RuntimeException {
 

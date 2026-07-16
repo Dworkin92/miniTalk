@@ -2,6 +2,7 @@ package mt.lexer;
 
 import java.util.ArrayList;
 import java.util.List;
+import mt.exceptions.MTRuntimeException;
 
 public final class MTLexer {
 
@@ -416,9 +417,9 @@ public final class MTLexer {
                         column));
     }
 
-    private RuntimeException error(String message) {
+    private MTRuntimeException error(String message) {
 
-        return new RuntimeException(
+        return new MTRuntimeException(
                 "[line "
                         + line
                         + ", column "

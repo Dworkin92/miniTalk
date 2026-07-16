@@ -17,7 +17,7 @@ public final class TestUtils {
      */
     public static void assertResult(
             String expression,
-            MTObject result) {
+            Object result) {
 
         System.out.println(
                 expression
