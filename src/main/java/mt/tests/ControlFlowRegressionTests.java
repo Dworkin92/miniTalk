@@ -14,6 +14,8 @@ import static mt.tests.TestUtils.assertResult;
 
 public final class ControlFlowRegressionTests {
 
+    private static final MTRuntime runtime = MTRuntimeBootstrap.bootstrap();
+
     private ControlFlowRegressionTests() {
     }
 
@@ -64,10 +66,10 @@ public final class ControlFlowRegressionTests {
         MTParser parser = new MTParser(lexer.tokenize());
         MTNode ast = parser.parse();
 
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         assertResult(source, interpreter.evaluate(
-                ast, new MTScope(null)));
+                ast, new MTScope(runtime,null)));
     }
 
     private static void testIfTrueFalseCondition() {
@@ -84,10 +86,10 @@ public final class ControlFlowRegressionTests {
         MTParser parser = new MTParser(lexer.tokenize());
         MTNode ast = parser.parse();
 
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         assertResult( source,
-            interpreter.evaluate( ast, new MTScope(null)));
+            interpreter.evaluate( ast, new MTScope(runtime,null)));
     }
 
     private static void testIfFalse() {
@@ -102,10 +104,10 @@ public final class ControlFlowRegressionTests {
         MTLexer lexer = new MTLexer(source);
         MTParser parser = new MTParser(lexer.tokenize());
         MTNode ast = parser.parse();
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         assertResult(source, interpreter.evaluate(
-                    ast,new MTScope(null)));
+                    ast,new MTScope(runtime, null)));
     }
 
     private static void testIfTrueIfFalse() {
@@ -121,10 +123,10 @@ public final class ControlFlowRegressionTests {
         MTLexer lexer = new MTLexer(source);
         MTParser parser = new MTParser(lexer.tokenize());
         MTNode ast = parser.parse();
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         assertResult(source, interpreter.evaluate(
-                    ast, new MTScope(null)));
+                    ast, new MTScope(runtime, null)));
     }
 
     private static void testIfFalseIfTrue() {
@@ -140,12 +142,12 @@ public final class ControlFlowRegressionTests {
         MTLexer lexer = new MTLexer(source);
         MTParser parser = new MTParser(lexer.tokenize());
         MTNode ast = parser.parse();
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         assertResult( source,
             interpreter.evaluate(
                     ast,
-                    new MTScope(null)));
+                    new MTScope(runtime, null)));
     }
 
     private static void testIfTrueMutation() {
@@ -165,12 +167,12 @@ public final class ControlFlowRegressionTests {
         MTLexer lexer = new MTLexer(source);
         MTParser parser = new MTParser(lexer.tokenize());
         MTNode ast = parser.parse();
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
-        MTScope scope = new MTScope(null);
+        MTScope scope = new MTScope(runtime, null);
 
         MTInteger zero = new MTInteger(0);
-        zero.setClazz(MTKernelBootstrap.createIntegerClass());
+        zero.setClazz(MTKernelBootstrap.createIntegerClass(runtime.getObjectClass()));
         scope.define(MTSymbol.intern("x"),zero);
 
         assertResult(source,
@@ -195,12 +197,12 @@ public final class ControlFlowRegressionTests {
 
         MTLexer lexer = new MTLexer(source);
         MTParser parser = new MTParser(lexer.tokenize());
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
-        MTScope scope = new MTScope(null);
+        MTScope scope = new MTScope(runtime, null);
 
         MTInteger zero = new MTInteger(0);
-        zero.setClazz(MTKernelBootstrap.createIntegerClass());
+        zero.setClazz(MTKernelBootstrap.createIntegerClass(runtime.getObjectClass()));
         scope.define(MTSymbol.intern("x"), zero);
 
         assertResult(source,
@@ -227,12 +229,12 @@ public final class ControlFlowRegressionTests {
 
         MTLexer lexer = new MTLexer(source);
         MTParser parser = new MTParser(lexer.tokenize());
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
-        MTScope scope = new MTScope(null);
+        MTScope scope = new MTScope(runtime,null);
 
         MTInteger zero = new MTInteger(0);
-        zero.setClazz(MTKernelBootstrap.createIntegerClass());
+        zero.setClazz(MTKernelBootstrap.createIntegerClass(runtime.getObjectClass()));
         scope.define(MTSymbol.intern("x"),zero);
 
         assertResult(source,
@@ -257,12 +259,12 @@ public final class ControlFlowRegressionTests {
 
         MTLexer lexer = new MTLexer(source);
         MTParser parser = new MTParser(lexer.tokenize());
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
-        MTScope scope = new MTScope(null);
+        MTScope scope = new MTScope(runtime,null);
 
         MTInteger zero = new MTInteger(0);
-        zero.setClazz(MTKernelBootstrap.createIntegerClass());
+        zero.setClazz(MTKernelBootstrap.createIntegerClass(runtime.getObjectClass()));
 
         scope.define(MTSymbol.intern("x"),zero);
 
@@ -289,12 +291,12 @@ public final class ControlFlowRegressionTests {
 
         MTLexer lexer = new MTLexer(source);
         MTParser parser = new MTParser(lexer.tokenize());
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
-        MTScope scope = new MTScope(null);
+        MTScope scope = new MTScope(runtime, null);
 
         MTInteger zero = new MTInteger(0);
-        zero.setClazz(MTKernelBootstrap.createIntegerClass());
+        zero.setClazz(MTKernelBootstrap.createIntegerClass(runtime.getObjectClass()));
         scope.define(MTSymbol.intern("x"), zero);
 
         assertResult(source,
@@ -315,12 +317,12 @@ public final class ControlFlowRegressionTests {
 
         MTLexer lexer = new MTLexer(source);
         MTParser parser = new MTParser(lexer.tokenize());
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
-        MTScope scope = new MTScope(null);
+        MTScope scope = new MTScope(runtime,null);
 
         MTInteger zero = new MTInteger(0);
-        zero.setClazz(MTKernelBootstrap.createIntegerClass());
+        zero.setClazz(MTKernelBootstrap.createIntegerClass(runtime.getObjectClass()));
         scope.define(MTSymbol.intern("x"), zero);
 
         assertResult(source,
@@ -347,12 +349,12 @@ public final class ControlFlowRegressionTests {
 
         MTLexer lexer = new MTLexer(source);
         MTParser parser = new MTParser(lexer.tokenize());
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
-        MTScope scope = new MTScope(null);
+        MTScope scope = new MTScope(runtime,null);
 
         MTInteger zero = new MTInteger(0);
-        zero.setClazz(MTKernelBootstrap.createIntegerClass());
+        zero.setClazz(MTKernelBootstrap.createIntegerClass(runtime.getObjectClass()));
         scope.define(MTSymbol.intern("x"), zero);
 
         assertResult(source,
@@ -380,12 +382,12 @@ public final class ControlFlowRegressionTests {
 
         MTLexer lexer = new MTLexer(source);
         MTParser parser = new MTParser(lexer.tokenize());
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
-        MTScope scope = new MTScope(null);
+        MTScope scope = new MTScope(runtime,null);
 
         MTInteger zero = new MTInteger(0);
-        zero.setClazz(MTKernelBootstrap.createIntegerClass());
+        zero.setClazz(MTKernelBootstrap.createIntegerClass(runtime.getObjectClass()));
         scope.define(MTSymbol.intern("x"), zero);
 
         assertResult(source,
@@ -406,11 +408,11 @@ public final class ControlFlowRegressionTests {
 
         MTLexer lexer = new MTLexer(source);
         MTParser parser = new MTParser(lexer.tokenize());
-        MTInterpreter interpreter = new MTInterpreter();
-        MTScope scope = new MTScope(null);
+        MTInterpreter interpreter = new MTInterpreter(runtime);
+        MTScope scope = new MTScope(runtime,null);
 
         MTInteger zero = new MTInteger(0);
-        zero.setClazz(MTKernelBootstrap.createIntegerClass());
+        zero.setClazz(MTKernelBootstrap.createIntegerClass(runtime.getObjectClass()));
         scope.define(MTSymbol.intern("x"),zero);
 
         assertResult(source,
@@ -439,12 +441,12 @@ public final class ControlFlowRegressionTests {
 
         MTLexer lexer = new MTLexer(source);
         MTParser parser = new MTParser(lexer.tokenize());
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
-        MTScope scope = new MTScope(null);
+        MTScope scope = new MTScope(runtime,null);
 
         MTInteger zero = new MTInteger(0);
-        zero.setClazz(MTKernelBootstrap.createIntegerClass());
+        zero.setClazz(MTKernelBootstrap.createIntegerClass(runtime.getObjectClass()));
 
         scope.define(MTSymbol.intern("x"),zero);
 

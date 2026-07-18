@@ -8,11 +8,15 @@ public final class MTKernelBootstrap {
     private MTKernelBootstrap() {
     }
 
-    public static MTClass createIntegerClass() {
+    public static MTClass createIntegerClass(MTClass superclass) {
 
         MTClass integerClass =
                 new MTClass(
                         MTSymbol.intern("Integer"));
+
+        integerClass.setSuperclass(superclass);
+        MTClass classClass = superclass.getClazz();
+        integerClass.setClazz(classClass);
 
         PrimitiveInstaller.install(
             integerClass,

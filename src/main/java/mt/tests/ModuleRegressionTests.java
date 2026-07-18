@@ -14,6 +14,8 @@ import static mt.tests.TestUtils.assertResult;
 
 public final class ModuleRegressionTests {
 
+    private static final MTRuntime runtime = MTRuntimeBootstrap.bootstrap();
+
     private ModuleRegressionTests() {
     }
 
@@ -107,12 +109,12 @@ private static void testModuleExecution() {
                     lexer.tokenize());
 
     MTInterpreter interpreter =
-            new MTInterpreter();
+            new MTInterpreter(runtime);
 
     MTObject result =
             interpreter.evaluate(
                     parser.parse(),
-                    new MTScope(null));
+                    new MTScope(runtime, null));
 
     assertResult(
             "42",

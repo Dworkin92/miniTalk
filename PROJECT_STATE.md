@@ -1,802 +1,362 @@
-\# MiniTalk - Project State
+# MiniTalk - Project State
 
+Last update: beta5
 
-
-Last update: 2025-07-05
-
-
-
-\## Vision
-
-
+## Vision
 
 MiniTalk est un langage de scripting orienté objet inspiré de Smalltalk.
 
-
-
 Objectifs :
 
+- syntaxe simple et lisible
+- environnement de scripting plus agréable que le shell
+- accès progressif à l'écosystème Java
+- apprentissage des techniques d'implémentation des langages
 
+---
 
-\- syntaxe simple et lisible
+# État actuel du projet
 
-\- environnement de scripting plus agréable que le shell
-
-\- accès progressif à l'écosystème Java
-
-\- apprentissage des techniques d'implémentation des langages
-
-
-
-\---
-
-
-
-\# État du projet
-
-
-
-\## Lexer
-
-
+## Front-end
 
 Implémenté :
 
-
-
-\- Integer literals
-
-\- String literals
-
-\- Boolean literals
-
-\- nil
-
-\- Variables
-
-\- Assignments (:=)
-
-\- Binary selectors
-
-\- Block syntax
-
-\- Temporaries
-
-\- Comments
-
-\- META directives
-
-
-
-META support :
-
-
-
-```smalltalk
-
-/\*
-
-@module Core;
-
-@import Collections;
-
-\*/
-
-```
-
-
-
-Tokens spécifiques :
-
-
-
-\- LCO\*MENT
-
-\- RCOMMENT
-
-\- META
-
-
-
-\---
-
-
-
-\##\*Parser
-
-
-
-Implémenté :
-
-
-
-\### Expressi\*ns
-
-
-
-\- Variables
-
-\- Assignments
-
-\- Se\*uences
-
-\- Parent\*esized expressions
-
-
-
-\### Messages
-
-
-
-\* Unary messages
-
-
-
-```small\*alk
-
-\[42] value
-
-```
-
-
-
-\- Binary messa\*es
-
-
-
-```smalltalk
-
-3 + 4
-
-```
-
-
-
-\- Keyw\*rd messages
-
-
-
-```smalltalk
-
-true\*ifTrue: \[42]
-
-```
-
-
-
-\### Blocks
-
-
-
-\- pa\*ameters\*
-
-```smalltalk
-
-\[:x :y | ...]
-
-```
-
-
-
-\-\*temporaries\*
-
-```smalltalk
-
-\[
-
-&#x20;  \*| z |
-
-]
-
-```
-
-
-
-\### Control\*flow syntax
-
-
-
-\- ifTrue:
-
-\- ifFalse:
-
-\* if\*rue:ifFalse:
-
-\- whileTrue:
-
-\- whileF\*lse:
-
-\- to:do:
-
-
-
-\### Returns
-
-
-
-```sma\*ltalk
-
-^42\*```
-
-
-
-\### META directives
-
-
-
-Parser i\*terpre\*s:
-
-
-
-```smalltalk
-
-@module\*Name;
-
-@import OtherModule;
-
-```
-
-
-
-\*vailable\*through:
-
-
-
-```java
-
-parser.get\*odule\*ame()
-
-parser.getImports()
-
-```
-
-
-
-\---\*
-
-\## Runtime
-
-
-
-Implemented :
-
-
-
-\### Ob\*ects
-
-
-
-\- MTObject
-
-\- MTClass
-
-\- MTInt\*ger
-
-\- MTBoolean
-
-\- MTString
-
-\- MTArr\*y
-
-\- MTDictionary
-
-\- MTNil
-
-
-
-\### Scop\*s
-
-
-
-\- lexical\*scope chain
-
-\- captured\*scopes\*
-
-\### Closures
-
-
-
-Supported.
-
-
-
-Example\*:
-
-
-
-```smalltalk
-
-\[:x |
-
-&#x20;   \[:y |
-
-&#x20; \*     (x + y) \* factor
-
-&#x20;   ]
-
-]
-
-```
-
-\*### Non\*Local Returns
-
-
-
-Implemented using :\*
-
-```java
-
-MTNonLocalReturnException\*```
-
-
-
-Supports genuine\*Smalltalk-style non-local return.
-
-\*---
-
-
-
-\## Integer primitives
-
-
-
-Implem\*nted :
-
-
-
-```\*mall\*alk
-
-\+
-
-\-
-
-\*
-
-/
-
-%
-
-=
-
-<>
-
-<
-
->
-
-\~<
-
->\~
-
-```
-
-
-
-\*liases :
-
-
-
-```smalltalk
-
-==
-
-!=
-
-\*=
-
->=
-
-```
-
-
-
-\---
-
-
-
-\## Boolean primitiv\*s
-
-
-
-Implemented :
-
-
-
-```small\*alk
-
-not
-
-and:
-
-or:
-
-xor:
-
-```
-
-
-
-\---
-
-
-
-\##\*Control Flow
-
-
-
-Implemented :
-
-
-
-```sm\*ll\*alk
-
-ifTrue:
-
-ifFalse:
-
-ifTrue\*ifFalse:
-
-
-
-whileTrue:
-
-whileFalse:
-
-
-
-\*o:do:
-
-```
-
-
-
-Behaviour :
-
-
-
-```\*malltalk
-
-1 to\* 5 do: \[...]
-
-```
-
-
-
-and
-
-
-
-```smalltal\*
-
-5\*to: 1 do: \[...]
-
-```
-
-
-
-are both\*supported.
-
-
-
-Descending iterations\*automatically use a step of -1.
-
-
-
-\-\*-
-
-
-
-\## Module System
-
-
-
-Partially imp\*emented.
-
-
-
-Supported syntax :
-
-
-
-```s\*alltalk
-
-/\*
-
-@module Core;
-
-@import C\*llections;
-
-\*/
-
-```
-
-
-
-Current capabil\*ties :
-
-
-
-\- parser extracts module n\*me
-
-\- parser extracts imports
-
-
-
-Not \*et implemented :
-
-
-
-\- module loader
-
-\* dependency resolution
-
-\- import ex\*cution
-
-
-
-\---
-
-
-
-\## File Execution
-
-
-
-Im\*lemented.
-
-
-
-Example :
-
-
-
-```powershel\*
-
-java -\*ar miniTalk.jar fibonacci.mt
-
-```
-
-
-
-\*cripts are loaded through:
-
-
-
-```jav\*
-
-MTLoader
-
-```
-
-
-
-\*ipeline :
-
-
-
-```text
+- Lexer opérationnel
+- Parser opérationnel
+- AST opérationnel
+- Interpréteur AST opérationnel
+- MTLoader
+- Exécution directe de fichiers .mt
+
+Pipeline actuel :
 
 File
+ -> Lexer
+ -> Parser
+ -> AST
+ -> Interpreter
 
-&#x20;-> Lexer
+---
 
-\*-> Parser
+## Littéraux
 
-&#x20;-> Interpreter
+Supportés :
 
-```
+- Integer
+- String
+- Boolean
+- nil
 
+---
 
+## Variables et affectations
 
-\---\*
+Supportées :
 
-\## Examples
+- variables
+- affectations (:=)
+- séquences
+- portée lexicale
 
+---
 
+## Messages
 
-Currently working :
+### Unary messages
 
-\*```text\*\*xamples/
+Exemple :
 
-&#x20;   fibonacci.mt
+    [42] value
 
-&#x20;   clos\*res.mt
+### Binary messages
 
-&#x20;   closureCounter.mt
+Exemple :
 
-&#x20;   n\*stedClosure.mt
+    3 + 4
 
-```
+### Keyword messages
 
+Exemple :
 
+    true
+        ifTrue: [42]
+        ifFalse: [99]
 
-Results :
+---
 
+## Blocks
 
+Supportés :
 
-```\*ext
+- blocs sans arguments
+- blocs à paramètres
+- temporaires
+- value
+- value:
+- value:value:
+- valueArray:
 
-fibonacci.mt
+Exemple :
 
-\-> 55
+    [:x :y | x + y]
 
+---
 
+## Closures
 
-closures.m\*
+Support complet :
 
-\-> 60
+- capture lexicale
+- mutation de variables capturées
+- closures imbriquées
 
+Exemple validé :
 
+    ([:x |
+        [:y |
+            (x + y) * factor
+        ]
+    ] value: 10) value: 20
 
-closureCounter.mt
+Résultat :
 
-\-> 3
+    90
 
+---
 
+## Non Local Return
 
-ne\*tedClosure.mt
+Supporté.
 
-\-> 90
+Exemple :
 
-```
+    ^42
 
+Implémentation :
 
+- MTNonLocalReturnException
 
-\---
+---
 
+## Contrôle de flux
 
+Implémenté :
 
-\# Kn\*wn Issues
+- ifTrue:
+- ifFalse:
+- ifTrue:ifFalse:
+- whileTrue:
+- whileFalse:
+- to:do:
 
+Les itérations croissantes et décroissantes fonctionnent.
 
+---
 
-\## Bootstrap
+## META directives
 
+Supportées par le lexer et le parser.
 
+Syntaxe :
 
-Runtime b\*otstrap and kernel bootstrap are n\*t fully unified.
+    /*
+    @module Core;
+    @import Collections;
+    */
 
+Le parser extrait :
 
+- moduleName
+- imports
 
-Current concern\*
+API actuelle :
 
+- parser.getModuleName()
+- parser.getImports()
 
+---
 
-\- Object\*exists in runtime bootstrap
+## Runtime
 
-\- Inte\*er\*Boolean/String are still created s\*parately
+Objets principaux :
 
+- MTObject
+- MTClass
+- MTMetaclass
+- MTInteger
+- MTBoolean
+- MTString
+- MTArray
+- MTDictionary
+- MTNil
+- MTBlock
+- MTScope
 
+---
 
-Consequence:
+## Primitives disponibles
 
+### Integer
 
+- +
+- -
+- *
+- /
+- %
+- =
+- <>
+- <
+- >
+- ~<
+- >~
 
-```smallta\*k
+Alias :
 
-42 println
+- ==
+- !=
+- <=
+- >=
 
-```
+### Boolean
 
+- not
+- and:
+- or:
+- xor:
 
+### String
 
-currently fails\*because\*classes are not yet connected to O\*ject through superclass relationsh\*ps.
+- size
+- +
+- =
 
+### Dictionary
 
+- at:
+- at:put:
+- includesKey:
+- size
 
-A future bootstrap refactorin\* is required.
+---
 
+## Tests
 
+Réorganisés en modules :
 
-\---
+- ParserRegressionTests
+- BlockRegressionTests
+- PrimitiveRegressionTests
+- ControlFlowRegressionTests
+- ModuleRegressionTests
+- NonLocalReturnRegressionTests
 
+Utilitaire commun :
 
+- TestUtils.assertResult(...)
 
-\# Testing
+---
 
+## Exécution de scripts
 
+Commande validée :
 
-Reg\*ession tests split into modules :
+    java -jar miniTalk-2.0.0.jar exemples/fibonacci.mt
 
-\*```text
+Exemples validés :
 
-ParserRegressionTests
+- fibonacci.mt -> 55
+- closures.mt -> 60
+- closureCounter.mt -> 3
+- nestedClosure.mt -> 90
 
-Bloc\*RegressionTests
+MiniTalk exécute désormais des fichiers .mt hors des tests Java.
 
-PrimitiveRegressio\*Tests
+---
 
-ControlFlowRegressionTests
+# Bootstrap objet
 
-M\*duleRegressionTests
+## Situation actuelle
 
-NonLocalReturn\*egressionTests
+Le carré magique existe :
 
-```
+- Object
+- Class
+- ObjectClass
+- ClassClass
 
+Relations :
 
+- Object superclass = null
+- Class superclass = Object
+- ObjectClass superclass = ClassClass
+- ClassClass superclass = ObjectClass
 
-Common helper \*
+---
 
+## Dette technique identifiée
 
+Le bootstrap noyau et le runtime ne sont pas encore totalement unifiés.
 
-```java
+Les classes :
 
-TestUtils.assertResult(.\*.)
+- Integer
+- Boolean
+- String
+- Array
+- Dictionary
+- Block
 
-```
+sont encore créées indépendamment via MTKernelBootstrap.
 
+L'interpréteur utilise encore des appels du type :
 
+    MTKernelBootstrap.createIntegerClass();
 
-\---
+lors de l'évaluation des littéraux.
 
+Conséquence :
 
+Les classes métier ne semblent pas encore réellement rattachées à Object par héritage.
 
-\# Immediate Next Step\*
+Exemple révélateur :
 
+    42 println
 
+échoue actuellement avec :
 
-Priority 1
+    Unknown selector: #println
 
+alors que println est installé sur Object.
 
+---
 
-\- Complete bootstrap\*hierarchy
+# Priorités de la prochaine étape
 
-\- Connect Integer/Boolea\*/String/Array/Dictionary to Object\*- Make Object-level primitives inh\*rited
+1. Audit du bootstrap
+2. Unification Runtime / Kernel
+3. Raccordement :
 
+   - Integer -> Object
+   - Boolean -> Object
+   - String -> Object
+   - Array -> Object
+   - Dictionary -> Object
+   - Block -> Object
 
+4. Remplacement progressif des createXXXClass() dans l'interpréteur par l'utilisation des classes enregistrées dans MTRuntime.
 
-Priority 2
+5. Validation finale avec :
 
+    42 println
 
+---
 
-\- ObjectPrimiti\*es
+# Version
 
-&#x20;   - print
+Tag recommandé :
 
-&#x20;   - println
+    beta5
 
+Jalon majeur :
 
-
-Prio\*ity 3
-
-
-
-\- Module loader
-
-\- Import re\*olution
-
-\- Dependency tracking
-
-
-
-Pri\*rity 4
-
-
-
-\- Library loading at start\*p
-
-
-
-\---
-
-
-
-\# Long-Term Ideas
-
-
-
-\- REPL
-
-\* Standard library
-
-\- Java bridge
-
-\- \*elf / Super
-
-\- User-defined classes\*- Coroutines
-
-\- Multitasking
-
-\- Shar\*d object synchronization
-
+MiniTalk est maintenant capable d'exécuter des scripts .mt réels depuis la ligne de commande.

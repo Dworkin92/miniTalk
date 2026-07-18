@@ -80,6 +80,7 @@ public class MTBlock
 
         MTScope activationScope =
                 new MTScope(
+                        capturedScope.runtime(),
                         capturedScope);
 
         activationScope.setHomeBlock(homeBlock);
@@ -117,7 +118,7 @@ public class MTBlock
             createActivationScope(
                     arguments);
 
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(activationScope.getRuntime());
 
         /*
          * L'AST n'est pas encore execute.

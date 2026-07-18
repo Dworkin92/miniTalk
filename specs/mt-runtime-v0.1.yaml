@@ -23,6 +23,8 @@ principles:
 
   dynamicClassEvolution: true
 
+  prefix for most of the class : MT
+
 ##############################################################################
 # BOOTSTRAP OBJECT GRAPH
 ##############################################################################
@@ -35,15 +37,17 @@ bootstrap:
 
     superclass: null
 
-    class: ObjectClass
+    metaclass: ObjectClass
 
-  Class:
+
+  Class (#Class):
 
     runtimeType: MTClass
 
     superclass: Object
 
-    class: ClassClass
+    metaclass: ClassClass
+
 
   ObjectClass:
 
@@ -51,7 +55,7 @@ bootstrap:
 
     superclass: ClassClass
 
-    class: ClassClass
+    metaclass: ClassClass
 
   ClassClass:
 
@@ -59,7 +63,7 @@ bootstrap:
 
     superclass: ObjectClass
 
-    class: ClassClass
+    metaclass: ClassClass
 
 ##############################################################################
 # ROOT OBJECT

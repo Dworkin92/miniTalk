@@ -4,7 +4,12 @@ import mt.tests.RuntimeRegressionTests;
 
 import mt.debug.MTDebug;
 import java.nio.file.Path;
-import mt.runtime.*;
+//import mt.runtime.*;
+import mt.runtime.MTObject;
+import mt.runtime.MTScope;
+import mt.runtime.MTLoader;
+import mt.runtime.MTRuntime;
+import mt.runtime.bootstrap.MTRuntimeBootstrap;
 
 public class Main {
 
@@ -30,12 +35,14 @@ public class Main {
             }
         }
 
+        MTRuntime runtime = MTRuntimeBootstrap.bootstrap();
+
         if (needsRegTests) {
             RuntimeRegressionTests.runAll();
         }
         else {
-            MTScope global = new MTScope(null);
-            MTLoader loader = new MTLoader(global);
+            MTScope global = new MTScope(runtime, null);
+            MTLoader loader = new MTLoader(runtime,global);
             MTObject result = loader.loadFile(Path.of(myMtFile));
 
             System.out.println(result);

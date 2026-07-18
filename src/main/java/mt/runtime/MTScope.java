@@ -2,27 +2,38 @@ package mt.runtime;
 
 import mt.exceptions.MTRuntimeException;
 
-public class MTScope
-        extends MTObject {
+public class MTScope extends MTObject {
 
     private final MTScope parent;
+
+    private final MTRuntime runtime;
 
     private final MTDictionary bindings;
 
     private MTBlock homeBlock;
 
     public MTScope(
+            MTRuntime runtime,
             MTScope parent) {
 
         this.parent = parent;
 
-        this.bindings =
-                new MTDictionary();
+        this.runtime = runtime;
+
+        this.bindings = new MTDictionary();
     }
 
     public MTScope parent() {
 
         return parent;
+    }
+
+    public MTRuntime getRuntime() {
+        return runtime;
+    }
+
+    public MTRuntime runtime() {
+        return runtime;
     }
 
     public void define(

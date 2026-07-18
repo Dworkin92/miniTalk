@@ -14,6 +14,8 @@ import static mt.tests.TestUtils.assertResult;
 
 public final class NonLocalReturnRegressionTests {
 
+    private static final MTRuntime runtime = MTRuntimeBootstrap.bootstrap();
+
     private NonLocalReturnRegressionTests() {
     }
 
@@ -52,12 +54,12 @@ public final class NonLocalReturnRegressionTests {
 
         MTBlockNode blockNode = new MTBlockNode(new MTArray(),body);
 
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         MTBlock block = (MTBlock)
             interpreter.evaluate(
                     blockNode,
-                    new MTScope(null));
+                    new MTScope(runtime, null));
 
         assertResult("[ ^42 ]",
             block.value());
@@ -79,10 +81,10 @@ public final class NonLocalReturnRegressionTests {
 
         MTBlockNode blockNode = new MTBlockNode(new MTArray(), body);
 
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         MTBlock block = (MTBlock)interpreter.evaluate(
-                    blockNode, new MTScope(null));
+                    blockNode, new MTScope(runtime, null));
 
         System.out.println(source + " ==> " + block.value());
     }
@@ -90,7 +92,7 @@ public final class NonLocalReturnRegressionTests {
     private static void testNonLocalReturnSkipsAssignment() {
         System.out.println("=== Non Local Return Skips Assignment test ===");
 
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         String source = """
             x := 0
@@ -99,7 +101,7 @@ public final class NonLocalReturnRegressionTests {
               x <- 999.
             ] value.
             """;
-        MTScope global = new MTScope(null);
+        MTScope global = new MTScope(runtime, null);
         MTInteger zero = new MTInteger(0);
         zero.setClazz(integerClass);
         global.define(MTSymbol.intern("x"),zero);
@@ -112,7 +114,7 @@ public final class NonLocalReturnRegressionTests {
 
         MTBlockNode blockNode = new MTBlockNode(new MTArray(), body);
 
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         MTBlock block = (MTBlock)interpreter.evaluate(
                     blockNode, global);
@@ -128,9 +130,9 @@ public final class NonLocalReturnRegressionTests {
     private static void testNonLocalReturnCapturedVariable() {
         System.out.println("=== Non Local Return Captured Variable test ===");
 
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
-        MTScope global = new MTScope(null);
+        MTScope global = new MTScope(runtime, null);
         MTInteger value = new MTInteger(123);
         value.setClazz(integerClass);
         global.define(MTSymbol.intern("x"), value);
@@ -143,7 +145,7 @@ public final class NonLocalReturnRegressionTests {
         MTBlockNode blockNode = new MTBlockNode(
             new MTArray(),body);
 
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         MTBlock block = (MTBlock)interpreter.evaluate(
             blockNode, global);

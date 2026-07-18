@@ -13,6 +13,8 @@ import static mt.tests.TestUtils.assertResult;
 
 public final class PrimitiveRegressionTests {
 
+    private static final MTRuntime runtime = MTRuntimeBootstrap.bootstrap();
+
     private PrimitiveRegressionTests() {
     }
 
@@ -52,7 +54,7 @@ public final class PrimitiveRegressionTests {
 
     private static void testIntegerAddition() {
         System.out.println("=== Integer addition ===");
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -69,7 +71,7 @@ public final class PrimitiveRegressionTests {
 
     private static void testIntegerSubtraction() {
         System.out.println("=== Integer subtraction ===");
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -86,7 +88,7 @@ public final class PrimitiveRegressionTests {
 
     private static void testIntegerMultiplication() {
         System.out.println("=== Integer multiplication ===");
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -103,7 +105,7 @@ public final class PrimitiveRegressionTests {
 
     private static void testIntegerDivision() {
         System.out.println("=== Integer division ===");
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -120,7 +122,7 @@ public final class PrimitiveRegressionTests {
 
     private static void testIntegerModulo() {
         System.out.println("=== Integer modulo ===");
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -137,7 +139,7 @@ public final class PrimitiveRegressionTests {
 
     private static void testIntegerEquals() {
         System.out.println("=== Integer Equals ===");
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -154,7 +156,7 @@ public final class PrimitiveRegressionTests {
 
     private static void testIntegerDifferentFrom() {
         System.out.println("=== Integer Different from ===");
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -172,7 +174,7 @@ public final class PrimitiveRegressionTests {
 
     private static void testIntegerLessThan() {
         System.out.println("=== Integer Less than ===");
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -189,7 +191,7 @@ public final class PrimitiveRegressionTests {
 
     private static void testIntegerGreaterThan() {
         System.out.println("=== Integer Greater than ===");
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -206,7 +208,7 @@ public final class PrimitiveRegressionTests {
 
     private static void testIntegerLessOrEqual() {
         System.out.println("=== Integer Less or Equal to ===");
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -224,7 +226,7 @@ public final class PrimitiveRegressionTests {
 
     private static void testIntegerGreaterOrEqual() {
         System.out.println("=== Integer Greter or Equal to ===");
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);

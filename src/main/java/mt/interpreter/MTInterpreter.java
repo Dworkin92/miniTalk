@@ -8,13 +8,20 @@ import mt.exceptions.MTRuntimeException;
 
 public class MTInterpreter {
 
+    private final MTRuntime runtime;
+
+    public MTInterpreter(MTRuntime runtime) {
+        this.runtime = runtime;
+    }
+
     public MTObject evaluate(
             MTNode node,
             MTScope scope) {
 
         if (node instanceof MTIntegerLiteralNode n) {
             MTClass integerClass =
-                MTKernelBootstrap.createIntegerClass();
+                runtime.classNamed("Integer");
+                //MTKernelBootstrap.createIntegerClass();
 
             MTInteger value = new MTInteger(n.getValue());
 
@@ -43,8 +50,7 @@ public class MTInterpreter {
 
         if (node instanceof MTStringLiteralNode n) {
 
-            MTClass stringClass =
-                MTKernelBootstrap.createStringClass();
+            MTClass stringClass = MTKernelBootstrap.createStringClass();
 
             MTString result = new MTString(n.getValue());
 

@@ -13,61 +13,84 @@ public final class MTRuntimeBootstrap {
         /*
          * Construction brute
          */
-        MTClass objectClass =
-                new MTClass(
-                        MTSymbol.intern("Object"));
 
-        MTClass classClass =
-                new MTClass(
-                        MTSymbol.intern("Class"));
+        MTRuntime runtime = bootstrapCore();
 
-        MTMetaclass objectMetaclass =
-                new MTMetaclass(
-                        MTSymbol.intern("ObjectClass"));
+        bootstrapFirstClasses(runtime);
 
-        MTMetaclass classMetaclass =
-                new MTMetaclass(
-                        MTSymbol.intern("ClassClass"));
+        bootstrapPrimitives(runtime);
 
+        return runtime;
+    }
 
-        MTRuntime runtime =
-                new MTRuntime(
-                    objectClass,
-                    classClass,
-                    objectMetaclass,
-                    classMetaclass);
+    private static MTRuntime bootstrapCore() {
+
+        MTClass objectClass = new MTClass(
+                MTSymbol.intern("Object"));
+
+        MTClass classClass = new MTClass(
+                MTSymbol.intern("Class"));
+
+        MTMetaclass objectMetaclass = new MTMetaclass(
+                MTSymbol.intern("ObjectClass"));
+
+        MTMetaclass classMetaclass = new MTMetaclass(
+                MTSymbol.intern("ClassClass"));
+
+        MTRuntime runtime = new MTRuntime(
+                objectClass,
+                classClass,
+                objectMetaclass,
+                classMetaclass);
 
         /*
-         * Relier la hierarchie
+         * Héritage
          */
 
-        objectClass.setSuperclass(
-                null);
+        objectClass.setSuperclass(null);
 
-        classClass.setSuperclass(
-                objectClass);
+        classClass.setSuperclass(objectClass);
 
-        objectMetaclass.setSuperclass(
-                classMetaclass);
+        objectMetaclass.setSuperclass(classMetaclass);
 
-        classMetaclass.setSuperclass(
-                objectMetaclass);
+        classMetaclass.setSuperclass(objectMetaclass);
+        //classMetaclass.setSuperclass(classMetaclass);
 
         /*
-         * Relier les classes
+         * Instance-of
          */
 
-        objectClass.setClazz(
-                objectMetaclass);
+        /*
+        objectClass.setClazz(objectMetaclass);
 
-        classClass.setClazz(
-                classMetaclass);
+        classClass.setClazz(classMetaclass);
 
-        objectMetaclass.setClazz(
-                classMetaclass);
+        objectMetaclass.setClazz(classMetaclass);
 
-        classMetaclass.setClazz(
-                classMetaclass);
+        classMetaclass.setClazz(classMetaclass);
+        */
+
+        objectClass.setClazz(classClass);
+
+        classClass.setClazz(classClass);
+
+        objectMetaclass.setClazz(classMetaclass);
+
+        classMetaclass.setClazz(classMetaclass);
+
+        /*
+         * Classe -> métaclasse associée
+         */
+
+        objectClass.setMetaclass(objectMetaclass);
+
+        classClass.setMetaclass(classMetaclass);
+
+        objectMetaclass.setMetaclass(classMetaclass);
+
+        classMetaclass.setMetaclass(classMetaclass);
+
+
 
 
         runtime.registerClass(objectClass);
@@ -78,35 +101,41 @@ public final class MTRuntimeBootstrap {
 
         runtime.registerClass(classMetaclass);
 
-
-        runtime.registerClass(
-            MTKernelBootstrap.createIntegerClass());
-
-        runtime.registerClass(
-            MTKernelBootstrap.createBooleanClass());
-
-        runtime.registerClass(
-            MTKernelBootstrap.createStringClass());
-
-        runtime.registerClass(
-            MTKernelBootstrap.createArrayClass());
-
-        runtime.registerClass(
-            MTKernelBootstrap.createDictionaryClass());
-
-
-        /* installer les primitives pour MTObject */
-        PrimitiveInstaller.install(
-            objectClass,
-            ObjectPrimitives.class);
-
-        /*
-        return new MTRuntime(
-                objectClass,
-                classClass,
-                objectMetaclass,
-                classMetaclass);
-        */
         return runtime;
+    }
+
+    private static void bootstrapFirstClasses(MTRuntime runtime) {
+
+        MTClass objectClass = runtime.getObjectClass();
+
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(objectClass);
+        integerClass.setSuperclass(objectClass);
+        runtime.registerClass(integerClass);
+
+        MTClass booleanClass = MTKernelBootstrap.createBooleanClass();
+        booleanClass.setSuperclass(objectClass);
+        runtime.registerClass(booleanClass);
+
+        MTClass stringClass = MTKernelBootstrap.createStringClass();
+        stringClass.setSuperclass(objectClass);
+        runtime.registerClass(stringClass);
+
+        MTClass arrayClass = MTKernelBootstrap.createArrayClass();
+        arrayClass.setSuperclass(objectClass);
+        runtime.registerClass(arrayClass);
+
+        MTClass dictionaryClass = MTKernelBootstrap.createDictionaryClass();
+        dictionaryClass.setSuperclass(objectClass);
+        runtime.registerClass(dictionaryClass);
+
+        MTClass blockClass = MTKernelBootstrap.createBlockClass();
+        blockClass.setSuperclass(objectClass);
+        runtime.registerClass(blockClass);
+    }
+
+    private static void bootstrapPrimitives(MTRuntime runtime) {
+        PrimitiveInstaller.install(
+            runtime.getObjectClass(),
+            ObjectPrimitives.class);
     }
 }

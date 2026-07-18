@@ -14,6 +14,8 @@ import static mt.tests.TestUtils.assertResult;
 
 public final class ParserRegressionTests {
 
+    private static final MTRuntime runtime = MTRuntimeBootstrap.bootstrap();
+
     private ParserRegressionTests() {
     }
 
@@ -59,7 +61,7 @@ public final class ParserRegressionTests {
 
         MTNode ast = parser.parse();
 
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         assertResult("42",interpreter.evaluate(ast,null));
     }
@@ -77,12 +79,12 @@ public final class ParserRegressionTests {
 
         MTNode ast = parser.parse();
 
-        MTScope scope = new MTScope(null);
+        MTScope scope = new MTScope(runtime,null);
 
         scope.define(MTSymbol.intern("x"),
                      new MTInteger(123));
 
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         assertResult("x <- 123 (building AST)", interpreter.evaluate(ast, scope));
     }
@@ -101,11 +103,11 @@ public final class ParserRegressionTests {
 
         MTNode ast = parser.parse();
 
-        MTScope scope = new MTScope(null);
+        MTScope scope = new MTScope(runtime, null);
 
         scope.define(MTSymbol.intern("x"), new MTInteger(0));
 
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         assertResult("x := 42", interpreter.evaluate(
                     ast,
@@ -132,13 +134,13 @@ public final class ParserRegressionTests {
 
         MTNode ast = parser.parse();
 
-        MTScope scope = new MTScope(null);
+        MTScope scope = new MTScope(runtime, null);
 
         scope.define(
             MTSymbol.intern("x"),
             new MTInteger(0));
 
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         assertResult("x <- 10. x", interpreter.evaluate(
                     ast, scope));
@@ -155,9 +157,9 @@ public final class ParserRegressionTests {
         MTMessageSendNode send = (MTMessageSendNode) ast;
         System.out.println(send.getSelector());
 
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
         assertResult(source, interpreter.evaluate(
-            ast, new MTScope(null)));
+            ast, new MTScope(runtime, null)));
     }
 
     private static void testParserBinaryMessage() {
@@ -173,9 +175,9 @@ public final class ParserRegressionTests {
 
         MTNode ast = parser.parse();
 
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         assertResult(source, interpreter.evaluate(
                     ast, null));
@@ -193,10 +195,10 @@ public final class ParserRegressionTests {
 
         MTNode ast = parser.parse();
 
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         assertResult(source, interpreter.evaluate(
-                    ast, new MTScope(null)));
+                    ast, new MTScope(runtime, null)));
     }
 
     private static void testParserParentheses() {
@@ -207,7 +209,7 @@ public final class ParserRegressionTests {
         MTDebug.log(lexer.tokenize().toString());
         MTParser parser = new MTParser(lexer.tokenize());
         MTNode ast = parser.parse();
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
         assertResult(source, interpreter.evaluate(ast, null));
 
         source = "(3 + 4) * 5";
@@ -235,10 +237,10 @@ public final class ParserRegressionTests {
         MTDebug.log(lexer.tokenize().toString());
         MTParser parser = new MTParser(lexer.tokenize());
         MTNode ast = parser.parse();
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         try {
-            MTScope scope = new MTScope(null);
+            MTScope scope = new MTScope(runtime, null);
             interpreter.evaluate(ast,scope);
             System.out.println("FAILED");
         }
@@ -256,7 +258,7 @@ public final class ParserRegressionTests {
 
         MTParser parser = new MTParser(lexer.tokenize());
         MTNode ast = parser.parse();
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
         assertResult(source, interpreter.evaluate(
                     ast,null));
 

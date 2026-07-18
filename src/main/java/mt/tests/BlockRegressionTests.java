@@ -15,6 +15,8 @@ import mt.exceptions.MTRuntimeException;
 
 public final class BlockRegressionTests {
 
+    private static final MTRuntime runtime = MTRuntimeBootstrap.bootstrap();
+
     private BlockRegressionTests() {
     }
 
@@ -43,8 +45,8 @@ public final class BlockRegressionTests {
     private static void testBlock() {
         System.out.println("=== Block V4 test ===");
 
-        MTScope global = new MTScope(null);
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTScope global = new MTScope(runtime,null);
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         MTInteger zValue = new MTInteger(100);
         zValue.setClazz(integerClass);
@@ -91,7 +93,7 @@ public final class BlockRegressionTests {
         assertResult("y", activation.lookup(MTSymbol.intern("y")));
         assertResult("z",activation.lookup(MTSymbol.intern("z")));
 
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         /*
         System.out.println(
@@ -120,12 +122,12 @@ public final class BlockRegressionTests {
 
         MTParser parser = new MTParser(lexer.tokenize());
         MTNode ast = parser.parse();
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
-        MTBlock block = (MTBlock)interpreter.evaluate(ast, new MTScope(null));
+        MTBlock block = (MTBlock)interpreter.evaluate(ast, new MTScope(runtime,null));
         System.out.println("nb de parametres ==> " + block.parameterCount());
 
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
         MTInteger value = new MTInteger(123);
         value.setClazz(integerClass);
         MTArray arguments = new MTArray();
@@ -138,7 +140,7 @@ public final class BlockRegressionTests {
         parser = new MTParser(lexer.tokenize());
         ast = parser.parse();
         block = (MTBlock)interpreter.evaluate(
-            ast, new MTScope(null));
+            ast, new MTScope(runtime,null));
         System.out.println("nb de parametres ==> " + block.parameterCount());
 
         MTInteger ten = new MTInteger(10);
@@ -159,11 +161,11 @@ public final class BlockRegressionTests {
         MTLexer lexer = new MTLexer(source);
         MTParser parser = new MTParser(lexer.tokenize());
         MTNode ast = parser.parse();
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         MTBlock block = (MTBlock)interpreter.evaluate(
-                    ast, new MTScope(null));
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+                    ast, new MTScope(runtime,null));
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         MTInteger one = new MTInteger(1);
         one.setClazz(integerClass);
@@ -200,12 +202,12 @@ public final class BlockRegressionTests {
         MTParser parser = new MTParser(lexer.tokenize());
 
         MTNode ast = parser.parse();
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         MTBlock block =(MTBlock)interpreter.evaluate(
-            ast, new MTScope(null));
+            ast, new MTScope(runtime,null));
 
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         MTInteger ten = new MTInteger(10);
         ten.setClazz(integerClass);
@@ -242,12 +244,12 @@ public final class BlockRegressionTests {
             MTParser parser = new MTParser(lexer.tokenize());
 
             MTNode ast = parser.parse();
-            MTInterpreter interpreter = new MTInterpreter();
+            MTInterpreter interpreter = new MTInterpreter(runtime);
 
             MTBlock block = (MTBlock)interpreter.evaluate(
-                ast, new MTScope(null));
+                ast, new MTScope(runtime,null));
 
-            MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+            MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
             MTInteger ten = new MTInteger(10);
             ten.setClazz(integerClass);
@@ -269,8 +271,8 @@ public final class BlockRegressionTests {
     private static void testClosureMutation() {
         System.out.println("=== Closure Mutation test ===");
 
-        MTScope global = new MTScope(null);
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTScope global = new MTScope(runtime,null);
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         MTInteger zero = new MTInteger(0);
         zero.setClazz(integerClass);
@@ -289,7 +291,7 @@ public final class BlockRegressionTests {
 
         MTParser parser = new MTParser(lexer.tokenize());
 
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         MTBlock block = (MTBlock)interpreter.evaluate(parser.parse(), global);
         assertResult( "counter <- 0. [ counter := counter + 1 ]",block.value());
@@ -301,8 +303,8 @@ public final class BlockRegressionTests {
     private static void testClosureWithTemporary() {
         System.out.println("=== Closure With Temporary test ===");
 
-        MTScope global = new MTScope(null);
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTScope global = new MTScope(runtime,null);
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         MTInteger factor = new MTInteger(2);
         factor.setClazz(integerClass);
@@ -324,7 +326,7 @@ public final class BlockRegressionTests {
 
         MTParser parser = new MTParser(lexer.tokenize());
         MTNode ast = parser.parse();
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         MTBlock block = (MTBlock)interpreter.evaluate(ast,global);
 
@@ -340,9 +342,9 @@ public final class BlockRegressionTests {
     private static void testNestedClosure() {
         System.out.println("=== Nested Closure test ===");
 
-        MTScope global = new MTScope(null);
+        MTScope global = new MTScope(runtime,null);
 
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass();
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         MTInteger factor = new MTInteger(3);
         factor.setClazz(integerClass);
@@ -366,7 +368,7 @@ public final class BlockRegressionTests {
 
         MTNode ast = parser.parse();
 
-        MTInterpreter interpreter = new MTInterpreter();
+        MTInterpreter interpreter = new MTInterpreter(runtime);
 
         /*
          * Block externe
@@ -428,8 +430,8 @@ public final class BlockRegressionTests {
 
         MTParser parser = new MTParser(lexer.tokenize());
         MTNode ast = parser.parse();
-        MTInterpreter interpreter = new MTInterpreter();
-        MTScope scope = new MTScope(null);
+        MTInterpreter interpreter = new MTInterpreter(runtime);
+        MTScope scope = new MTScope(runtime,null);
 
         MTBlock block = (MTBlock)interpreter.evaluate(ast, scope);
 

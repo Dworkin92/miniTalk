@@ -24,8 +24,14 @@ MOP
 Bootstrap
 +
 Primitives
++
+Lexer
++
+AST
 ```
-Le lexer, parser et interpréteur AST restent à faire.
+
+La REPL et la gestion des modules restent à développer +
+un grand nombre de méthodes utiles pour les objets
 
 ## 2. MOP (Meta Object Protocol)
 
@@ -69,6 +75,8 @@ Class class = ClassClass
 ObjectClass superclass = ClassClass
 
 ClassClass superclass = ObjectClass
+
+ObjectClass class = ClassClass
 
 ClassClass class = ClassClass
 ```
@@ -224,6 +232,9 @@ Supporte :
 * ajout dynamique
 * rebindProps()
 
+un système d'annotations Java permet de créer rapidement des
+synonymes pour les opérateurs et les messages
+
 Stratégie retenue : migration paresseuse
 
 Après ajout d'une propriété :
@@ -270,12 +281,16 @@ Méthodes :
 -
 *
 /
+%
 =
+!=, <>
 <
 >
-~<
->~
+~<, <=
+>~, >=
 ```
+
+
 
 ### MTString
 Méthodes :
@@ -394,9 +409,6 @@ Collection
 SequenceableCollection
 Set
 Magnitude
-Block
-Scope
-Closure
 ```
 
 ### MOP
@@ -431,27 +443,29 @@ Interpréteur AST
 ### État d'avancement
 Je dirais :
 ```Plain Text
-MOP                ~90%
-Runtime            ~65%
-Bootstrap          ~70%
-Primitives         ~60%
-AST                ~90%
-Blocks/Closures    ~0%
-Parser             ~0%
-Interpréteur AST   ~0%
+MOP                   ~90%
+Runtime               ~75%
+Bootstrap             ~75%
+Primitives            ~60%
+AST                   ~90%
+Blocks/Closures       ~100%
+Parser                ~100%
+Scope                 ~95%
+Closures lexicales    ~100%
+Interpréteur AST      ~100%
+Non-local return(^)   ~100%
+REPL                   0%
+Gestion fichiers      ~50%
+Gestion bibliothèques ~0%
 ```
 
 Le plus gros risque conceptuel (métaclasses + dispatch + propriétés + bootstrap minimal) est maintenant derrière nous.
+mais le bootstrap n'est pas complet ( il manque les metaclass pour le classe hors du quadrant magique)
 
 Le prochain gros sujet sera très probablement :
 ```Plain Text
-MTBlock
-   +
-MTScope
-   +
-Closures lexicales
-   +
-Non-local return (^)
+Bootstrap correct
+chargement de librairies minitalk
+interopérabilité avec Java (exemple, utiliser JDBC pour accéder à des DB)
 ```
 
-car c'est ce qui permettra finalement d'exécuter l'AST.

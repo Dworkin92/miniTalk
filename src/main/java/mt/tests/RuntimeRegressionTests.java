@@ -13,6 +13,7 @@ import mt.tests.*;
 import mt.exceptions.MTRuntimeException;
 
 public final class RuntimeRegressionTests {
+    private static final MTRuntime runtime = MTRuntimeBootstrap.bootstrap();
 
     private RuntimeRegressionTests() {
     }
@@ -100,9 +101,7 @@ MTArray array =
 array.setClazz(
         arrayClass);
 
-MTClass integerClass =
-        MTKernelBootstrap
-                .createIntegerClass();
+MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
 MTInteger one =
         new MTInteger(1);
@@ -271,7 +270,7 @@ System.out.println(
 
 
         MTScope global =
-            new MTScope(null);
+            new MTScope(runtime,null);
 
         global.define(
             MTSymbol.intern("x"),
@@ -282,8 +281,7 @@ System.out.println(
                 MTSymbol.intern("x")));
 
         MTScope child =
-            new MTScope(
-                global);
+            new MTScope(runtime, global);
 
         System.out.println(
             child.lookup(
@@ -324,7 +322,7 @@ System.out.println(
             "=== Interpreter test ===");
 
         MTInterpreter interpreter =
-            new MTInterpreter();
+            new MTInterpreter(runtime);
 
         MTIntegerLiteralNode fortyTwo =
             new MTIntegerLiteralNode(42);
@@ -343,7 +341,7 @@ System.out.println(
                 ageNode,
                 null));
 
-        MTScope scope = new MTScope(null);
+        MTScope scope = new MTScope(runtime, null);
 
         scope.define(
             MTSymbol.intern("x"),
@@ -366,9 +364,9 @@ System.out.println(
         System.out.println(
                 "=== Assignment test ===");
         MTInterpreter interpreter =
-            new MTInterpreter();
+            new MTInterpreter(runtime);
 
-        MTScope scope = new MTScope(null);
+        MTScope scope = new MTScope(runtime, null);
 
         scope.define(
             MTSymbol.intern("x"),
@@ -388,13 +386,13 @@ System.out.println(
             scope.lookup(
                 MTSymbol.intern("x")));
 
-        MTScope global = new MTScope(null);
+        MTScope global = new MTScope(runtime, null);
 
         global.define(
             MTSymbol.intern("x"),
             new MTInteger(10));
 
-        MTScope child = new MTScope(global);
+        MTScope child = new MTScope(runtime, global);
 
         assignNode =
             new MTAssignmentNode(
@@ -417,11 +415,9 @@ System.out.println(
                 "=== Message Send test ===");
 
         MTInterpreter interpreter =
-            new MTInterpreter();
+            new MTInterpreter(runtime);
 
-        MTClass integerClass =
-            MTKernelBootstrap
-                .createIntegerClass();
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         MTIntegerLiteralNode threeL =
             new MTIntegerLiteralNode(3);
@@ -463,9 +459,9 @@ System.out.println(
                 "=== Sequence test ===");
 
         MTInterpreter interpreter =
-            new MTInterpreter();
+            new MTInterpreter(runtime);
 
-        MTScope scope = new MTScope(null);
+        MTScope scope = new MTScope(runtime,null);
 
         scope.define(
             MTSymbol.intern("x"),
@@ -524,10 +520,10 @@ private static void testBlockNode() {
             "=== BlockNode test ===");
 
         MTInterpreter interpreter =
-            new MTInterpreter();
+            new MTInterpreter(runtime);
 
         MTScope scope =
-            new MTScope(null);
+            new MTScope(runtime, null);
 
         scope.define(
             MTSymbol.intern("z"),
@@ -614,13 +610,13 @@ private static void testParserBlock() {
             parser.parse();
 
     MTInterpreter interpreter =
-            new MTInterpreter();
+            new MTInterpreter(runtime);
 
     MTBlock block =
             (MTBlock)
             interpreter.evaluate(
                     ast,
-                    new MTScope(null));
+                    new MTScope(runtime,null));
 
     System.out.println(
             block.value());
@@ -644,7 +640,7 @@ private static void testParserBlock() {
             "=== Parser Boolean/Nil test ===");
 
     MTInterpreter interpreter =
-            new MTInterpreter();
+            new MTInterpreter(runtime);
 
     String source = "true";
 
@@ -694,11 +690,9 @@ private static void testClosureRead() {
             "=== Closure Read test ===");
 
     MTScope global =
-            new MTScope(null);
+            new MTScope(runtime,null);
 
-    MTClass integerClass =
-            MTKernelBootstrap
-                    .createIntegerClass();
+    MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
     MTInteger factor =
             new MTInteger(3);
@@ -727,7 +721,7 @@ private static void testClosureRead() {
                     lexer.tokenize());
 
     MTInterpreter interpreter =
-            new MTInterpreter();
+            new MTInterpreter(runtime);
 
     MTBlock block =
             (MTBlock)
@@ -771,17 +765,15 @@ private static void testDites42() {
                     lexer.tokenize());
 
     MTInterpreter interpreter =
-            new MTInterpreter();
+            new MTInterpreter(runtime);
 
                 MTScope scope =
-            new MTScope(null);
+            new MTScope(runtime,null);
 
     MTInteger zero =
             new MTInteger(0);
 
-    zero.setClazz(
-            MTKernelBootstrap
-                    .createIntegerClass());
+    zero.setClazz(MTKernelBootstrap.createIntegerClass(runtime.getObjectClass()));
 
     scope.define(
             MTSymbol.intern("x"),
