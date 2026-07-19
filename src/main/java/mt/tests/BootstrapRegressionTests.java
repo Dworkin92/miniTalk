@@ -32,6 +32,8 @@ public final class BootstrapRegressionTests {
         testDictionaryClassCreation();
 
         testBlockClassCreation();
+
+        testUserClassCreation();
     }
 
     private static void testIntegerClassCreation() {
@@ -248,5 +250,101 @@ System.out.println("Integer Metaclass class name = " +
             "Block metaclass class",
             "#ClassClass",
             blockClass.getClazz().getClazz().getName().toString());
+    }
+
+    public static void testUserClassCreation() {
+
+    System.out.println(
+        "=== User class creation test ===");
+
+    MTRuntime runtime =
+        MTRuntimeBootstrap.bootstrap();
+
+    MTClass objectClass =
+        runtime.getObjectClass();
+
+    MTClass personClass =
+        new MTClass(
+            MTSymbol.intern("Person"));
+
+    personClass.setSuperclass(
+        objectClass);
+
+    MTMetaclass personMetaclass =
+        new MTMetaclass(
+            MTSymbol.intern("PersonClass"));
+
+    personMetaclass.setSuperclass(
+        (MTClass) objectClass.getClazz());
+
+    personMetaclass.setClazz(
+        runtime.getClassMetaclass());
+
+    personClass.setClazz(
+        personMetaclass);
+
+    System.out.println(
+        "Person class name = "
+        + personClass.getName());
+
+    System.out.println(
+        "Person metaclass name = "
+        + personClass.getClazz().getName());
+
+    System.out.println(
+        "Person metaclass superclass name = "
+        + personClass.getClazz()
+                     .getSuperclass()
+                     .getName());
+
+    System.out.println(
+        "Person metaclass class name = "
+        + personClass.getClazz()
+                     .getClazz()
+                     .getName());
+
+    MTClass employeeClass = new MTClass(
+        MTSymbol.intern("Employee"));
+
+employeeClass.setSuperclass(
+    personClass);
+
+MTMetaclass employeeMetaclass =
+    new MTMetaclass(
+        MTSymbol.intern("EmployeeClass"));
+
+employeeMetaclass.setSuperclass(
+    (MTClass) personClass.getClazz());
+
+employeeMetaclass.setClazz(
+    runtime.getClassMetaclass());
+
+employeeClass.setClazz(
+    employeeMetaclass);
+
+        assertEquals(
+            "Employee class name",
+            "#Employee",
+            employeeClass.getName().toString());
+
+        assertEquals(
+            "Employee metaclass name",
+            "#EmployeeClass",
+            employeeClass.getClazz().getName().toString());
+
+        assertEquals(
+            "Employee class superclass name",
+            "#Person",
+            employeeClass.getSuperclass().getName().toString());
+
+        assertEquals(
+            "Employee metaclass superclass name",
+            "#PersonClass",
+            employeeClass.getClazz().getSuperclass().getName().toString());
+
+        assertEquals(
+            "Employee metaclass class name",
+            "#ClassClass",
+            employeeClass.getClazz().getClazz().getName().toString());
     }
 }

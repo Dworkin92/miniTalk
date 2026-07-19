@@ -224,18 +224,20 @@ Le bootstrap actuel construit :
 
 Relations de superclasse :
 
+```Text
 Object superclass      = null
 Class superclass       = Object
 ObjectClass superclass = ClassClass
 ClassClass superclass  = ObjectClass
+```
 
 Relations de classe :
-
+```Text
 Object class      = ObjectClass
 Class class       = ClassClass
 ObjectClass class = ClassClass
 ClassClass class  = ClassClass
-
+```
 ### Simplification récente du MOP
 
 Le champ :
@@ -264,8 +266,19 @@ Cette simplification n'a provoqué aucune régression connue.
 - Block
 
 Toutes héritent actuellement de :
-
+```Text
 Object
+```
+
+Ces classes ont pour classes, le métaclasses suivants :
+```
+Integer       class -> IntegerClass
+Boolean       class -> BooleanClass
+String        class -> StringClass
+Array         class -> ArrayClass
+Dictionary    class -> DictionaryClass
+Block         class -> BlockClass
+```
 
 et sont enregistrées dans MTRuntime.
 

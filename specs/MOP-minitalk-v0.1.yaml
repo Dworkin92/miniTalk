@@ -120,6 +120,95 @@ inheritance:
     superclass: Object
 
 ##############################################################################
+# METACLASS MODEL
+##############################################################################
+
+metaclassModel:
+
+  everyClassHasMetaclass: true
+
+  examples:
+
+    Object:
+      class: ObjectClass
+
+    Class:
+      class: ClassClass
+
+    Integer:
+      class: IntegerClass
+
+    Boolean:
+      class: BooleanClass
+
+    String:
+      class: StringClass
+
+    Array:
+      class: ArrayClass
+
+    Dictionary:
+      class: DictionaryClass
+
+    Block:
+      class: BlockClass
+
+##############################################################################
+# METACLASS INHERITANCE
+##############################################################################
+
+metaclassInheritance:
+
+  rule: >
+    If class A inherits from class B,
+    then AClass inherits from BClass.
+
+  examples:
+
+    Integer:
+      superclass: Object
+
+    IntegerClass:
+      superclass: ObjectClass
+
+    Boolean:
+      superclass: Object
+
+    BooleanClass:
+      superclass: ObjectClass
+
+##############################################################################
+# METACLASS TYPING
+##############################################################################
+
+metaclassTyping:
+
+  ObjectClass:
+    class: ClassClass
+
+  ClassClass:
+    class: ClassClass
+
+  IntegerClass:
+    class: ClassClass
+
+  BooleanClass:
+    class: ClassClass
+
+  StringClass:
+    class: ClassClass
+
+  ArrayClass:
+    class: ClassClass
+
+  DictionaryClass:
+    class: ClassClass
+
+  BlockClass:
+    class: ClassClass
+
+
+##############################################################################
 # SINGLETONS
 ##############################################################################
 
@@ -141,6 +230,14 @@ singletons:
 classes:
 
   areObjects: true
+
+  everyClassHasAMetaclass: true
+
+  metaclassCreation:
+    automatic: true
+
+  classRelationship:
+    storedIn: clazz
 
   inheritFrom:
     MTObject
