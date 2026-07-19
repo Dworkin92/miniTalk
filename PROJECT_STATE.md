@@ -1,6 +1,6 @@
 # MiniTalk - Project State
 
-Last update: beta5
+Last update: refactor-v2
 
 ## Vision
 
@@ -13,11 +13,9 @@ Objectifs :
 - accès progressif à l'écosystème Java
 - apprentissage des techniques d'implémentation des langages
 
----
+## État actuel du projet
 
-# État actuel du projet
-
-## Front-end
+### Front-end
 
 Implémenté :
 
@@ -31,14 +29,12 @@ Implémenté :
 Pipeline actuel :
 
 File
- -> Lexer
- -> Parser
- -> AST
- -> Interpreter
+-> Lexer
+-> Parser
+-> AST
+-> Interpreter
 
----
-
-## Littéraux
+### Littéraux
 
 Supportés :
 
@@ -46,10 +42,10 @@ Supportés :
 - String
 - Boolean
 - nil
+- Symbol
+- Array
 
----
-
-## Variables et affectations
+### Variables et affectations
 
 Supportées :
 
@@ -58,51 +54,27 @@ Supportées :
 - séquences
 - portée lexicale
 
----
-
-## Messages
-
-### Unary messages
-
-Exemple :
-
-    [42] value
-
-### Binary messages
-
-Exemple :
-
-    3 + 4
-
-### Keyword messages
-
-Exemple :
-
-    true
-        ifTrue: [42]
-        ifFalse: [99]
-
----
-
-## Blocks
+### Messages
 
 Supportés :
 
+- unary messages
+- binary messages
+- keyword messages
+
+### Blocks
+
+Support complet :
+
 - blocs sans arguments
 - blocs à paramètres
-- temporaires
+- variables temporaires
 - value
 - value:
 - value:value:
 - valueArray:
 
-Exemple :
-
-    [:x :y | x + y]
-
----
-
-## Closures
+### Closures
 
 Support complet :
 
@@ -110,35 +82,26 @@ Support complet :
 - mutation de variables capturées
 - closures imbriquées
 
-Exemple validé :
+Exemples validés :
 
-    ([:x |
-        [:y |
-            (x + y) * factor
-        ]
-    ] value: 10) value: 20
+- closureCounter.mt
+- nestedClosure.mt
 
-Résultat :
+### Non Local Return
 
-    90
+Support complet.
 
----
+Syntaxe :
 
-## Non Local Return
-
-Supporté.
-
-Exemple :
-
-    ^42
+^42
 
 Implémentation :
 
 - MTNonLocalReturnException
 
----
+Le retour non local fonctionne à travers plusieurs niveaux de closures.
 
-## Contrôle de flux
+### Contrôle de flux
 
 Implémenté :
 
@@ -151,50 +114,174 @@ Implémenté :
 
 Les itérations croissantes et décroissantes fonctionnent.
 
----
+### META Directives
 
-## META directives
+Supportées :
 
-Supportées par le lexer et le parser.
-
-Syntaxe :
-
-    /*
-    @module Core;
-    @import Collections;
-    */
+- @module
+- @import
 
 Le parser extrait :
 
 - moduleName
 - imports
 
-API actuelle :
+API :
 
-- parser.getModuleName()
-- parser.getImports()
-
----
+parser.getModuleName()
+parser.getImports()
 
 ## Runtime
 
-Objets principaux :
+### Objets principaux
 
 - MTObject
 - MTClass
 - MTMetaclass
-- MTInteger
-- MTBoolean
-- MTString
-- MTArray
-- MTDictionary
-- MTNil
+- MTMethod
+- MTProperty
 - MTBlock
 - MTScope
 
----
+### MTObject
+
+Objet fondamental du système.
+
+Contient :
+
+- objectId
+- clazz
+- propertyValues
+
+Responsabilités :
+
+- réception de messages
+- stockage des propriétés
+- rattachement à une classe
+- dispatch dynamique
+
+Le dispatch repose sur :
+
+receiver.send(...)
+clazz.lookupMethod(...)
+
+### MTClass
+
+Responsabilités :
+
+- création des instances
+- lookup des méthodes
+- gestion des propriétés
+- héritage
+
+Contient :
+
+- name
+- superclass
+- declaredProperties
+- allProperties
+- methods
+
+Les instances sont créées via :
+
+newInstance()
+
+qui rattache automatiquement l'objet à sa classe.
+
+### MTMetaclass
+
+MTMetaclass hérite actuellement de MTClass.
+
+Aucun comportement spécifique supplémentaire n'est encore implémenté.
+
+### MTRuntime
+
+Le runtime conserve :
+
+- Object
+- Class
+- ObjectClass
+- ClassClass
+
+et un registre global des classes.
+
+Services principaux :
+
+- registerClass(...)
+- classNamed(...)
+- createClass(...)
+
+## Bootstrap Objet
+
+### Carré Magique
+
+Le bootstrap actuel construit :
+
+- Object
+- Class
+- ObjectClass
+- ClassClass
+
+Relations de superclasse :
+
+Object superclass      = null
+Class superclass       = Object
+ObjectClass superclass = ClassClass
+ClassClass superclass  = ObjectClass
+
+Relations de classe :
+
+Object class      = ObjectClass
+Class class       = ClassClass
+ObjectClass class = ClassClass
+ClassClass class  = ClassClass
+
+### Simplification récente du MOP
+
+Le champ :
+
+MTClass.metaclass
+
+a été supprimé.
+
+Le système repose désormais uniquement sur :
+
+MTObject.clazz
+
+pour représenter la relation :
+
+instance -> classe
+
+Cette simplification n'a provoqué aucune régression connue.
+
+## Classes noyau actuellement bootstrapées
+
+- Integer
+- Boolean
+- String
+- Array
+- Dictionary
+- Block
+
+Toutes héritent actuellement de :
+
+Object
+
+et sont enregistrées dans MTRuntime.
 
 ## Primitives disponibles
+
+### Object
+
+- print
+- println
+
+### Boolean
+
+- not
+- and:
+- or:
+- xor:
 
 ### Integer
 
@@ -207,22 +294,9 @@ Objets principaux :
 - <>
 - <
 - >
-- ~<
-- >~
-
-Alias :
-
-- ==
-- !=
 - <=
 - >=
-
-### Boolean
-
-- not
-- and:
-- or:
-- xor:
+- !=
 
 ### String
 
@@ -237,126 +311,70 @@ Alias :
 - includesKey:
 - size
 
----
+## Validation récente
 
-## Tests
+Tests validés :
 
-Réorganisés en modules :
+- lexer
+- parser
+- ast
+- blocs
+- closures
+- non local return
+- contrôle de flux
+- modules
+- primitives
+- dictionnaires
+- tableaux
 
-- ParserRegressionTests
-- BlockRegressionTests
-- PrimitiveRegressionTests
-- ControlFlowRegressionTests
-- ModuleRegressionTests
-- NonLocalReturnRegressionTests
+Validation importante :
 
-Utilitaire commun :
+42 println.
 
-- TestUtils.assertResult(...)
+Le message println est correctement trouvé via la chaîne d'héritage jusqu'à Object.
 
----
+## Dette technique restante
 
-## Exécution de scripts
+### Bootstrap
 
-Commande validée :
+- audit complet du graphe des classes
+- identification des classes orphelines
+- finalisation de l'unification Runtime / Kernel
 
-    java -jar miniTalk-2.0.0.jar exemples/fibonacci.mt
+### Bibliothèques
 
-Exemples validés :
+À concevoir :
 
-- fibonacci.mt -> 55
-- closures.mt -> 60
-- closureCounter.mt -> 3
-- nestedClosure.mt -> 90
+- chargement de bibliothèques MiniTalk
+- système d'import avancé
 
-MiniTalk exécute désormais des fichiers .mt hors des tests Java.
+### REPL
 
----
+Non implémentée.
 
-# Bootstrap objet
+### Interop Java
 
-## Situation actuelle
+À concevoir :
 
-Le carré magique existe :
+- accès aux classes Java
+- invocation de méthodes Java
+- accès JDBC
 
-- Object
-- Class
-- ObjectClass
-- ClassClass
+## Évaluation globale
 
-Relations :
+MOP                     ~90%
+Runtime                 ~85%
+Bootstrap               ~85%
+Parser                 ~100%
+AST                    ~100%
+Closures               ~100%
+Non Local Return       ~100%
+Interpréteur AST       ~100%
+Primitives              ~75%
+REPL                     0%
+Bibliothèques           ~10%
+Interop Java             0%
 
-- Object superclass = null
-- Class superclass = Object
-- ObjectClass superclass = ClassClass
-- ClassClass superclass = ObjectClass
+Le principal risque conceptuel (objets, classes, métaclasses, dispatch et propriétés) est désormais largement maîtrisé.
 
----
-
-## Dette technique identifiée
-
-Le bootstrap noyau et le runtime ne sont pas encore totalement unifiés.
-
-Les classes :
-
-- Integer
-- Boolean
-- String
-- Array
-- Dictionary
-- Block
-
-sont encore créées indépendamment via MTKernelBootstrap.
-
-L'interpréteur utilise encore des appels du type :
-
-    MTKernelBootstrap.createIntegerClass();
-
-lors de l'évaluation des littéraux.
-
-Conséquence :
-
-Les classes métier ne semblent pas encore réellement rattachées à Object par héritage.
-
-Exemple révélateur :
-
-    42 println
-
-échoue actuellement avec :
-
-    Unknown selector: #println
-
-alors que println est installé sur Object.
-
----
-
-# Priorités de la prochaine étape
-
-1. Audit du bootstrap
-2. Unification Runtime / Kernel
-3. Raccordement :
-
-   - Integer -> Object
-   - Boolean -> Object
-   - String -> Object
-   - Array -> Object
-   - Dictionary -> Object
-   - Block -> Object
-
-4. Remplacement progressif des createXXXClass() dans l'interpréteur par l'utilisation des classes enregistrées dans MTRuntime.
-
-5. Validation finale avec :
-
-    42 println
-
----
-
-# Version
-
-Tag recommandé :
-
-    beta5
-
-Jalon majeur :
-
-MiniTalk est maintenant capable d'exécuter des scripts .mt réels depuis la ligne de commande.
+Le chantier prioritaire devient la stabilisation définitive du bootstrap et l'achèvement du noyau objet.

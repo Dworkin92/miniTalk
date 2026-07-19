@@ -25,4 +25,25 @@ public final class TestUtils {
                 + result.toString());
     }
 
+    public static void assertEquals(
+        String label,
+        Object expected,
+        Object actual) {
+
+        if (expected.equals(actual)) {
+            System.out.println(
+                label
+                + " expected: "
+                + expected
+                + " => OK");
+        } else {
+            System.out.println(
+                label
+                + " expected: "
+                + expected
+                + " actual: "
+                + actual
+                + " => FAILED");
+        }
+    }
 }

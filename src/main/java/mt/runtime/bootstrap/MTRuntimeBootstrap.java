@@ -60,7 +60,6 @@ public final class MTRuntimeBootstrap {
          * Instance-of
          */
 
-        /*
         objectClass.setClazz(objectMetaclass);
 
         classClass.setClazz(classMetaclass);
@@ -68,28 +67,6 @@ public final class MTRuntimeBootstrap {
         objectMetaclass.setClazz(classMetaclass);
 
         classMetaclass.setClazz(classMetaclass);
-        */
-
-        objectClass.setClazz(classClass);
-
-        classClass.setClazz(classClass);
-
-        objectMetaclass.setClazz(classMetaclass);
-
-        classMetaclass.setClazz(classMetaclass);
-
-        /*
-         * Classe -> métaclasse associée
-         */
-
-        objectClass.setMetaclass(objectMetaclass);
-
-        classClass.setMetaclass(classMetaclass);
-
-        objectMetaclass.setMetaclass(classMetaclass);
-
-        classMetaclass.setMetaclass(classMetaclass);
-
 
 
 
@@ -108,27 +85,31 @@ public final class MTRuntimeBootstrap {
 
         MTClass objectClass = runtime.getObjectClass();
 
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass(objectClass);
-        integerClass.setSuperclass(objectClass);
+        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime, "Integer", objectClass);
+        //integerClass.setSuperclass(objectClass);
         runtime.registerClass(integerClass);
+        runtime.registerClass(integerClass.getClazz());
 
-        MTClass booleanClass = MTKernelBootstrap.createBooleanClass();
-        booleanClass.setSuperclass(objectClass);
+        MTClass booleanClass = MTKernelBootstrap.createBooleanClass(runtime, "Boolean", objectClass);
+        //booleanClass.setSuperclass(objectClass);
         runtime.registerClass(booleanClass);
+        runtime.registerClass(booleanClass.getClazz());
 
-        MTClass stringClass = MTKernelBootstrap.createStringClass();
-        stringClass.setSuperclass(objectClass);
+        MTClass stringClass = MTKernelBootstrap.createStringClass(runtime, "String", objectClass);
+        //stringClass.setSuperclass(objectClass);
         runtime.registerClass(stringClass);
+        runtime.registerClass(stringClass.getClazz());
 
-        MTClass arrayClass = MTKernelBootstrap.createArrayClass();
-        arrayClass.setSuperclass(objectClass);
+        MTClass arrayClass = MTKernelBootstrap.createArrayClass(runtime, "Array", objectClass);
+        //arrayClass.setSuperclass(objectClass);
         runtime.registerClass(arrayClass);
+        runtime.registerClass(arrayClass.getClazz());
 
-        MTClass dictionaryClass = MTKernelBootstrap.createDictionaryClass();
+        MTClass dictionaryClass = MTKernelBootstrap.createDictionaryClass(runtime, "Dictionary", objectClass);
         dictionaryClass.setSuperclass(objectClass);
         runtime.registerClass(dictionaryClass);
 
-        MTClass blockClass = MTKernelBootstrap.createBlockClass();
+        MTClass blockClass = MTKernelBootstrap.createBlockClass(runtime, "Block", objectClass);
         blockClass.setSuperclass(objectClass);
         runtime.registerClass(blockClass);
     }

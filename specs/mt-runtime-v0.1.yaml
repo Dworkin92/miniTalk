@@ -1,29 +1,20 @@
 runtime:
-
   name: MiniTalk Runtime Model
-  version: 1.0
+  version: 0.2
 
 ##############################################################################
 # GLOBAL PRINCIPLES
 ##############################################################################
 
 principles:
-
   everythingIsAnObject: true
-
   classesAreObjects: true
-
   metaclassesAreObjects: true
-
   singleInheritance: true
-
   lexicalClosures: true
-
   nonLocalReturns: true
-
   dynamicClassEvolution: true
-
-  prefix for most of the class : MT
+  javaImplementationPrefix: MT
 
 ##############################################################################
 # BOOTSTRAP OBJECT GRAPH
@@ -32,38 +23,20 @@ principles:
 bootstrap:
 
   Object:
-
-    runtimeType: MTClass
-
     superclass: null
+    class: ObjectClass
 
-    metaclass: ObjectClass
-
-
-  Class (#Class):
-
-    runtimeType: MTClass
-
+  Class:
     superclass: Object
-
-    metaclass: ClassClass
-
+    class: ClassClass
 
   ObjectClass:
-
-    runtimeType: MTMetaclass
-
     superclass: ClassClass
-
-    metaclass: ClassClass
+    class: ClassClass
 
   ClassClass:
-
-    runtimeType: MTMetaclass
-
     superclass: ObjectClass
-
-    metaclass: ClassClass
+    class: ClassClass
 
 ##############################################################################
 # ROOT OBJECT
@@ -74,30 +47,22 @@ MTObject:
   abstract: true
 
   fields:
-
-    objectId:
-
-      type: Long
-
-      unique: true
-
-    clazz:
-
-      type: MTClass
-
-      nullable: false
-
-    propertyValues:
-
-      type: MTDictionary<MTSymbol, MTObject>
-
-      nullable: false
+    - objectId
+    - clazz
+    - propertyValues
 
   responsibilities:
+    - dynamic message dispatch
+    - property storage
+    - runtime typing
+    - object identity
 
-    - storeProperties
-    - receiveMessages
-    - provideIdentity
+  messageDispatch:
+    unary:
+      send(selector)
+
+    keywordOrBinary:
+      send(selector, arguments)
 
 ##############################################################################
 # CLASSES
@@ -108,41 +73,22 @@ MTClass:
   superclass: MTObject
 
   fields:
-
-    name:
-
-      type: MTSymbol
-
-    superclass:
-
-      type: MTClass
-
-      nullable: true
-
-    metaclass:
-
-      type: MTMetaclass
-
-      nullable: false
-
-    declaredProperties:
-
-      type: MTDictionary<MTSymbol, MTProperty>
-
-    allProperties:
-
-      type: MTDictionary<MTSymbol, MTProperty>
-
-    methods:
-
-      type: MTDictionary<MTSymbol, MTMethod>
+    - name
+    - superclass
+    - declaredProperties
+    - allProperties
+    - methods
 
   responsibilities:
+    - instance creation
+    - method lookup
+    - property management
+    - inheritance management
 
-    - createInstances
-    - lookupMethods
-    - manageProperties
-    - manageInheritance
+  note: >
+    MTClass no longer contains a dedicated metaclass field.
+    Class relationships are represented exclusively through
+    MTObject.clazz.
 
 ##############################################################################
 # METACLASSES
@@ -153,9 +99,12 @@ MTMetaclass:
   superclass: MTClass
 
   responsibilities:
+    - represent meta-level classes
+    - participate in bootstrap graph
 
-    - ownClassMethods
-    - ownClassProperties
+  note: >
+    Current implementation only specializes MTClass and does not
+    introduce additional behaviour.
 
 ##############################################################################
 # METHODS
@@ -166,32 +115,14 @@ MTMethod:
   superclass: MTObject
 
   fields:
-
-    selector:
-
-      type: MTSymbol
-
-    ownerClass:
-
-      type: MTClass
-
-    parameterCount:
-
-      type: Integer
-
-    body:
-
-      type: MTBlockNode
-
-    sourceComment:
-
-      type: MTCommentNode
-      nullable: true
+    - selector
+    - ownerClass
+    - body
 
   responsibilities:
-
-    - execute
-    - receiveArguments
+    - executable behavior
+    - message implementation
+    - method invocation
 
 ##############################################################################
 # PROPERTIES
@@ -202,20 +133,9 @@ MTProperty:
   superclass: MTObject
 
   fields:
-
-    name:
-
-      type: MTSymbol
-
-    ownerClass:
-
-      type: MTClass
-
-    defaultValue:
-
-      type: MTObject
-
-      default: nil
+    - name
+    - ownerClass
+    - defaultValue
 
 ##############################################################################
 # SYMBOLS
@@ -226,29 +146,8 @@ MTSymbol:
   superclass: MTString
 
   constraints:
-
-    interned: true
-
-    uniquePerName: true
-
-##############################################################################
-# SYMBOL TABLE
-##############################################################################
-
-MTSymbolTable:
-
-  singleton: true
-
-  fields:
-
-    symbols:
-
-      type: MTDictionary<String, MTSymbol>
-
-  responsibilities:
-
-    - intern
-    - lookup
+    - globally interned
+    - identity comparison allowed
 
 ##############################################################################
 # PROPERTY MANAGEMENT
@@ -258,19 +157,12 @@ propertyManagement:
 
   inheritance: true
 
-  autoGeneratedAccessors: true
+  storage:
+    owner: MTObject
+    field: propertyValues
 
-  generatedGetter:
-
-    selectorPattern: "<propertyName>"
-
-  generatedSetter:
-
-    selectorPattern: "<propertyName>:"
-
-  propertyValueStorage:
-
-    location: MTObject.propertyValues
+  lookup:
+    source: allProperties
 
 ##############################################################################
 # PROPERTY RECOMPUTATION
@@ -279,15 +171,11 @@ propertyManagement:
 propertyRecomputation:
 
   trigger:
+    - property addition
 
-    - addProperty
-
-  algorithm: |
-
-    newAllProperties =
-        copy(superclass.allProperties)
-
-    + copy(declaredProperties)
+  algorithm:
+    - inherit superclass properties
+    - add local properties
 
   storeResult: true
 
@@ -299,29 +187,11 @@ dynamicClassEvolution:
 
   enabled: true
 
-  affectsExistingInstances:
+  strategy: lazyMigration
 
-    immediateMigration: false
-
-##############################################################################
-# MISSING PROPERTIES
-##############################################################################
-
-missingProperties:
-
-  readAccess:
-
-    returns: nil
-
-    warning:
-
-      enabled: true
-
-      optional: true
-
-  writeAccess:
-
-    behavior: createEntry
+  note: >
+    Existing instances may require rebindProps()
+    to synchronize with newly added properties.
 
 ##############################################################################
 # PROPERTY REBINDING
@@ -329,21 +199,11 @@ missingProperties:
 
 rebind:
 
-  instanceMethod:
+  instanceMethod: rebindProps
 
-    selector: rebindProps
-
-    behavior: |
-
-      For each property declared
-      in clazz.allProperties
-
-      if propertyValues
-      does not contain property
-
-      then add:
-
-          property -> nil
+  purpose: >
+    Synchronize an instance layout with the current
+    property definition of its class.
 
 ##############################################################################
 # METHOD LOOKUP
@@ -352,34 +212,13 @@ rebind:
 methodLookup:
 
   start:
-
-    receiverClass: true
-
-  follow:
-
-    superclassChain: true
-
-  stopAt:
-
-    - Object
-
-##############################################################################
-# PROPERTY LOOKUP
-##############################################################################
-
-propertyLookup:
-
-  start:
-
-    receiverClass: true
+    receiver.clazz
 
   follow:
-
-    superclassChain: true
+    superclass
 
   stopAt:
-
-    - Object
+    null
 
 ##############################################################################
 # INSTANCE CREATION
@@ -387,27 +226,14 @@ propertyLookup:
 
 instanceCreation:
 
-  selector:
-
-    - new
+  entryPoint:
+    MTClass.newInstance()
 
   algorithm:
-
-    - allocateObject
-    - initializeProperties
-    - sendInitializeIfPresent
-
-##############################################################################
-# INITIALIZE SEMANTICS
-##############################################################################
-
-initialize:
-
-  automaticSend: true
-
-  selector: initialize
-
-  optional: true
+    - create MTObject
+    - set clazz
+    - rebind properties
+    - return object
 
 ##############################################################################
 # SCOPES
@@ -415,38 +241,19 @@ initialize:
 
 MTScope:
 
-  fields:
-
-    parent:
-
-      type: MTScope
-
-      nullable: true
-
-    bindings:
-
-      type: MTDictionary<MTSymbol, MTObject>
-
-  operations:
-
-    - define
-    - lookup
-    - assign
+  responsibilities:
+    - lexical variable storage
+    - parent scope resolution
+    - closure support
 
   assign:
     description: >
-      assign(name,value) ne crée jamais de nouvelle variable.
+      assign(name,value) never creates a new variable.
 
-      Le nom doit déjà exister dans le scope courant
-      ou dans un scope ancêtre.
-
-  activation_scope:
+  activationScope:
     description: >
-      Lors de l'activation d'un block :
-      - les paramètres sont définis ;
-      - les variables temporaires sont créées ;
-      - les variables capturées restent accessibles
-        via les scopes ancêtres.
+      Block activation creates parameters and temporaries
+      while preserving access to captured variables.
 
 ##############################################################################
 # CLOSURES
@@ -456,20 +263,16 @@ MTBlock:
 
   superclass: MTObject
 
-  fields:
-
-    ast:
-
-      type: MTBlockNode
-
-    lexicalScope:
-
-      type: MTScope
-
   responsibilities:
+    - lexical capture
+    - delayed execution
+    - closure activation
 
-    - execute
-    - captureVariables
+  supportedMessages:
+    - value
+    - value:
+    - value:value:
+    - valueArray:
 
 ##############################################################################
 # RETURNS
@@ -478,14 +281,7 @@ MTBlock:
 MTNonLocalReturnException:
 
   purpose:
-
-    implementNonLocalReturn
-
-  fields:
-
-    value:
-
-      type: MTObject
+    implementation of non-local return (^)
 
 ##############################################################################
 # KERNEL CLASSES
@@ -496,23 +292,14 @@ kernelClasses:
   - Object
   - Class
 
-  - Method
-  - Property
-
-  - Collection
-  - SequenceableCollection
-
-  - Array
-  - Set
-  - Dictionary
+  - Integer
+  - Boolean
 
   - String
   - Symbol
 
-  - Magnitude
-  - Integer
-
-  - Boolean
+  - Array
+  - Dictionary
 
   - Block
 
@@ -523,22 +310,22 @@ kernelClasses:
 singletons:
 
   nil:
-
-    class: Object
-
-    unique: true
+    class: Nil
 
   true:
-
     class: Boolean
-
-    unique: true
 
   false:
-
     class: Boolean
 
-    unique: true
+##############################################################################
+# OBJECT PRIMITIVES
+##############################################################################
+
+objectPrimitives:
+
+  - print
+  - println
 
 ##############################################################################
 # DICTIONARY PROTOCOL
@@ -547,13 +334,9 @@ singletons:
 dictionaryProtocol:
 
   requiredMethods:
-
     - at:
     - at:put:
-    - removeKey:
     - includesKey:
-    - keys
-    - values
     - size
 
 ##############################################################################
@@ -564,60 +347,20 @@ validation:
 
   scenarios:
 
-    - |
-      Person <- Class new: #Person.
+    - dynamic message dispatch
 
-      Person addProperty: #age.
+    - lexical closures
 
-      p <- Person new.
+    - nested closures
 
-      p age: 38.
+    - non-local returns
 
-      p age.
+    - property inheritance
 
-    - |
-      Person addProperty: #age.
+    - runtime class registration
 
-      p <- Person new.
+    - class lookup through classNamed()
 
-      Person addProperty: #name.
+    - object inheritance through Object
 
-      p name.
-
-      p rebindProps.
-
-      p name.
-
-    - |
-      Employee <- Class
-          subclass: Person
-          new: #Employee.
-
-      Employee addProperty: #salary.
-
-      e <- Employee new.
-
-      e age: 42.
-
-      e salary: 50000.
-
-    - |
-      Person class
-          addProperty: #species.
-
-      Person species: 'Human'.
-
-    - |
-      Person addMethod:
-          #fullName
-          body:
-          [
-              ^name
-          ].
-
-      Employee addMethod:
-          #fullName
-          body:
-          [
-              ^super fullName
-          ].
+    - 42 println

@@ -1,7 +1,6 @@
 mop:
-
   name: MiniTalk Meta Object Protocol
-  version: 0.1
+  version: 0.2
 
 ##############################################################################
 # PRINCIPLES
@@ -28,36 +27,47 @@ principles:
 bootstrap:
 
   Object:
-
-    type: Class
-
     superclass: null
-
     class: ObjectClass
 
   Class:
-
-    type: Class
-
     superclass: Object
-
     class: ClassClass
 
   ObjectClass:
-
-    type: Metaclass
-
     superclass: ClassClass
-
     class: ClassClass
 
   ClassClass:
-
-    type: Metaclass
-
     superclass: ObjectClass
-
     class: ClassClass
+
+##############################################################################
+# CURRENT META MODEL
+##############################################################################
+
+metaModel:
+
+  rootObject:
+    MTObject
+
+  classRepresentation:
+    MTClass
+
+  metaclassRepresentation:
+    MTMetaclass
+
+  typingMechanism:
+    clazz
+
+  dedicatedMetaclassField:
+    false
+
+  note: >
+    Earlier versions contained a dedicated metaclass
+    reference in MTClass. The current model relies
+    exclusively on the clazz relationship inherited
+    from MTObject.
 
 ##############################################################################
 # KERNEL CLASSES
@@ -67,23 +77,15 @@ kernelClasses:
 
   - Object
   - Class
-  - Method
-  - Property
 
-  - Collection
-  - SequenceableCollection
-
-  - Array
-  - Set
-  - Dictionary
+  - Integer
+  - Boolean
 
   - String
   - Symbol
 
-  - Magnitude
-  - Integer
-
-  - Boolean
+  - Array
+  - Dictionary
 
   - Block
 
@@ -93,48 +95,28 @@ kernelClasses:
 
 inheritance:
 
-  Collection:
+  Object:
+    superclass: null
 
-    superclass: Object
-
-  SequenceableCollection:
-
-    superclass: Collection
-
-  Array:
-
-    superclass: SequenceableCollection
-
-  String:
-
-    superclass: SequenceableCollection
-
-  Set:
-
-    superclass: Collection
-
-  Dictionary:
-
-    superclass: Collection
-
-  Magnitude:
-
+  Class:
     superclass: Object
 
   Integer:
-
-    superclass: Magnitude
-
-  Symbol:
-
-    superclass: String
+    superclass: Object
 
   Boolean:
+    superclass: Object
 
+  String:
+    superclass: Object
+
+  Array:
+    superclass: Object
+
+  Dictionary:
     superclass: Object
 
   Block:
-
     superclass: Object
 
 ##############################################################################
@@ -144,22 +126,13 @@ inheritance:
 singletons:
 
   nil:
-
-    class: Object
-
-    unique: true
+    uniqueInstance: true
 
   true:
-
-    class: Boolean
-
-    unique: true
+    uniqueInstance: true
 
   false:
-
-    class: Boolean
-
-    unique: true
+    uniqueInstance: true
 
 ##############################################################################
 # CLASSES
@@ -167,19 +140,35 @@ singletons:
 
 classes:
 
-  everyClassHasAMetaclass: true
+  areObjects: true
 
-  metaclassInheritanceFollowsClassInheritance: true
+  inheritFrom:
+    MTObject
 
-  examples:
+  responsibilities:
+    - method lookup
+    - inheritance
+    - property management
+    - instance creation
 
-    - |
-      Person <- Class new: #Person.
+  instanceCreation:
+    operation: newInstance
 
-    - |
-      Employee <- Class
-          subclass: Person
-          new: #Employee.
+##############################################################################
+# METACLASSES
+##############################################################################
+
+metaclasses:
+
+  representation:
+    MTMetaclass
+
+  inheritance:
+    MTMetaclass -> MTClass -> MTObject
+
+  currentSemantics: >
+    Metaclasses participate in the bootstrap graph but
+    currently introduce no behaviour beyond MTClass.
 
 ##############################################################################
 # CLASS CREATION PROTOCOL
@@ -187,16 +176,14 @@ classes:
 
 classProtocol:
 
-  classMethods:
+  runtimeFactory:
+    createClass(name, superclass)
 
-    - new
-    - new:
+  runtimeRegistration:
+    registerClass(clazz)
 
-    - subclass:new
-    - subclass:new:
-
-    - addMethod:
-    - addProperty:
+  lookup:
+    classNamed(name)
 
 ##############################################################################
 # METHODS
@@ -205,27 +192,22 @@ classProtocol:
 methods:
 
   representation:
-
-    class: Method
+    MTMethod
 
   properties:
 
-    - selector
-    - ownerClass
-    - parameters
-    - ast
+    selector:
+      MTSymbol
 
-  inheritance:
+    ownerClass:
+      MTClass
 
-    enabled: true
+    body:
+      MTMethodBody
 
-  overriding:
+  inheritance: true
 
-    enabled: true
-
-  superCalls:
-
-    enabled: true
+  overriding: allowed
 
 ##############################################################################
 # PROPERTIES
@@ -234,14 +216,12 @@ methods:
 properties:
 
   representation:
+    MTProperty
 
-    class: Property
+  inherited: true
 
-  properties:
-
-    - name
-    - ownerClass
-    - defaultValue
+  storedIn:
+    MTObject.propertyValues
 
 ##############################################################################
 # PROPERTY INHERITANCE
@@ -251,13 +231,11 @@ propertyInheritance:
 
   enabled: true
 
-  instanceLayoutIncludesInheritedProperties: true
+  inheritanceStrategy:
+    superclassFirst
 
-  lookupStrategy:
-
-    - currentClass
-    - superclass
-    - superclass.superclass
+  storage:
+    allProperties
 
 ##############################################################################
 # PROPERTY ACCESSORS
@@ -265,27 +243,11 @@ propertyInheritance:
 
 propertyAccessors:
 
-  generatedAutomatically: true
+  generatedAutomatically: false
 
-  getter:
-
-    selectorPattern: "<propertyName>"
-
-  setter:
-
-    selectorPattern: "<propertyName>:"
-
-  examples:
-
-    - |
-      Person addProperty: #age.
-
-    - |
-      p <- Person new.
-
-      p age: 38.
-
-      p age.
+  note: >
+    Accessor generation remains a possible future
+    evolution of the object model.
 
 ##############################################################################
 # PROPERTY CONFLICTS
@@ -294,40 +256,10 @@ propertyAccessors:
 propertyConflicts:
 
   sameClass:
-
-    allowed: false
-
-    error: PropertyAlreadyDefinedException
+    forbidden
 
   inheritedRedefinition:
-
-    allowed: false
-
-    error: PropertyAlreadyDefinedException
-
-##############################################################################
-# EXPLICIT ACCESSOR OVERRIDE
-##############################################################################
-
-accessorOverrides:
-
-  explicitMethodWins: true
-
-  example: |
-
-    Person addProperty: #age.
-
-    Person addMethod:
-      #age:
-      body:
-      [
-          :value |
-
-          value < 0 ifTrue:
-          [
-              self error: 'Invalid age'
-          ].
-      ].
+    forbidden
 
 ##############################################################################
 # CLASS VS INSTANCE MEMBERS
@@ -336,28 +268,16 @@ accessorOverrides:
 memberSemantics:
 
   instanceProperty:
-
-    createdBy: "Person addProperty: #age"
-
-    appliesTo: "instances of Person"
-
-  classProperty:
-
-    createdBy: "Person class addProperty: #species"
-
-    appliesTo: "Person object"
+    storedInObject
 
   instanceMethod:
-
-    createdBy: "Person addMethod: ..."
-
-    appliesTo: "instances of Person"
+    lookedUpFromReceiverClass
 
   classMethod:
+    futureExtension
 
-    createdBy: "Person class addMethod: ..."
-
-    appliesTo: "Person object"
+  classProperty:
+    futureExtension
 
 ##############################################################################
 # SYMBOLS
@@ -366,18 +286,12 @@ memberSemantics:
 symbols:
 
   syntax:
-
-    prefix: "#"
+    "#name"
 
   interned: true
 
-  examples:
-
-    - "#age"
-    - "#name"
-    - "#at:put:"
-    - "#size"
-    - "#+"
+  implementation:
+    MTSymbol.intern(...)
 
 ##############################################################################
 # MESSAGE DISPATCH
@@ -385,15 +299,20 @@ symbols:
 
 messageDispatch:
 
-  lookup:
+  receiver:
+    object
 
-    - receiver.class
-    - receiver.class.superclass
-    - receiver.class.superclass.superclass
+  start:
+    receiver.clazz
+
+  lookup:
+    localMethodThenSuperclass
 
   stopAt:
+    null
 
-    - Object
+  failure:
+    MTRuntimeException
 
 ##############################################################################
 # SUPER
@@ -405,11 +324,9 @@ super:
 
   isPseudoVariable: true
 
-  behavior: >
-
-    Envoie un message à self en démarrant
-    la recherche dans la superclasse
-    de la classe courante.
+  purpose: >
+    Start method lookup in the superclass of the
+    current method owner.
 
 ##############################################################################
 # SELF
@@ -421,6 +338,9 @@ self:
 
   isPseudoVariable: true
 
+  purpose: >
+    Reference to the current receiver.
+
 ##############################################################################
 # BLOCKS
 ##############################################################################
@@ -428,67 +348,30 @@ self:
 blocks:
 
   representation:
+    MTBlock
 
-    class: Block
+  lexical: true
 
-  properties:
-
-    - ast
-    - lexicalScope
-
-  nestedBlocks:
-
-    enabled: true
+  nestedBlocks: true
 
   parameters:
     description: >
-      Les paramètres sont déclarés dans l'en-tête du block.
+      Parameters are declared in the block header.
 
   temporaries:
     description: >
-      Les variables temporaires sont déclarées explicitement
-      entre deux caractères '|'.
+      Temporaries are declared between vertical bars.
 
-    example: |
-      [:x :y |
-
-          | z |
-
-          z := x + y.
-          z
-
-      ]
-
-  variable_resolution:
+  variableResolution:
     description: >
-      Une variable référencée dans un block doit être :
-      - un paramètre du block ;
-      - une variable temporaire déclarée ;
-      - une variable visible dans un scope englobant.
+      Variables are resolved through lexical scope
+      lookup beginning with the current scope and
+      continuing through parent scopes.
 
   assignment:
     description: >
-      Une affectation ne crée jamais implicitement une variable.
+      Assignment never creates a variable implicitly.
 
-      L'affectation à une variable non déclarée constitue
-      une erreur.
-
-    valid: |
-      [:x |
-
-          | y |
-
-          y := x + 1.
-          y
-
-      ]
-
-    invalid: |
-      [:x |
-
-          y := x + 1.
-
-      ]
 ##############################################################################
 # SCOPES
 ##############################################################################
@@ -497,12 +380,13 @@ scopes:
 
   lexical: true
 
-  hierarchy:
+  representation:
+    MTScope
 
-    - GlobalScope
-    - MethodScope
-    - BlockScope
-    - NestedBlockScope
+  responsibilities:
+    - variable storage
+    - scope chaining
+    - closure support
 
 ##############################################################################
 # RETURNS
@@ -513,8 +397,19 @@ returns:
   operator: "^"
 
   semantics:
+    nonLocalReturn
 
-    nonLocal: true
+  implementation:
+    MTNonLocalReturnException
+
+##############################################################################
+# OBJECT PRIMITIVES
+##############################################################################
+
+objectPrimitives:
+
+  - print
+  - println
 
 ##############################################################################
 # COMMENTS
@@ -530,11 +425,6 @@ comments:
 
   preservedByLexer: true
 
-  lexerEmits:
-
-    - LCOMMENT
-    - RCOMMENT
-
 ##############################################################################
 # META DIRECTIVES
 ##############################################################################
@@ -545,12 +435,10 @@ meta:
 
   prefix: "@"
 
-  terminator: ";"
-
   examples:
 
-    - "@module Core;"
-    - "@import Collections;"
+    - module
+    - import
 
   parserResponsibleForInterpretation: true
 
@@ -562,44 +450,24 @@ validation:
 
   scenarios:
 
-    - |
-      Person <- Class new: #Person.
+    - method dispatch
 
-      Person addProperty: #age.
+    - inheritance
 
-      p <- Person new.
+    - property inheritance
 
-      p age: 38.
+    - closures
 
-      p age.
+    - nested closures
 
-    - |
-      Employee <- Class
-          subclass: Person
-          new: #Employee.
+    - non local returns
 
-      e <- Employee new.
+    - runtime class registration
 
-      e age: 42.
+    - classNamed lookup
 
-    - |
-      Person class
-          addProperty: #species.
+    - dictionary primitives
 
-      Person species: 'Human'.
+    - array primitives
 
-    - |
-      Person addMethod:
-          #fullName
-          body:
-          [
-              ^name
-          ].
-
-    - |
-      Employee addMethod:
-          #fullName
-          body:
-          [
-              ^super fullName
-          ].
+    - 42 println

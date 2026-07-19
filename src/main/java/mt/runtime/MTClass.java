@@ -10,8 +10,6 @@ public class MTClass
 
     private MTClass superclass;
 
-    private MTMetaclass metaclass;
-
     private final Map<MTSymbol, MTProperty>
             declaredProperties =
                 new LinkedHashMap<>();
@@ -41,16 +39,6 @@ public class MTClass
             MTClass superclass) {
 
         this.superclass = superclass;
-    }
-
-    public MTMetaclass getMetaclass() {
-        return metaclass;
-    }
-
-    public void setMetaclass(
-            MTMetaclass metaclass) {
-
-        this.metaclass = metaclass;
     }
 
     public void addProperty(

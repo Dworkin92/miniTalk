@@ -61,6 +61,8 @@ public final class RuntimeRegressionTests {
         testClosureRead();
 
         testDites42();
+
+        BootstrapRegressionTests.runAll();
     }
 
     private static void testSymbols() {
@@ -783,6 +785,21 @@ private static void testDites42() {
             interpreter.evaluate(
                     parser.parse(),
                     scope));
+
+    System.out.println(
+    runtime.getObjectClass()
+           .getClazz()
+           .getName());
+
+System.out.println(
+    runtime.getClassClass()
+           .getClazz()
+           .getName());
+
+System.out.println(
+    runtime.classNamed("Integer")
+           .getClazz()
+           .getName());
 }
 
 }
