@@ -34,6 +34,8 @@ public final class BootstrapRegressionTests {
         testBlockClassCreation();
 
         testUserClassCreation();
+
+        testClassDefInstaller();
     }
 
     private static void testIntegerClassCreation() {
@@ -347,4 +349,49 @@ employeeClass.setClazz(
             "#ClassClass",
             employeeClass.getClazz().getClazz().getName().toString());
     }
+
+    public static void testClassDefInstaller() {
+
+    System.out.println(
+        "=== ClassDefInstaller test ===");
+
+    MTRuntime runtime =
+        MTRuntimeBootstrap.bootstrapCoreOnly();
+
+    MTClass integerClass =
+        ClassDefInstaller.install(
+            runtime,
+            IntegerClassDef.class);
+
+    assertEquals(
+        "Integer class name",
+        "#Integer",
+        integerClass.getName().toString());
+
+    assertEquals(
+        "Integer metaclass name",
+        "#IntegerClass",
+        integerClass.getClazz().getName().toString());
+
+    assertEquals(
+        "Integer class superclass name",
+        "#Object",
+        integerClass.getSuperclass().getName().toString());
+
+    assertEquals(
+        "Integer metaclass superclass name",
+        "#ObjectClass",
+        integerClass.getClazz()
+                    .getSuperclass()
+                    .getName()
+                    .toString());
+
+    assertEquals(
+        "Integer metaclass class name",
+        "#ClassClass",
+        integerClass.getClazz()
+                    .getClazz()
+                    .getName()
+                    .toString());
+}
 }

@@ -16,9 +16,9 @@ public final class MTRuntimeBootstrap {
 
         MTRuntime runtime = bootstrapCore();
 
-        bootstrapFirstClasses(runtime);
+        bootstrapCorePrimitives(runtime);
 
-        bootstrapPrimitives(runtime);
+        bootstrapFirstClasses(runtime);
 
         return runtime;
     }
@@ -81,6 +81,20 @@ public final class MTRuntimeBootstrap {
         return runtime;
     }
 
+    /**
+     * classe spécialement créée pour les tests afin de
+     * rendre visible l'accès a bootstrapCore()
+     */
+    public static MTRuntime bootstrapCoreOnly() {
+        return bootstrapCore();
+    }
+
+    private static void bootstrapCorePrimitives(MTRuntime runtime) {
+        PrimitiveInstaller.install(
+            runtime.getObjectClass(),
+            ObjectPrimitives.class);
+    }
+
     private static void bootstrapFirstClasses(MTRuntime runtime) {
 
         MTClass objectClass = runtime.getObjectClass();
@@ -114,9 +128,5 @@ public final class MTRuntimeBootstrap {
         runtime.registerClass(blockClass);
     }
 
-    private static void bootstrapPrimitives(MTRuntime runtime) {
-        PrimitiveInstaller.install(
-            runtime.getObjectClass(),
-            ObjectPrimitives.class);
-    }
+
 }
