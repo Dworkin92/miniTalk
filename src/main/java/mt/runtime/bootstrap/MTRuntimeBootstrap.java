@@ -99,10 +99,16 @@ public final class MTRuntimeBootstrap {
 
         MTClass objectClass = runtime.getObjectClass();
 
+
+        MTClass integerClass = ClassDefInstaller.install(runtime, IntegerClassDef.class);
+        PrimitiveInstaller.install(integerClass, IntegerPrimitives.class);
+
+        /*
         MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime, "Integer", objectClass);
         //integerClass.setSuperclass(objectClass);
         runtime.registerClass(integerClass);
         runtime.registerClass(integerClass.getClazz());
+        */
 
         MTClass booleanClass = MTKernelBootstrap.createBooleanClass(runtime, "Boolean", objectClass);
         //booleanClass.setSuperclass(objectClass);
