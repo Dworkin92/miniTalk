@@ -26,7 +26,7 @@ public @interface ClassDef {
      */
     String superclass() default "Object";
 
-    //Class<?> instancePrimitives() default Void.class;
+    Class<?> instancePrimitives() default Void.class;
 
     //Class<?> classPrimitives() default Void.class;
 }

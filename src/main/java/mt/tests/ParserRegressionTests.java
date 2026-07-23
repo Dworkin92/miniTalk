@@ -165,6 +165,9 @@ public final class ParserRegressionTests {
     private static void testParserBinaryMessage() {
         System.out.println("=== Parser Binary Message test ===");
 
+               MTClass integerClass = ClassDefInstaller.install(runtime, IntegerClassDef.class);
+                       //MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
+
         String source = "3 + 4";
 
         MTLexer lexer = new MTLexer(source);
@@ -176,8 +179,6 @@ public final class ParserRegressionTests {
         MTNode ast = parser.parse();
 
         MTInterpreter interpreter = new MTInterpreter(runtime);
-
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
 
         assertResult(source, interpreter.evaluate(
                     ast, null));

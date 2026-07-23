@@ -5,6 +5,7 @@
 *.class
 build/
 target/
+archives/
 
 # Debug
 *.log
@@ -20,6 +21,7 @@ miniTalk.layout
 
 # OS
 .DS_Store
+
 
 # Temp files
 *~

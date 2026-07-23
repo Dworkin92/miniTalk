@@ -1,4 +1,4 @@
-package mt.runtime.primitives;
+package mt.runtime.bootstrap;
 
 /**
  * pseudo class null

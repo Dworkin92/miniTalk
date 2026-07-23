@@ -5,7 +5,8 @@ import mt.runtime.MTRuntime;
 import mt.runtime.MTClass;
 import mt.runtime.MTMetaclass;
 import mt.runtime.MTSymbol;
-import mt.exceptions.MTBootstrapException; // <== ATTENTION : classe à créer
+import mt.runtime.primitives.PrimitiveInstaller;
+import mt.exceptions.MTBootstrapException;
 
 import java.lang.reflect.Method;
 
@@ -73,6 +74,13 @@ public final class ClassDefInstaller {
 
         runtime.registerClass(
             metaclass);
+
+        /* Installation automatique des primitives */
+        Class<?> primitiveClass = definition.instancePrimitives();
+
+        if (primitiveClass != Void.class) {
+            PrimitiveInstaller.install(clazz, primitiveClass);
+        }
 
         return clazz;
     }

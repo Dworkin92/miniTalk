@@ -93,6 +93,10 @@ public final class MTRuntimeBootstrap {
         PrimitiveInstaller.install(
             runtime.getObjectClass(),
             ObjectPrimitives.class);
+
+        PrimitiveInstaller.install(
+            runtime.getClassClass(),
+            ClassPrimitives.class);
     }
 
     private static void bootstrapFirstClasses(MTRuntime runtime) {
@@ -101,37 +105,53 @@ public final class MTRuntimeBootstrap {
 
 
         MTClass integerClass = ClassDefInstaller.install(runtime, IntegerClassDef.class);
-        PrimitiveInstaller.install(integerClass, IntegerPrimitives.class);
 
         /*
+         * === ancien système === *
         MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime, "Integer", objectClass);
-        //integerClass.setSuperclass(objectClass);
         runtime.registerClass(integerClass);
         runtime.registerClass(integerClass.getClazz());
-        */
+         */
 
+        MTClass booleanClass = ClassDefInstaller.install(runtime, BooleanClassDef.class);
+
+        /*
+         * === ancien système === *
         MTClass booleanClass = MTKernelBootstrap.createBooleanClass(runtime, "Boolean", objectClass);
-        //booleanClass.setSuperclass(objectClass);
         runtime.registerClass(booleanClass);
         runtime.registerClass(booleanClass.getClazz());
+         */
 
+        MTClass stringClass = ClassDefInstaller.install(runtime, StringClassDef.class);
+
+        /*
         MTClass stringClass = MTKernelBootstrap.createStringClass(runtime, "String", objectClass);
-        //stringClass.setSuperclass(objectClass);
         runtime.registerClass(stringClass);
         runtime.registerClass(stringClass.getClazz());
+         */
 
+        MTClass arrayClass = ClassDefInstaller.install(runtime, ArrayClassDef.class);
+        /*
         MTClass arrayClass = MTKernelBootstrap.createArrayClass(runtime, "Array", objectClass);
-        //arrayClass.setSuperclass(objectClass);
         runtime.registerClass(arrayClass);
         runtime.registerClass(arrayClass.getClazz());
+        */
 
+        MTClass dictionaryClass = ClassDefInstaller.install(runtime, DictionaryClassDef.class);
+
+        /*
         MTClass dictionaryClass = MTKernelBootstrap.createDictionaryClass(runtime, "Dictionary", objectClass);
         dictionaryClass.setSuperclass(objectClass);
         runtime.registerClass(dictionaryClass);
+        */
 
+        MTClass blockClass = ClassDefInstaller.install(runtime, BlockClassDef.class);
+        /*
         MTClass blockClass = MTKernelBootstrap.createBlockClass(runtime, "Block", objectClass);
         blockClass.setSuperclass(objectClass);
         runtime.registerClass(blockClass);
+        */
+
     }
 
 
