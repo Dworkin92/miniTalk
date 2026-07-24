@@ -4,15 +4,13 @@
 
 MiniTalk est actuellement organisé en 4 couches :
 
-+-----------------------------------+
+|                                   |
+|:---------------------------------:|
 |         MiniTalk Source           |
-+-----------------------------------+
 |               AST                 |
-+-----------------------------------+
 |          Runtime / MOP            |
-+-----------------------------------+
 |            Java VM                |
-+-----------------------------------+
+
 
 Pour l'instant, nous avons principalement développé :
 
