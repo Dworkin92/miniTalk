@@ -32,8 +32,6 @@ public final class MTParser {
 
     public MTNode parse() {
 
-        parseMetaDirectives();
-
         return parseSequence();
     }
 
@@ -320,38 +318,7 @@ public final class MTParser {
         return imports;
     }
 
-    private void parseMetaDirectives() {
 
-        while (match(MTTokenType.LCOMMENT)) {
-
-            while (!check(MTTokenType.RCOMMENT)) {
-
-                if (match(MTTokenType.META)) {
-                    String directive = previous().text();
-
-                    if (directive.equals("@module")) {
-                        MTToken name = consume(MTTokenType.IDENTIFIER, "Expected module name");
-                        moduleName = name.text();
-                        consume(MTTokenType.SEMICOLON, "Expected ';'");
-                    }
-
-                    else if (directive.equals("@import")) {
-
-                        MTToken name = consume(MTTokenType.IDENTIFIER,"Expected module name");
-
-                        imports.add(name.text());
-
-                        consume(MTTokenType.SEMICOLON, "Expected ';'");
-                    }
-                }
-                else {
-                    advance();
-                }
-            }
-
-            consume(MTTokenType.RCOMMENT, "Expected */");
-        }
-    }
     /*
      * Helpers
      */

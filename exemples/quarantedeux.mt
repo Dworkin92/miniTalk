@@ -1,1 +1,4 @@
-42 println
+@[ module Core ]
+
+42 println.
+

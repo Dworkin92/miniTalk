@@ -28,10 +28,7 @@ public enum MTTokenType {
     LBRACKET,          // [
     RBRACKET,          // ]
 
-    LCOMMENT,          // /*
-    RCOMMENT,          // */
-
-    META,              // @module, @import, ...
+    META_DIRECTIVE,    // @[ meta-directive ]
 
     RETURN,            // ^
 

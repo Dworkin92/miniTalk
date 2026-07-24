@@ -33,23 +33,21 @@ public final class MTLexer {
             char c = peek();
 
             /*
-             * Commentaires
+             * Directives META
+             *
+             * @[ module Core ]
+             * @[ import Integer.mt ]
              */
-            if (c == '/' && peekNext() == '*') {
-                readCommentStart();
-                continue;
-            }
-
-            if (c == '*' && peekNext() == '/') {
-                readCommentEnd();
+            if (c == '@' && peekNext() == '[') {
+                readMetaDirective();
                 continue;
             }
 
             /*
-             * Directives META
+             * Commentaires
              */
-            if (insideComment() && c == '@') {
-                readMeta();
+            if (c == '/' && peekNext() == '*') {
+                skipComment();
                 continue;
             }
 
@@ -139,10 +137,6 @@ public final class MTLexer {
             }
         }
 
-        if (commentDepth > 0) {
-            throw error("Unterminated comment");
-        }
-
         tokens.add(
                 new MTToken(
                         MTTokenType.EOF,
@@ -153,60 +147,68 @@ public final class MTLexer {
         return tokens;
     }
 
-    private boolean insideComment() {
-        return commentDepth > 0;
-    }
+    private void skipComment() {
 
-    private void readCommentStart() {
+        advance(); // /
+        advance(); // *
 
-        addToken(MTTokenType.LCOMMENT, "/*");
+        int depth = 1;
 
-        advance();
-        advance();
+        while (depth > 0) {
+            if (isAtEnd()) {
+                throw error("Unterminated comment");
+            }
 
-        commentDepth++;
-    }
+            if (peek() == '/' && peekNext() == '*') {
 
-    private void readCommentEnd() {
+                advance();
+                advance();
 
-        if (commentDepth == 0) {
-            throw error("Unexpected comment terminator");
+                depth++;
+
+                continue;
+            }
+
+            if (peek() == '*' && peekNext() == '/') {
+
+                advance();
+                advance();
+
+                depth--;
+
+                continue;
+            }
+
+            advance();
         }
-
-        addToken(MTTokenType.RCOMMENT, "*/");
-
-        advance();
-        advance();
-
-        commentDepth--;
     }
 
-    private void readMeta() {
+    private void readMetaDirective() {
 
         int start = position;
         int startLine = line;
         int startColumn = column;
 
         advance(); // @
+        advance(); // [
 
-        while (!isAtEnd()) {
+        StringBuilder text = new StringBuilder();
 
-            char c = peek();
+        while (!isAtEnd() && peek() != ']') {
 
-            if (Character.isLetterOrDigit(c)
-                    || c == '_'
-                    || c == '-') {
-
-                advance();
-            } else {
-                break;
-            }
+            text.append(advance());
         }
+
+        if (isAtEnd()) {
+            throw error("Unterminated meta directive");
+        }
+
+        advance(); // ]
 
         tokens.add(
                 new MTToken(
-                        MTTokenType.META,
-                        source.substring(start, position),
+                        MTTokenType.META_DIRECTIVE,
+                        text.toString().trim(),
                         startLine,
                         startColumn));
     }
