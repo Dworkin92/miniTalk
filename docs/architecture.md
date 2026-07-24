@@ -81,21 +81,18 @@ ClassClass class = ClassClass
 
 Diagramme
 
-```
-            Object
-               ^
-               |
-             Class
+```Plain Text
+                      class
+   Object ----------> ObjectClass ---------------+
+      ^                   ^                      |
+      | superclass        | superclass           |
+      |                   |                class |
+    Class ----------> ClassClass ---+            |
+             class        ^         | class      |
+                          |         |            |
+                          +---------+------------+
 
 
-          ObjectClass
-               ^
-               |
-          ClassClass
-
-Object.class      -> ObjectClass
-Class.class       -> ClassClass
-ClassClass.class  -> ClassClass
 ```
 
 ## 4. Runtime
