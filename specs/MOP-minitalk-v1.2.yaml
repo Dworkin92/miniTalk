@@ -1,0 +1,601 @@
+mop:
+  name: MiniTalk Meta Object Protocol
+  version: 1.2
+
+  note: >
+    v1.0 uses a pure quadrant model.
+    v1.2 explores explicit separation between
+    clazz and metaclazz and removes superclass cycles.
+
+##############################################################################
+# PRINCIPLES
+##############################################################################
+
+principles:
+
+  everythingIsAnObject: true
+
+  classesAreObjects: true
+
+  metaclassesAreObjects: true
+
+  singleInheritance: true
+
+  lexicalClosures: true
+
+  nonLocalReturns: true
+
+##############################################################################
+# BOOTSTRAP
+##############################################################################
+
+bootstrap:
+  Object:
+    superclass: null
+    clazz: Class
+    metaclazz: ObjectClass
+
+  Class:
+    superclass: Object
+    clazz: Class
+    metaclazz: ClassClass
+
+  ObjectClass:
+    superclass: Object
+    clazz: ClassClass
+    metaclazz: null?
+
+  ClassClass:
+    superclass: ObjectClass
+    clazz: Class
+    metaclazz: null?
+
+##############################################################################
+# CURRENT META MODEL
+##############################################################################
+
+metaModel:
+
+  rootObject:
+    MTObject
+
+  classRepresentation:
+    MTClass
+
+  metaclassRepresentation:
+    MTMetaclass
+
+  instanceTypingMechanism:
+    clazz
+
+  metaclassTypingMechanism:
+    metaclazz
+
+  dedicatedMetaclassField:
+    true
+
+  note: >
+    Earlier versions contained a dedicated metaclass
+    reference in MTClass.
+
+    MOP v1.0 experimented with a simplified model
+    relying exclusively on the clazz relationship
+    inherited from MTObject.
+
+    Practical experience with class lookup and the
+    Object/Class/ObjectClass/ClassClass bootstrap
+    cycle has reopened the question of introducing
+    an explicit metaclazz relationship.
+
+##############################################################################
+# KERNEL CLASSES
+##############################################################################
+
+kernelClasses:
+
+  - Object
+  - Class
+
+  - Integer
+  - Boolean
+
+  - String
+  - Symbol
+
+  - Array
+  - Dictionary
+
+  - Block
+
+##############################################################################
+# INHERITANCE TREE
+##############################################################################
+
+inheritance:
+
+  Object:
+    superclass: null
+
+  Class:
+    superclass: Object
+
+  Integer:
+    superclass: Object
+
+  Boolean:
+    superclass: Object
+
+  String:
+    superclass: Object
+
+  Array:
+    superclass: Object
+
+  Dictionary:
+    superclass: Object
+
+  Block:
+    superclass: Object
+
+##############################################################################
+# METACLASS MODEL
+##############################################################################
+
+metaclassModel:
+
+  everyClassHasMetaclass: true
+
+  examples:
+
+    Object:
+      class: ObjectClass
+
+    Class:
+      class: ClassClass
+
+    Integer:
+      class: IntegerClass
+
+    Boolean:
+      class: BooleanClass
+
+    String:
+      class: StringClass
+
+    Array:
+      class: ArrayClass
+
+    Dictionary:
+      class: DictionaryClass
+
+    Block:
+      class: BlockClass
+
+##############################################################################
+# METACLASS INHERITANCE
+##############################################################################
+
+metaclassInheritance:
+
+  rule: >
+    If class A inherits from class B,
+    then AClass inherits from BClass.
+    Object and ObjectClass are exception.
+
+  examples:
+
+    Object:
+      superclass: null
+
+    ObjectClass:
+      superclass: Object
+
+    Class:
+      superclass: Object
+
+    ClassClass:
+      superclass: ObjectClass
+      
+    Integer:
+      superclass: Object
+
+    IntegerClass:
+      superclass: ObjectClass
+
+    Boolean:
+      superclass: Object
+
+    BooleanClass:
+      superclass: ObjectClass
+
+##############################################################################
+# METACLASS TYPING
+##############################################################################
+
+metaclassTyping:
+
+  ObjectClass:
+    class: ClassClass
+
+  ClassClass:
+    class: Class
+
+  IntegerClass:
+    class: ClassClass
+
+  BooleanClass:
+    class: ClassClass
+
+  StringClass:
+    class: ClassClass
+
+  ArrayClass:
+    class: ClassClass
+
+  DictionaryClass:
+    class: ClassClass
+
+  BlockClass:
+    class: ClassClass
+
+
+##############################################################################
+# SINGLETONS
+##############################################################################
+
+singletons:
+
+  nil:
+    uniqueInstance: true
+
+  true:
+    uniqueInstance: true
+
+  false:
+    uniqueInstance: true
+
+##############################################################################
+# CLASSES
+##############################################################################
+
+classes:
+
+  areObjects: true
+
+  everyClassHasAMetaclass: true
+
+  metaclassCreation:
+    automatic: true
+
+  classRelationship:
+    storedIn: clazz
+
+  inheritFrom:
+    MTObject
+
+  responsibilities:
+    - method lookup
+    - inheritance
+    - property management
+    - instance creation
+
+  instanceCreation:
+    operation: newInstance
+
+##############################################################################
+# METACLASSES
+##############################################################################
+
+metaclasses:
+
+  representation:
+    MTMetaclass
+
+  inheritance:
+    MTMetaclass -> MTClass -> MTObject
+
+  currentSemantics: >
+    Metaclasses participate in the bootstrap graph but
+    currently introduce no behaviour beyond MTClass.
+
+##############################################################################
+# CLASS CREATION PROTOCOL
+##############################################################################
+
+classProtocol:
+
+  runtimeFactory:
+    createClass(name, superclass)
+
+  runtimeRegistration:
+    registerClass(clazz)
+
+  lookup:
+    classNamed(name)
+
+##############################################################################
+# METHODS
+##############################################################################
+
+methods:
+
+  representation:
+    MTMethod
+
+  properties:
+
+    selector:
+      MTSymbol
+
+    ownerClass:
+      MTClass
+
+    body:
+      MTMethodBody
+
+  inheritance: true
+
+  overriding: allowed
+
+##############################################################################
+# PROPERTIES
+##############################################################################
+
+properties:
+
+  representation:
+    MTProperty
+
+  inherited: true
+
+  storedIn:
+    MTObject.propertyValues
+
+##############################################################################
+# PROPERTY INHERITANCE
+##############################################################################
+
+propertyInheritance:
+
+  enabled: true
+
+  inheritanceStrategy:
+    superclassFirst
+
+  storage:
+    allProperties
+
+##############################################################################
+# PROPERTY ACCESSORS
+##############################################################################
+
+propertyAccessors:
+
+  generatedAutomatically: false
+
+  note: >
+    Accessor generation remains a possible future
+    evolution of the object model.
+
+##############################################################################
+# PROPERTY CONFLICTS
+##############################################################################
+
+propertyConflicts:
+
+  sameClass:
+    forbidden
+
+  inheritedRedefinition:
+    forbidden
+
+##############################################################################
+# CLASS VS INSTANCE MEMBERS
+##############################################################################
+
+memberSemantics:
+
+  instanceProperty:
+    storedInObject
+
+  instanceMethod:
+    lookedUpFromReceiverClass
+
+  classMethod:
+    futureExtension
+
+  classProperty:
+    futureExtension
+
+##############################################################################
+# SYMBOLS
+##############################################################################
+
+symbols:
+
+  syntax:
+    "#name"
+
+  interned: true
+
+  implementation:
+    MTSymbol.intern(...)
+
+##############################################################################
+# MESSAGE DISPATCH
+##############################################################################
+
+messageDispatch:
+
+  receiver:
+    object
+
+  start:
+    receiver.clazz
+
+  lookup:
+    localMethodThenSuperclass
+
+  stopAt:
+    null
+
+  failure:
+    MTRuntimeException
+
+##############################################################################
+# SUPER
+##############################################################################
+
+super:
+
+  isObject: false
+
+  isPseudoVariable: true
+
+  purpose: >
+    Start method lookup in the superclass of the
+    current method owner.
+
+##############################################################################
+# SELF
+##############################################################################
+
+self:
+
+  isObjectReference: true
+
+  isPseudoVariable: true
+
+  purpose: >
+    Reference to the current receiver.
+
+##############################################################################
+# BLOCKS
+##############################################################################
+
+blocks:
+
+  representation:
+    MTBlock
+
+  lexical: true
+
+  nestedBlocks: true
+
+  parameters:
+    description: >
+      Parameters are declared in the block header.
+
+  temporaries:
+    description: >
+      Temporaries are declared between vertical bars.
+
+  variableResolution:
+    description: >
+      Variables are resolved through lexical scope
+      lookup beginning with the current scope and
+      continuing through parent scopes.
+
+  assignment:
+    description: >
+      Assignment never creates a variable implicitly.
+
+##############################################################################
+# SCOPES
+##############################################################################
+
+scopes:
+
+  lexical: true
+
+  representation:
+    MTScope
+
+  responsibilities:
+    - variable storage
+    - scope chaining
+    - closure support
+
+##############################################################################
+# RETURNS
+##############################################################################
+
+returns:
+
+  operator: "^"
+
+  semantics:
+    nonLocalReturn
+
+  implementation:
+    MTNonLocalReturnException
+
+##############################################################################
+# OBJECT PRIMITIVES
+##############################################################################
+
+objectPrimitives:
+
+  - print
+  - println
+
+##############################################################################
+# COMMENTS
+##############################################################################
+
+comments:
+
+  startDelimiter: "/*"
+
+  endDelimiter: "*/"
+
+  nested: true
+
+  preservedByLexer: true
+
+##############################################################################
+# META DIRECTIVES
+##############################################################################
+
+meta:
+
+  allowedOnlyInsideComments: true
+
+  prefix: "@"
+
+  examples:
+
+    - module
+    - import
+
+  parserResponsibleForInterpretation: true
+
+##############################################################################
+# VALIDATION CRITERIA
+##############################################################################
+
+validation:
+
+  scenarios:
+
+    - method dispatch
+
+    - inheritance
+
+    - property inheritance
+
+    - closures
+
+    - nested closures
+
+    - non local returns
+
+    - runtime class registration
+
+    - classNamed lookup
+
+    - dictionary primitives
+
+    - array primitives
+
+    - 42 println

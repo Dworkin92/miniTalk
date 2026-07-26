@@ -1,5 +1,8 @@
 package mt.runtime;
 
+import mt.runtime.MTObject;
+import mt.runtime.MTClass;
+
 public final class MTNil
         extends MTObject {
 
@@ -10,8 +13,11 @@ public final class MTNil
     }
 
     public static MTNil instance() {
-
         return INSTANCE;
+    }
+
+    public static void setNilClass(MTClass clazz) {
+        instance().setClazz(clazz);
     }
 
     @Override

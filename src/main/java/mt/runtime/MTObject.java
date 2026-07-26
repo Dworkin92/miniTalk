@@ -3,6 +3,7 @@ package mt.runtime;
 import java.util.HashMap;
 import java.util.Map;
 import mt.exceptions.MTRuntimeException;
+import mt.debug.MTDebug;
 
 /**
  * la classe Java MTObjet définit  un objet basique minimal
@@ -63,7 +64,15 @@ public class MTObject {
      * binaire composé d'un ou plusieurs arguments (exemple "at:put:")
      */
     public MTObject send(MTSymbol selector,MTArray arguments) {
+        MTDebug.log("[SEND] receiver="
+            + this
+            + " selector="
+            + selector
+            + " clazz="
+            + clazz);
+
         MTMethod method = clazz.lookupMethod(selector);
+
 
         if (method == null) {
             throw new MTRuntimeException(

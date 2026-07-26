@@ -1,6 +1,7 @@
 package mt.runtime;
 
 import mt.exceptions.MTRuntimeException;
+import mt.debug.MTDebug;
 
 public class MTScope extends MTObject {
 
@@ -45,26 +46,39 @@ public class MTScope extends MTObject {
                 value);
     }
 
-    public MTObject lookup(
-            MTSymbol name) {
+public MTObject lookup(
+        MTSymbol name) {
 
-        if (bindings.includesKey(
-                name)) {
+    MTDebug.log("[LOOKUP] " + name);
 
-            return bindings.at(
-                    name);
-        }
-
-        if (parent != null) {
-
-            return parent.lookup(
-                    name);
-        }
-
-        throw new MTRuntimeException(
-                "Unknown variable: "
-                        + name);
+    if (bindings.includesKey(name)) {
+        return bindings.at(name);
     }
+
+    if (parent != null) {
+        return parent.lookup(name);
+    }
+
+    String symbolName = name.getValue();
+
+    if (!symbolName.isEmpty()
+            && Character.isUpperCase(symbolName.charAt(0))) {
+
+        MTDebug.log("[CLASS LOOKUP] " + symbolName);
+
+        MTClass clazz =
+            runtime.classNamed(symbolName);
+
+        MTDebug.log("[FOUND] " + clazz);
+
+        if (clazz != null) {
+            return clazz;
+        }
+    }
+
+    throw new MTRuntimeException(
+            "Unknown variable: " + name);
+}
 
     public void assign(
             MTSymbol name,

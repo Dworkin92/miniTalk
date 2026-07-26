@@ -26,6 +26,7 @@ miniTalk.layout
 # Temp files
 *~
 *.bak
+*.bkp
 *.old
 minitalk_sources.txt
 *.tgz

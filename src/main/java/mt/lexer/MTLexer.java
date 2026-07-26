@@ -52,6 +52,13 @@ public final class MTLexer {
             }
 
             /*
+             * Symbol
+             */
+            if (c == '#') {
+                readSymbol();
+                continue;
+            }
+            /*
              * Litteraux
              */
             if (Character.isDigit(c)) {
@@ -211,6 +218,34 @@ public final class MTLexer {
                         text.toString().trim(),
                         startLine,
                         startColumn));
+    }
+
+    private void readSymbol() {
+        int startLine = line;
+        int startColumn = column;
+
+        advance(); // #
+
+        int start = position;
+
+        while (!isAtEnd()) {
+
+            char c = peek();
+
+            if (Character.isLetterOrDigit(c) || c == '_') {
+                advance();
+            }
+            else {
+                break;
+            }
+        }
+
+        tokens.add(
+            new MTToken(
+                MTTokenType.SYMBOL,
+                source.substring(start, position),
+                startLine,
+                startColumn));
     }
 
     private void readIdentifier() {

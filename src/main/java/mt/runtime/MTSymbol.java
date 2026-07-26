@@ -1,6 +1,7 @@
 package mt.runtime;
 
 import java.util.Map;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class MTSymbol
@@ -10,17 +11,35 @@ public final class MTSymbol
             INTERNED =
                 new ConcurrentHashMap<>();
 
+    private static MTClass symbolClass = null;
+
+
     private MTSymbol(String value) {
 
         super(value);
     }
 
-    public static MTSymbol intern(
-            String value) {
+    public static void setSymbolClass(MTClass clazz) {
+        symbolClass = clazz;
+    }
 
-        return INTERNED.computeIfAbsent(
-                value,
-                MTSymbol::new);
+    public static MTSymbol intern(String value) {
+        MTSymbol symbol = INTERNED.computeIfAbsent(
+            value, MTSymbol::new);
+
+        if (symbolClass != null && symbol.getClazz() == null) {
+            symbol.setClazz(symbolClass);
+        }
+
+        return symbol;
+    }
+
+    public static void setRuntimeClass(MTClass clazz) {
+        symbolClass = clazz;
+    }
+
+    public static Collection<MTSymbol> allInterned() {
+        return INTERNED.values();
     }
 
     @Override

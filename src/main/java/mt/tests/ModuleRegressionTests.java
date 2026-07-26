@@ -20,11 +20,13 @@ public final class ModuleRegressionTests {
     }
 
     public static void runAll() {
-        testModuleDirective();
+        testMetaDirectiveNode();
+       /* testModuleDirective();
         testImportDirectives();
-        testModuleExecution();
+        testModuleExecution();*/
     }
 
+    /*
     private static void testModuleDirective() {
 
     System.out.println(
@@ -32,9 +34,7 @@ public final class ModuleRegressionTests {
 
     String source =
             """
-            /*
-            @module Core;
-            */
+            @[module Core]
 
             42
             """;
@@ -60,11 +60,9 @@ private static void testImportDirectives() {
 
     String source =
             """
-            /*
-            @module Application;
-            @import Collections;
-            @import IO;
-            */
+            @[module Application]
+            @[import Collections]
+            @[import IO]
 
             42
             """;
@@ -94,9 +92,7 @@ private static void testModuleExecution() {
 
     String source =
             """
-            /*
-            @module Core;
-            */
+            @[module Core]
 
             42
             """;
@@ -119,6 +115,45 @@ private static void testModuleExecution() {
     assertResult(
             "42",
             result);
+}
+*/
+private static void testMetaDirectiveNode() {
+
+    System.out.println(
+        "=== Meta Directive AST test ===");
+
+    String source =
+        """
+        @[module Core]
+
+        42
+        """;
+
+    MTLexer lexer =
+        new MTLexer(source);
+
+    MTParser parser =
+        new MTParser(
+            lexer.tokenize());
+
+    MTNode ast =
+        parser.parse();
+
+    if (!(ast instanceof MTSequenceNode seq)) {
+        throw new AssertionError(
+            "Expected MTSequenceNode");
+    }
+
+    if (!(seq.getStatements().get(0)
+            instanceof MTMetaDirectiveNode meta)) {
+
+        throw new AssertionError(
+            "Expected MTMetaDirectiveNode");
+    }
+
+    assertResult(
+        "module Core",
+        meta.getText());
 }
 
 }

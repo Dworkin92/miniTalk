@@ -16,6 +16,11 @@ public final class MTBoolean
         this.value = value;
     }
 
+    public static void setBooleanClass(MTClass clazz) {
+        TRUE.setClazz(clazz);
+        FALSE.setClazz(clazz);
+    }
+
     public static MTBoolean valueOf(
             boolean value) {
 

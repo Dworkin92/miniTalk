@@ -7,6 +7,7 @@ public enum MTTokenType {
     IDENTIFIER,
     INTEGER,
     STRING,
+    SYMBOL,
 
     ASSIGN,            // :=
 

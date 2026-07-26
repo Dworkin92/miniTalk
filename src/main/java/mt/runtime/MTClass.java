@@ -2,6 +2,12 @@ package mt.runtime;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
+
+import mt.exceptions.MTRuntimeException;
+
+import mt.debug.MTDebug;
 
 public class MTClass
         extends MTObject {
@@ -104,19 +110,27 @@ public class MTClass
     }
 
     public MTMethod lookupMethod(MTSymbol selector) {
+        return lookupMethod(selector, new HashSet<>());
+    }
 
-        MTMethod method =
-            methods.get(selector);
+    private MTMethod lookupMethod(MTSymbol selector, Set<MTClass> visited) {
+        if (!visited.add(this)) {
+
+            throw new MTRuntimeException("Cyclic superclass hierarchy detected while looking up "
+               + selector + " from " + getName());
+        }
+
+        MTMethod method = methods.get(selector);
 
         if (method != null) {
             return method;
         }
 
         if (superclass != null) {
-            return superclass.lookupMethod(
-                    selector);
+            return superclass.lookupMethod(selector, visited);
         }
 
         return null;
     }
+
 }

@@ -15,7 +15,10 @@ import mt.lexer.MTLexer;
 
 import mt.runtime.MTRuntime;
 import mt.runtime.MTScope;
+import mt.ast.MTNode;
 
+import mt.meta.MTModule;
+import mt.meta.MTMetaResolver;
 import mt.exceptions.MTFileException;
 import mt.interpreter.MTInterpreter;
 import mt.parser.MTParser;
@@ -48,6 +51,7 @@ public final class MTLoader {
 
             loadedFiles.add(path);
 
+            /*
             MTLexer lexer = new MTLexer(source);
 
             List<MTToken> tokens = lexer.tokenize();
@@ -61,6 +65,25 @@ public final class MTLoader {
             return interpreter.evaluate(
                     parser.parse(),
                     globalScope);
+                    */
+            MTLexer lexer = new MTLexer(source);
+
+            MTParser parser = new MTParser(lexer.tokenize());
+
+            MTNode ast = parser.parse();
+
+            MTModule module = new MTModule("anonymous");
+
+            module.register(path);
+
+            MTMetaResolver resolver = new MTMetaResolver();
+
+            ast = resolver.resolve(ast, module, path);
+
+            MTInterpreter interpreter = new MTInterpreter(runtime);
+
+            return interpreter.evaluate(ast,globalScope);
+
         }
         catch (IOException ex) {
 

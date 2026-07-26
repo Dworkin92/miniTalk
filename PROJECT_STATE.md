@@ -391,3 +391,216 @@ Interop Java             0%
 Le principal risque conceptuel (objets, classes, métaclasses, dispatch et propriétés) est désormais largement maîtrisé.
 
 Le chantier prioritaire devient la stabilisation définitive du bootstrap et l'achèvement du noyau objet.
+
+META DIRECTIVES
+
+✅ Le lexer produit META_DIRECTIVE
+✅ Le parser produit MTMetaDirectiveNode
+✅ MTMetaResolver implémenté
+✅ Fusion d'AST opérationnelle
+✅ Imports récursifs testés
+✅ Imports circulaires testés
+✅ Compilation OK
+
+
+Bootstrap des objets fondamentaux
+---------------------------------
+
+Contexte
+~~~~~~~~
+
+L'introduction de la classe Symbol et des primitives :
+
+    =
+    asString
+
+a révélé un problème plus général dans le bootstrap du runtime.
+
+Plusieurs objets fondamentaux sont créés avant que leurs classes
+MiniTalk n'existent :
+
+    - MTSymbol
+    - MTBoolean.TRUE
+    - MTBoolean.FALSE
+    - MTString
+
+Ils se retrouvaient donc avec :
+
+    clazz == null
+
+ce qui provoquait des NullPointerException lors des envois
+de messages :
+
+    #Integer = #Integer
+    #Integer asString
+    Integer name
+
+Corrections
+~~~~~~~~~~~
+
+1. MTSymbol
+
+Fichier ~~
+    mt/runtime/MTSymbol.java
+
+Aj~~ts :
+
+    - variable statique sym~~lClass
+    - méthode setSymbolCla~~(...)
+    - méthode allInterned()~~Le bootstrap appelle :
+
+    bindI~~ernedSymbols(symbolClass)
+
+qui :
+~~   - mémorise la classe Symbol
+  ~~- rattache tous les symboles déjà~~nternés
+    - permet aux futurs s~~boles créés via intern(...)
+     ~~e recevoir automatiquement leur c~~sse
+
+2. MTBoolean
+
+Fichier :
+
+   ~~t/runtime/MTBoolean.java
+
+Ajout :~~    setBooleanClass(...)
+
+Le boot~~rap rattache :
+
+    TRUE
+    FALS~~
+à la classe Boolean.
+
+3. MTStrin~~
+Fichier :
+
+    mt/runtime/MTStri~~.java
+
+Ajouts :
+
+    - variable s~~tique stringClass
+    - méthode s~~StringClass(...)
+
+Le constructeur~~TString rattache automatiquement
+~~s nouvelles instances à la classe String lorsque
+celle-ci existe.
+
+4. MTRuntimeBootstrap
+
+Fichier :
+
+    mt/runtime/bootstrap/MTRuntimeBootstrap.java
+
+Ajouts :
+
+    bindInternedSymbols(symbolClass)
+
+et
+
+    MTBoolean.setBooleanClass(booleanClass)
+
+    MTString.setStringClass(stringClass)
+
+Résultat
+~~~~~~~~
+
+Le script suivant fonctionne désormais :
+
+    (#Integer = #Integer) println.
+    (#Integer = #Boolean) println.
+    (#Integer asString) println.
+    Integer name println.
+
+Résultat :
+
+    true
+    false
+    Integer
+    #Integer
+
+L'API de réflexion minimale sur les classes est donc
+désormais opérationnelle.
+
+Points à surveiller
+~~~~~~~~~~~~~~~~~~~
+
+Vérifier ultérieurement si d'autres objets fondamentaux
+créés pendant le bootstrap nécessitent le même traitement :
+
+    - nil
+    - Array
+    - Dictionary
+    - Block
+
+Actuellement, aucun problème connu n'a encore été observé
+sur ces classes.
+
+MOP v1.2
+=========
+
+Statut
+------
+
+Phase d'exploration/documentation.
+
+Le modèle MOP v1.0 basé exclusivement sur :
+
+    clazz
+    superclass
+
+a montré plusieurs limites lors des tests :
+
+    nil class
+    nil class name
+    nil class println
+
+ainsi que lors de la mise en place des primitives
+de réflexion :
+
+    class
+    name
+
+Une version expérimentale MOP v1.2 est documentée
+dans :
+
+    docs/MOP-minitalk-v1.2.yaml
+
+Principes explorés
+------------------
+
+Séparation explicite de trois relations :
+
+    clazz
+        objet -> classe
+
+    metaclazz
+        classe -> métaclasse
+
+    superclass
+        héritage
+
+Objectif :
+
+    - supprimer les cycles de lookup
+    - simplifier le bootstrap du MOP
+    - distinguer les relations conceptuellement
+      différentes actuellement fusionnées dans
+      "clazz"
+
+Points encore ouverts
+---------------------
+
+    - fermeture du sommet de la hiérarchie
+      des métaclasses
+
+    - rôle exact de ClassClass
+
+    - validation des chemins de lookup :
+
+        nil class
+        nil class name
+        nil class println
+
+Aucune modification du runtime n'a encore été
+effectuée à partir du modèle v1.2.
+

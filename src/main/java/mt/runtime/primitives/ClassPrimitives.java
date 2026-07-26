@@ -5,6 +5,7 @@ import mt.runtime.MTClass;
 import mt.runtime.MTObject;
 import mt.runtime.MTNil;
 import mt.runtime.MTSymbol;
+import mt.debug.MTDebug;
 
 public final class ClassPrimitives {
 
@@ -18,7 +19,13 @@ public final class ClassPrimitives {
 
         MTClass clazz = (MTClass) receiver;
 
-        return clazz.getName();
+        MTSymbol result = clazz.getName();
+
+        MTDebug.log("name result = " + result);
+        MTDebug.log("name result clazz = " + result.getClazz());
+
+return result;
+        //return clazz.getName();
     }
 
     @Primitive("superclass")

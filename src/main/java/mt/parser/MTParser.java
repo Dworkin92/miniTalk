@@ -19,9 +19,9 @@ public final class MTParser {
 
     private int current;
 
-    private String moduleName;
+    //private String moduleName;
 
-    private final List<String> imports = new ArrayList<>();
+    //private final List<String> imports = new ArrayList<>();
 
     public MTParser(List<MTToken> tokens) {
 
@@ -47,8 +47,11 @@ public final class MTParser {
         MTSequenceNode sequence =
                 new MTSequenceNode();
 
-        sequence.add(
-                parseExpression());
+        //sequence.add(parseExpression());
+        while (!isAtEnd()&& !check(MTTokenType.RBRACKET) && !check(MTTokenType.RPAREN)) {
+            sequence.add(parseExpression());
+            match(MTTokenType.DOT);
+        }
 
         while (match(MTTokenType.DOT)) {
 
@@ -109,13 +112,15 @@ public final class MTParser {
 
     private MTNode parsePrimary() {
 
+        if (match(MTTokenType.META_DIRECTIVE)) {
+            return new MTMetaDirectiveNode(previous().text());
+        }
+
         if (match(
                 MTTokenType.INTEGER)) {
 
             return new MTIntegerLiteralNode(
-                    Long.parseLong(
-                            previous()
-                                    .text()));
+                    Long.parseLong(previous().text()));
         }
 
         if (match(MTTokenType.NIL)) {
@@ -128,6 +133,11 @@ public final class MTParser {
 
         if (match(MTTokenType.FALSE)) {
             return new MTBooleanLiteralNode(false);
+        }
+
+        if (match(MTTokenType.SYMBOL)) {
+            return new MTSymbolLiteralNode(
+                MTSymbol.intern(previous().text()));
         }
 
         if (match(
@@ -308,6 +318,7 @@ public final class MTParser {
             body);
     }
 
+    /*
     public String getModuleName() {
 
         return moduleName;
@@ -317,7 +328,7 @@ public final class MTParser {
 
         return imports;
     }
-
+    */
 
     /*
      * Helpers

@@ -82,7 +82,7 @@ ClassClass class = ClassClass
 Diagramme
 
 ```Plain Text
-                      class
+           class
    Object ----------> ObjectClass ---------------+
       ^                   ^                      |
       | superclass        | superclass           |

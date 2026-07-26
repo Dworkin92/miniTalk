@@ -48,6 +48,28 @@ public class MTInterpreter {
             return scope.lookup(n.getName());
         }
 
+        /* modif pour debugger certaines choses */
+        /*
+        if (node instanceof MTVariableNode n) {
+
+            try {
+                return scope.lookup(n.getName());
+            }
+            catch (MTRuntimeException ex) {
+
+                MTClass clazz =
+                    runtime.classNamed(
+                        n.getName().getValue());
+
+                if (clazz != null) {
+                    return clazz;
+                }
+
+            throw ex;
+            }
+        }
+        */
+
         if (node instanceof MTStringLiteralNode n) {
 
             MTClass stringClass = MTKernelBootstrap.createStringClass();

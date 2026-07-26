@@ -51,10 +51,22 @@ public final class MTRuntimeBootstrap {
 
         classClass.setSuperclass(objectClass);
 
+        /*
+         * Mop v1.0
+         *
         objectMetaclass.setSuperclass(classMetaclass);
 
         classMetaclass.setSuperclass(objectMetaclass);
-        //classMetaclass.setSuperclass(classMetaclass);
+         **/
+
+        /*
+         * Mop v1.1
+         */
+        objectMetaclass.setSuperclass(objectClass);
+
+        classMetaclass.setSuperclass(objectMetaclass);
+         /**/
+
 
         /*
          * Instance-of
@@ -95,8 +107,9 @@ public final class MTRuntimeBootstrap {
             ObjectPrimitives.class);
 
         PrimitiveInstaller.install(
-            runtime.getClassClass(),
+            runtime.getClassMetaclass(),
             ClassPrimitives.class);
+
     }
 
     private static void bootstrapFirstClasses(MTRuntime runtime) {
@@ -104,55 +117,39 @@ public final class MTRuntimeBootstrap {
         MTClass objectClass = runtime.getObjectClass();
 
 
+        MTClass nilClass = ClassDefInstaller.install(runtime, NilClassDef.class);
+        MTNil.setNilClass(nilClass);
+
         MTClass integerClass = ClassDefInstaller.install(runtime, IntegerClassDef.class);
 
-        /*
-         * === ancien système === *
-        MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime, "Integer", objectClass);
-        runtime.registerClass(integerClass);
-        runtime.registerClass(integerClass.getClazz());
-         */
 
         MTClass booleanClass = ClassDefInstaller.install(runtime, BooleanClassDef.class);
-
-        /*
-         * === ancien système === *
-        MTClass booleanClass = MTKernelBootstrap.createBooleanClass(runtime, "Boolean", objectClass);
-        runtime.registerClass(booleanClass);
-        runtime.registerClass(booleanClass.getClazz());
-         */
+        MTBoolean.setBooleanClass(booleanClass);
 
         MTClass stringClass = ClassDefInstaller.install(runtime, StringClassDef.class);
+        MTString.setStringClass(stringClass);
 
-        /*
-        MTClass stringClass = MTKernelBootstrap.createStringClass(runtime, "String", objectClass);
-        runtime.registerClass(stringClass);
-        runtime.registerClass(stringClass.getClazz());
-         */
+        MTClass symbolClass = ClassDefInstaller.install(runtime, SymbolClassDef.class);
+        bindInternedSymbols(symbolClass);
+
 
         MTClass arrayClass = ClassDefInstaller.install(runtime, ArrayClassDef.class);
-        /*
-        MTClass arrayClass = MTKernelBootstrap.createArrayClass(runtime, "Array", objectClass);
-        runtime.registerClass(arrayClass);
-        runtime.registerClass(arrayClass.getClazz());
-        */
+
 
         MTClass dictionaryClass = ClassDefInstaller.install(runtime, DictionaryClassDef.class);
 
-        /*
-        MTClass dictionaryClass = MTKernelBootstrap.createDictionaryClass(runtime, "Dictionary", objectClass);
-        dictionaryClass.setSuperclass(objectClass);
-        runtime.registerClass(dictionaryClass);
-        */
 
         MTClass blockClass = ClassDefInstaller.install(runtime, BlockClassDef.class);
-        /*
-        MTClass blockClass = MTKernelBootstrap.createBlockClass(runtime, "Block", objectClass);
-        blockClass.setSuperclass(objectClass);
-        runtime.registerClass(blockClass);
-        */
 
     }
 
+    private static void bindInternedSymbols(MTClass symbolClass) {
+        MTSymbol.setSymbolClass(symbolClass);
+
+        for (MTSymbol symbol : MTSymbol.allInterned()) {
+
+            symbol.setClazz(symbolClass);
+        }
+    }
 
 }
