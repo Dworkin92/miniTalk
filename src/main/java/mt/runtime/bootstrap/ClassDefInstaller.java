@@ -51,29 +51,25 @@ public final class ClassDefInstaller {
             new MTClass(
                 MTSymbol.intern(
                     className));
-
         clazz.setSuperclass(
             superclass);
 
-        MTMetaclass metaclass =
+        MTMetaclass metaclazz =
             new MTMetaclass(
                 MTSymbol.intern(
                     className + "Class"));
-
-        metaclass.setSuperclass(
+        metaclazz.setSuperclass(
             (MTClass) superclass.getClazz());
 
-        metaclass.setClazz(
-            runtime.getClassMetaclass());
 
-        clazz.setClazz(
-            metaclass);
+        metaclazz.setClazz(runtime.getClassMetaclass());
+        metaclazz.setMetaclazz((MTMetaclass)null);
 
-        runtime.registerClass(
-            clazz);
+        clazz.setClazz(runtime.getClassClass());
+        clazz.setMetaclazz(metaclazz);
 
-        runtime.registerClass(
-            metaclass);
+        runtime.registerClass(clazz);
+        runtime.registerClass(metaclazz);
 
         /* Installation automatique des primitives */
         Class<?> primitiveClass = definition.instancePrimitives();
