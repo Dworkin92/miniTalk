@@ -59,7 +59,7 @@ public final class ClassDefInstaller {
                 MTSymbol.intern(
                     className + "Class"));
         metaclazz.setSuperclass(
-            (MTClass) superclass.getClazz());
+            (MTClass) superclass.getMetaclazz());
 
 
         metaclazz.setClazz(runtime.getClassMetaclass());

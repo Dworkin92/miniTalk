@@ -36,6 +36,8 @@ public final class BootstrapRegressionTests {
         testUserClassCreation();
 
         testClassDefInstaller();
+
+        testQuadrant();
     }
 
     private static void testIntegerClassCreation() {
@@ -352,46 +354,122 @@ employeeClass.setClazz(
 
     public static void testClassDefInstaller() {
 
-    System.out.println(
-        "=== ClassDefInstaller test ===");
+        System.out.println("=== ClassDefInstaller test ===");
 
-    MTRuntime runtime =
-        MTRuntimeBootstrap.bootstrapCoreOnly();
+        MTRuntime runtime = MTRuntimeBootstrap.bootstrapCoreOnly();
 
-    MTClass integerClass =
-        ClassDefInstaller.install(
-            runtime,
-            IntegerClassDef.class);
+        MTClass integerClass = ClassDefInstaller.install(runtime,IntegerClassDef.class);
+        MTMetaclass integerMetaclass = integerClass.getMetaclazz();
 
-    assertEquals(
-        "Integer class name",
-        "#Integer",
-        integerClass.getName().toString());
+        assertEquals(
+            "Integer : name",
+            "#Integer",
+            integerClass.getName().toString());
 
-    assertEquals(
-        "Integer metaclass name",
-        "#IntegerClass",
-        integerClass.getClazz().getName().toString());
+        assertEquals(
+            "Integer : metaclass name",
+            "#IntegerClass",
+            integerMetaclass.getName().toString());
 
-    assertEquals(
-        "Integer class superclass name",
-        "#Object",
-        integerClass.getSuperclass().getName().toString());
+        assertEquals(
+            "Integer : class name",
+            "#Class",
+            integerClass.getClazz().getName().toString());
 
-    assertEquals(
-        "Integer metaclass superclass name",
-        "#ObjectClass",
-        integerClass.getClazz()
-                    .getSuperclass()
-                    .getName()
-                    .toString());
+        assertEquals(
+            "Integer : superclass name",
+            "#Object",
+            integerClass.getSuperclass().getName().toString());
 
-    assertEquals(
-        "Integer metaclass class name",
-        "#ClassClass",
-        integerClass.getClazz()
-                    .getClazz()
-                    .getName()
-                    .toString());
-}
+        assertEquals(
+            "IntegerClass : class name",
+            "#ClassClass",
+            integerMetaclass.getClazz().getName().toString());
+
+        assertEquals(
+            "IntegerClass : superclass name",
+            "#ObjectClass",
+            integerMetaclass.getSuperclass().getName().toString());
+
+        if ( integerMetaclass.getMetaclazz() == null)
+            System.out.println("IntegerClass : metaclass name expected: null ==> OK");
+        else
+            System.out.println("IntegerClass : metaclass name expected: null ==> ECHEC");
+
+    }
+
+    public static void testQuadrant() {
+        System.out.println("=== Magic Quad test ===");
+
+        MTRuntime runtime = MTRuntimeBootstrap.bootstrapCoreOnly();
+
+        /* Object */
+        MTClass objectClass = runtime.getObjectClass();
+        assertEquals("Object : name",
+            "#Object",
+            objectClass.getName().toString());
+
+        assertEquals("Object : is instance of ",
+            "#Class",
+            objectClass.getClazz().getName().toString());
+
+        if ( objectClass.getSuperclass() == null)
+            System.out.println("Object : superclass name expected: null ==> OK");
+        else
+            System.out.println("Object : superclass name expected: null ==> ECHEC");
+
+
+        assertEquals("Object : metaclass name",
+                     "#ObjectClass",
+                     objectClass.getMetaclazz().getName().toString());
+        /* Class */
+        MTClass classClass = runtime.getClassClass();
+        assertEquals("Class : name",
+            "#Class",
+            classClass.getName().toString());
+        assertEquals("Class : is instance of",
+            "#Class",
+            classClass.getClazz().getName().toString());
+        assertEquals("Class : superclass name",
+            "#Object",
+            classClass.getSuperclass().getName().toString());
+        assertEquals("Class : metaclass name",
+            "#ClassClass",
+            classClass.getMetaclazz().getName().toString());
+
+        /* Object MetaClasse */
+        MTClass objectMetaclass = runtime.getObjectMetaclass();
+        assertEquals("ObjectClass :  name",
+            "#ObjectClass",
+            objectMetaclass.getName().toString());
+        assertEquals("ObjectClass : is instance of",
+            "#ClassClass",
+            objectMetaclass.getClazz().getName().toString());
+        assertEquals("ObjectClass : superclass name",
+            "#Object",
+            objectMetaclass.getSuperclass().getName().toString());
+
+        if ( objectMetaclass.getMetaclazz() == null)
+            System.out.println("ObjectClass : metaclass name expected: null ==> OK");
+        else
+            System.out.println("ObjectClass : metaclass name expected: null ==> ECHEC");
+
+        /* Class MetaClasse */
+        MTClass classMetaclass = runtime.getClassMetaclass();
+        assertEquals("ClassClass : name",
+            "#ClassClass",
+            classMetaclass.getName().toString());
+        assertEquals("ClassClass : is instance of",
+            "#Class",
+            classMetaclass.getClazz().getName().toString());
+        assertEquals("ClassClass : superclass name",
+            "#ObjectClass",
+            classMetaclass.getSuperclass().getName().toString());
+
+        if ( classMetaclass.getMetaclazz() == null)
+            System.out.println("ClassClass : metaclass name expected: null ==> OK");
+        else
+            System.out.println("ClassClass : metaclass name expected: null ==> ECHEC");
+
+    }
 }

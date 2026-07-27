@@ -590,9 +590,6 @@ Objectif :
 Points encore ouverts
 ---------------------
 
-    - fermeture du sommet de la hiérarchie
-      des métaclasses
-
     - rôle exact de ClassClass
 
     - validation des chemins de lookup :
@@ -601,6 +598,31 @@ Points encore ouverts
         nil class name
         nil class println
 
-Aucune modification du runtime n'a encore été
-effectuée à partir du modèle v1.2.
+
+MOP v1.2 : séparation de clazz et metaclazz
+-------------------------------------------
+
+Après plusieurs expérimentations sur le bootstrap
+Object/Class/ObjectClass/ClassClass, la relation
+clazz s'est révélée porter deux concepts distincts :
+
+    objet -> classe
+    classe -> métaclasse
+
+Pour tenter de simplifier algorithmiquement les
+cose, on tente l'introduction explicite de la
+relation metaclazz. Le travail effectué a donc été 
+
+- ajout de MTClass.metaclazz
+- adaptation de ClassDefInstaller
+- correction de l'héritage miroir des métaclasses
+- révision du quadrant magique
+- documentation MOP v1.2
+
+Tous les tests de non-régression passent.
+
+Je sais que pour certains, ce sera intellectuellement
+non satisfaisant, mais au temps pour les puristes :
+le nouveau modèle semble fonctionner sans mécanismes
+alambiqués (Behaivious, ClassDescription, etc.).
 

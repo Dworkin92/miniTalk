@@ -60,7 +60,7 @@ public final class MTRuntimeBootstrap {
          **/
 
         /*
-         * Mop v1.1
+         * Mop v1.2
          */
         objectMetaclass.setSuperclass(objectClass);
 
@@ -72,6 +72,8 @@ public final class MTRuntimeBootstrap {
          * Instance-of
          */
 
+        /** Mop v1.0
+         *
         objectClass.setClazz(objectMetaclass);
 
         classClass.setClazz(classMetaclass);
@@ -79,6 +81,27 @@ public final class MTRuntimeBootstrap {
         objectMetaclass.setClazz(classMetaclass);
 
         classMetaclass.setClazz(classMetaclass);
+        */
+
+        /** Mop v1.2
+         */
+        objectClass.setClazz(classClass);
+
+        classClass.setClazz(classClass);
+
+        objectMetaclass.setClazz(classMetaclass);
+
+        classMetaclass.setClazz(classClass);
+
+
+        objectClass.setMetaclazz(objectMetaclass);
+
+        classClass.setMetaclazz(classMetaclass);
+
+        objectMetaclass.setMetaclazz((MTMetaclass)null);
+
+        classMetaclass.setMetaclazz((MTMetaclass)null);
+
 
 
 
