@@ -55,6 +55,7 @@ public final class PrimitiveRegressionTests {
     private static void testIntegerAddition() {
         System.out.println("=== Integer addition ===");
         MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
+        MTScope scope = new MTScope(runtime, null);
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -66,12 +67,13 @@ public final class PrimitiveRegressionTests {
         MTArray plusArgs = new MTArray();
         plusArgs.add(b);
 
-        assertResult(" 10 + 3", a.send(MTSymbol.intern("+"), plusArgs));
+        assertResult(" 10 + 3", a.send(MTSymbol.intern("+"), plusArgs, scope));
     }
 
     private static void testIntegerSubtraction() {
         System.out.println("=== Integer subtraction ===");
         MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
+        MTScope scope = new MTScope(runtime, null);
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -83,12 +85,13 @@ public final class PrimitiveRegressionTests {
         MTArray minusArgs = new MTArray();
         minusArgs.add(b);
 
-        assertResult("10 - 3", a.send(MTSymbol.intern("-"), minusArgs));
+        assertResult("10 - 3", a.send(MTSymbol.intern("-"), minusArgs, scope));
     }
 
     private static void testIntegerMultiplication() {
         System.out.println("=== Integer multiplication ===");
         MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
+        MTScope scope = new MTScope(runtime, null);
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -100,12 +103,13 @@ public final class PrimitiveRegressionTests {
         MTArray multArgs = new MTArray();
         multArgs.add(b);
 
-        assertResult("10 * 3", a.send(MTSymbol.intern("*"), multArgs));
+        assertResult("10 * 3", a.send(MTSymbol.intern("*"), multArgs, scope));
     }
 
     private static void testIntegerDivision() {
         System.out.println("=== Integer division ===");
         MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
+        MTScope scope = new MTScope(runtime, null);
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -117,12 +121,13 @@ public final class PrimitiveRegressionTests {
         MTArray divArgs = new MTArray();
         divArgs.add(b);
 
-        assertResult("10 / 3", a.send(MTSymbol.intern("/"), divArgs));
+        assertResult("10 / 3", a.send(MTSymbol.intern("/"), divArgs, scope));
     }
 
     private static void testIntegerModulo() {
         System.out.println("=== Integer modulo ===");
         MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
+        MTScope scope = new MTScope(runtime, null);
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -134,12 +139,13 @@ public final class PrimitiveRegressionTests {
         MTArray modArgs = new MTArray();
         modArgs.add(b);
 
-        assertResult("10 % 3", a.send(MTSymbol.intern("%"), modArgs));
+        assertResult("10 % 3", a.send(MTSymbol.intern("%"), modArgs, scope));
     }
 
     private static void testIntegerEquals() {
         System.out.println("=== Integer Equals ===");
         MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
+        MTScope scope = new MTScope(runtime, null);
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -151,12 +157,13 @@ public final class PrimitiveRegressionTests {
         MTArray eqArgs = new MTArray();
         eqArgs.add(b);
 
-        assertResult("10 = 3", a.send(MTSymbol.intern("="), eqArgs));
+        assertResult("10 = 3", a.send(MTSymbol.intern("="), eqArgs, scope));
     }
 
     private static void testIntegerDifferentFrom() {
         System.out.println("=== Integer Different from ===");
         MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
+        MTScope scope = new MTScope(runtime, null);
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -168,13 +175,14 @@ public final class PrimitiveRegressionTests {
         MTArray neqArgs = new MTArray();
         neqArgs.add(b);
 
-        assertResult("10 <> 3", a.send(MTSymbol.intern("<>"), neqArgs));
-        assertResult("10 != 3", a.send(MTSymbol.intern("!="), neqArgs));
+        assertResult("10 <> 3", a.send(MTSymbol.intern("<>"), neqArgs, scope));
+        assertResult("10 != 3", a.send(MTSymbol.intern("!="), neqArgs, scope));
     }
 
     private static void testIntegerLessThan() {
         System.out.println("=== Integer Less than ===");
         MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
+        MTScope scope = new MTScope(runtime, null);
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -186,12 +194,13 @@ public final class PrimitiveRegressionTests {
         MTArray ltArgs = new MTArray();
         ltArgs.add(b);
 
-        assertResult("10 < 3", a.send(MTSymbol.intern("<"), ltArgs));
+        assertResult("10 < 3", a.send(MTSymbol.intern("<"), ltArgs, scope));
     }
 
     private static void testIntegerGreaterThan() {
         System.out.println("=== Integer Greater than ===");
         MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
+        MTScope scope = new MTScope(runtime, null);
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -203,12 +212,13 @@ public final class PrimitiveRegressionTests {
         MTArray gtArgs = new MTArray();
         gtArgs.add(b);
 
-        assertResult("10 > 3", a.send(MTSymbol.intern(">"), gtArgs));
+        assertResult("10 > 3", a.send(MTSymbol.intern(">"), gtArgs, scope));
     }
 
     private static void testIntegerLessOrEqual() {
         System.out.println("=== Integer Less or Equal to ===");
         MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
+        MTScope scope = new MTScope(runtime, null);
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -220,13 +230,14 @@ public final class PrimitiveRegressionTests {
         MTArray leArgs = new MTArray();
         leArgs.add(b);
 
-        assertResult("10 ~< 3", a.send(MTSymbol.intern("~<"), leArgs));
-        assertResult("10 <= 3", a.send(MTSymbol.intern("<="), leArgs));
+        assertResult("10 ~< 3", a.send(MTSymbol.intern("~<"), leArgs, scope));
+        assertResult("10 <= 3", a.send(MTSymbol.intern("<="), leArgs, scope));
     }
 
     private static void testIntegerGreaterOrEqual() {
         System.out.println("=== Integer Greter or Equal to ===");
         MTClass integerClass = MTKernelBootstrap.createIntegerClass(runtime.getObjectClass());
+        MTScope scope = new MTScope(runtime, null);
 
         MTInteger a = new MTInteger(10);
         a.setClazz(integerClass);
@@ -238,8 +249,8 @@ public final class PrimitiveRegressionTests {
         MTArray geArgs = new MTArray();
         geArgs.add(b);
 
-        assertResult("10 >~ 3", a.send(MTSymbol.intern(">~"), geArgs));
-        assertResult("10 >= 3", a.send(MTSymbol.intern(">="), geArgs));
+        assertResult("10 >~ 3", a.send(MTSymbol.intern(">~"), geArgs, scope));
+        assertResult("10 >= 3", a.send(MTSymbol.intern(">="), geArgs, scope));
     }
 
     private static void testBooleanOperations() {
@@ -247,9 +258,8 @@ public final class PrimitiveRegressionTests {
         System.out.println(
                 "=== Boolean operations ===");
 
-        MTClass booleanClass =
-            MTKernelBootstrap
-                .createBooleanClass();
+        MTClass booleanClass = MTKernelBootstrap.createBooleanClass();
+        MTScope scope = new MTScope(runtime, null);
 
         MTBoolean t = MTBoolean.TRUE;
 
@@ -261,11 +271,11 @@ public final class PrimitiveRegressionTests {
 
         assertResult("true not",
             t.send(
-                MTSymbol.intern("not")));
+                MTSymbol.intern("not"), scope));
 
         assertResult("false not",
             f.send(
-                MTSymbol.intern("not")));
+                MTSymbol.intern("not"), scope));
 
         MTArray andArgs = new MTArray();
 
@@ -274,7 +284,7 @@ public final class PrimitiveRegressionTests {
         assertResult("true and: false",
             t.send(
                 MTSymbol.intern("and:"),
-                andArgs));
+                andArgs, scope));
 
         MTArray orArgs = new MTArray();
 
@@ -283,7 +293,7 @@ public final class PrimitiveRegressionTests {
         assertResult("true or: false",
             t.send(
                 MTSymbol.intern("or:"),
-                orArgs));
+                orArgs, scope));
 
         MTArray xorArgs = new MTArray();
 
@@ -292,7 +302,7 @@ public final class PrimitiveRegressionTests {
         assertResult("true xor: true",
             t.send(
                 MTSymbol.intern("xor:"),
-                xorArgs));
+                xorArgs, scope));
 
         xorArgs = new MTArray();
 
@@ -301,7 +311,7 @@ public final class PrimitiveRegressionTests {
         assertResult("true xor: false",
             f.send(
                 MTSymbol.intern("xor:"),
-                xorArgs));
+                xorArgs, scope));
 
         assertResult("true getClazz",
             MTBoolean.TRUE.getClazz());
@@ -319,6 +329,7 @@ public final class PrimitiveRegressionTests {
         MTClass stringClass =
             MTKernelBootstrap
                 .createStringClass();
+        MTScope scope = new MTScope(runtime, null);
 
         MTString hello = new MTString("Hello ");
 
@@ -330,7 +341,7 @@ public final class PrimitiveRegressionTests {
 
         assertResult("'Hello '",
             hello.send(
-                MTSymbol.intern("size")));
+                MTSymbol.intern("size"), scope));
 
         MTArray concatArgs = new MTArray();
 
@@ -339,7 +350,7 @@ public final class PrimitiveRegressionTests {
         assertResult("'Hello ' + 'World'",
             hello.send(
                 MTSymbol.intern("+"),
-                concatArgs));
+                concatArgs, scope));
 
         MTArray eqArgs2 = new MTArray();
 
@@ -348,7 +359,7 @@ public final class PrimitiveRegressionTests {
         assertResult("'Hello ' = 'Hello '",
             hello.send(
                 MTSymbol.intern("="),
-                eqArgs2));
+                eqArgs2, scope));
 
         MTArray eqArgs3 = new MTArray();
 
@@ -357,7 +368,7 @@ public final class PrimitiveRegressionTests {
         assertResult("'Hello ' = 'World'",
             hello.send(
                 MTSymbol.intern("="),
-                eqArgs3));
+                eqArgs3, scope));
 
     }
 }

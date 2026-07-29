@@ -32,6 +32,11 @@ public class MTObject {
     private final Map<MTSymbol, MTObject> propertyValues =
             new HashMap<>();
 
+    /**
+     * name est un symbole permettant de désigner tout objet dans miniTalk
+     */
+    private MTSymbol name;
+
     /* ===============================
      *    méthodes
      * =============================== */
@@ -53,33 +58,31 @@ public class MTObject {
     /**
      * méthode pour envoyer un message de type unary désigné par le MTSymbol selector
      */
-    public MTObject send(MTSymbol selector) {
-        return send(
-            selector,
-            new MTArray());
+    public MTObject send(MTSymbol selector, MTScope scope) {
+        return send(selector, new MTArray(), scope);
     }
 
     /**
      * méthode pour envoyer un message binaire (exemple "at:") ou
      * binaire composé d'un ou plusieurs arguments (exemple "at:put:")
      */
-    public MTObject send(MTSymbol selector,MTArray arguments) {
-        MTDebug.log("[SEND] receiver="
-            + this
-            + " selector="
-            + selector
-            + " clazz="
-            + clazz);
+    public MTObject send(MTSymbol selector, MTArray arguments, MTScope scope) {
 
-        MTMethod method = clazz.lookupMethod(selector);
+        MTClass lookupClass = clazz;
 
+        if (this instanceof MTClass classReceiver
+            && classReceiver.getMetaclazz() != null) {
 
-        if (method == null) {
-            throw new MTRuntimeException(
-                "Unknown selector: " + selector);
+            lookupClass = classReceiver.getMetaclazz();
         }
 
-        return method.invoke(this, arguments);
+        MTMethod method = lookupClass.lookupMethod(selector);
+
+        if (method == null) {
+            throw new MTRuntimeException("Unknown selector: " + selector);
+        }
+
+        return method.invoke(this, arguments, scope);
     }
 
     /**
@@ -94,6 +97,14 @@ public class MTObject {
      */
     public void setClazz(MTClass clazz) {
         this.clazz = clazz;
+    }
+
+    public MTSymbol getName() {
+        return name;
+    }
+
+    public void setName(MTSymbol name){
+        this.name = name;
     }
 
     /**

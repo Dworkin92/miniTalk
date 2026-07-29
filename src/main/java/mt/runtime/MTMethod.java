@@ -29,13 +29,9 @@ public class MTMethod
         return ownerClass;
     }
 
-    public MTObject invoke(
-            MTObject receiver,
-            MTArray arguments) {
+    public MTObject invoke(MTObject receiver, MTArray arguments, MTScope scope) {
 
-        return body.execute(
-                receiver,
-                arguments);
+        return body.execute(receiver, arguments, scope);
     }
 
     public Object getBody() {

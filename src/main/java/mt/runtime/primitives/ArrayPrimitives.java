@@ -3,6 +3,7 @@ package mt.runtime.primitives;
 import mt.runtime.MTArray;
 import mt.runtime.MTInteger;
 import mt.runtime.MTObject;
+import mt.runtime.MTScope;
 
 public final class ArrayPrimitives {
 
@@ -12,7 +13,8 @@ public final class ArrayPrimitives {
     @Primitive("size")
     public static MTObject size(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray  arguments,
+            MTScope  scope) {
 
         MTArray self =
                 (MTArray) receiver;
@@ -30,7 +32,8 @@ public final class ArrayPrimitives {
     @Primitive("at:")
     public static MTObject at(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTArray self =
                 (MTArray) receiver;
@@ -45,7 +48,8 @@ public final class ArrayPrimitives {
     @Primitive("at:put:")
     public static MTObject atPut(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTArray self =
                 (MTArray) receiver;

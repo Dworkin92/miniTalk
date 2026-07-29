@@ -96,6 +96,7 @@ System.out.println(
 MTClass arrayClass =
         MTKernelBootstrap
                 .createArrayClass();
+MTScope scope = new MTScope(runtime, null);
 
 MTArray array =
         new MTArray();
@@ -123,7 +124,7 @@ array.add(two);
 System.out.println(
         array.send(
                 MTSymbol.intern("size"),
-                new MTArray()));
+                new MTArray(), scope));
 
 MTArray atArgs =
         new MTArray();
@@ -139,13 +140,14 @@ atArgs.add(zero);
 System.out.println(
         array.send(
                 MTSymbol.intern("at:"),
-                atArgs));
+                atArgs, scope));
     }
 
     private static void testDictionary() {
 
         System.out.println(
                 "=== Dictionary ===");
+        MTScope scope = new MTScope(runtime, null);
 
         MTClass dictionaryClass =
             MTKernelBootstrap
@@ -161,7 +163,7 @@ System.out.println(
 
         argsPut.add(new MTInteger(38));
 
-        dict.send(MTSymbol.intern("at:put:"), argsPut);
+        dict.send(MTSymbol.intern("at:put:"), argsPut, scope);
 
         MTArray argsAt = new MTArray();
 
@@ -170,14 +172,14 @@ System.out.println(
         System.out.println(
             dict.send(
                 MTSymbol.intern("at:"),
-                argsAt));
+                argsAt, scope));
 
         MTArray sizeArgs = new MTArray();
 
         System.out.println(
             dict.send(
                 MTSymbol.intern("size"),
-                sizeArgs));
+                sizeArgs, scope));
 
         MTArray includesArgs = new MTArray();
 
@@ -186,7 +188,7 @@ System.out.println(
         System.out.println(
             dict.send(
                 MTSymbol.intern("includesKey:"),
-                includesArgs));
+                includesArgs, scope));
         // ton code actuel
     }
 

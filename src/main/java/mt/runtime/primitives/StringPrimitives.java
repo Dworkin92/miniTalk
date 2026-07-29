@@ -4,6 +4,7 @@ import mt.runtime.MTArray;
 import mt.runtime.MTBoolean;
 import mt.runtime.MTInteger;
 import mt.runtime.MTObject;
+import mt.runtime.MTScope;
 import mt.runtime.MTString;
 
 public final class StringPrimitives {
@@ -14,7 +15,8 @@ public final class StringPrimitives {
     @Primitive("size")
     public static MTObject size(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTString self =
                 (MTString) receiver;
@@ -31,7 +33,8 @@ public final class StringPrimitives {
     @Primitive("+")
     public static MTObject plus(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTString self =
                 (MTString) receiver;
@@ -52,7 +55,8 @@ public final class StringPrimitives {
     @Primitive("=")
     public static MTObject equalsTo(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTString self =
                 (MTString) receiver;

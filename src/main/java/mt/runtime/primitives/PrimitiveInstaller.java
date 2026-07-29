@@ -31,10 +31,10 @@ public final class PrimitiveInstaller {
                     new MTMethod(
                         MTSymbol.intern(annotation.value()),
                         clazz,
-                        (receiver, arguments) -> {
+                        (receiver, arguments, scope) -> {
 
                             try {
-                                return (MTObject)method.invoke(null,receiver,arguments);
+                                return (MTObject)method.invoke(null,receiver,arguments, scope);
 
                             }
                             catch (InvocationTargetException ex) {

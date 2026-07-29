@@ -614,12 +614,14 @@ cose, on tente l'introduction explicite de la
 relation metaclazz. Le travail effectué a donc été 
 
 - ajout de MTClass.metaclazz
+- séparation de la sémentique clazz et metaclazz
 - adaptation de ClassDefInstaller
 - correction de l'héritage miroir des métaclasses
 - révision du quadrant magique
+- propagation du scope aux invocations de primitives 
 - documentation MOP v1.2
 
-Tous les tests de non-régression passent.
+Tous les tests de non-régression sont préservés.
 
 Je sais que pour certains, ce sera intellectuellement
 non satisfaisant, mais au temps pour les puristes :

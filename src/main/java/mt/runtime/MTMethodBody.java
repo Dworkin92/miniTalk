@@ -5,6 +5,7 @@ public interface MTMethodBody {
 
     MTObject execute(
             MTObject receiver,
-            MTArray arguments);
+            MTArray  arguments,
+            MTScope  scope);
 
 }

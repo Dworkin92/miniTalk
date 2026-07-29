@@ -12,7 +12,7 @@ import mt.debug.MTDebug;
 public class MTClass
         extends MTObject {
 
-    private final MTSymbol name;
+    //private final MTSymbol name;
 
     private MTClass superclass;
 
@@ -32,12 +32,15 @@ public class MTClass
 
     public MTClass(MTSymbol name) {
 
-        this.name = name;
+        //this.name = name;
+        this.setName(name);
     }
 
+    /*
     public MTSymbol getName() {
         return name;
     }
+    */
 
     public MTClass getSuperclass() {
         return superclass;
@@ -126,6 +129,9 @@ public class MTClass
     }
 
     private MTMethod lookupMethod(MTSymbol selector, Set<MTClass> visited) {
+        MTDebug.log( getName() + " -> " + selector + " superclass="
+            + (superclass != null ? superclass.getName() : "null"));
+
         if (!visited.add(this)) {
 
             throw new MTRuntimeException("Cyclic superclass hierarchy detected while looking up "

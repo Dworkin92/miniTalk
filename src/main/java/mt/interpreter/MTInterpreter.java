@@ -123,7 +123,8 @@ public class MTInterpreter {
 
             return receiver.send(
                 n.getSelector(),
-                arguments);
+                arguments,
+                scope);
         }
 
         if (node instanceof MTObjectLiteralNode n) {

@@ -28,5 +28,5 @@ public @interface ClassDef {
 
     Class<?> instancePrimitives() default Void.class;
 
-    //Class<?> classPrimitives() default Void.class;
+    Class<?> classPrimitives() default Void.class;
 }

@@ -5,6 +5,7 @@ import mt.runtime.MTBoolean;
 import mt.runtime.MTInteger;
 import mt.runtime.MTObject;
 import mt.runtime.MTBlock;
+import mt.runtime.MTScope;
 import mt.runtime.MTNil;
 
 public final class IntegerPrimitives {
@@ -15,7 +16,8 @@ public final class IntegerPrimitives {
     @Primitive("+")
     public static MTObject plus(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTInteger left =
                 (MTInteger) receiver;
@@ -29,7 +31,8 @@ public final class IntegerPrimitives {
     @Primitive("-")
     public static MTObject minus(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTInteger left =
                 (MTInteger) receiver;
@@ -43,7 +46,8 @@ public final class IntegerPrimitives {
     @Primitive("*")
     public static MTObject multiply(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTInteger left =
                 (MTInteger) receiver;
@@ -57,7 +61,8 @@ public final class IntegerPrimitives {
     @Primitive("/")
     public static MTObject divide(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTInteger left =
                 (MTInteger) receiver;
@@ -71,7 +76,8 @@ public final class IntegerPrimitives {
     @Primitive("%")
     public static MTObject modulo(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTInteger left =
                 (MTInteger) receiver;
@@ -86,7 +92,8 @@ public final class IntegerPrimitives {
     @Primitive("==")
     public static MTObject equalsTo(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTInteger left =
                 (MTInteger) receiver;
@@ -100,7 +107,8 @@ public final class IntegerPrimitives {
     @Primitive("<")
     public static MTObject lessThan(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTInteger left =
                 (MTInteger) receiver;
@@ -114,7 +122,8 @@ public final class IntegerPrimitives {
     @Primitive(">")
     public static MTObject greaterThan(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTInteger left =
                 (MTInteger) receiver;
@@ -129,7 +138,8 @@ public final class IntegerPrimitives {
     @Primitive("<=")
     public static MTObject lessOrEqual(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTInteger left =
                 (MTInteger) receiver;
@@ -144,7 +154,8 @@ public final class IntegerPrimitives {
     @Primitive(">=")
     public static MTObject greaterOrEqual(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTInteger left =
                 (MTInteger) receiver;
@@ -159,7 +170,8 @@ public final class IntegerPrimitives {
     @Primitive("!=")
     public static MTObject differentFrom(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTInteger left =
                 (MTInteger) receiver;
@@ -171,7 +183,8 @@ public final class IntegerPrimitives {
     }
 
     @Primitive("to:do:")
-    public static MTObject toDo(MTObject receiver, MTArray arguments) {
+    public static MTObject toDo(MTObject receiver, MTArray arguments,
+            MTScope scope) {
 
         MTInteger start = (MTInteger) receiver;
 

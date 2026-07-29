@@ -4,6 +4,7 @@ import mt.runtime.MTArray;
 import mt.runtime.MTBlock;
 import mt.runtime.MTObject;
 import mt.runtime.MTBoolean;
+import mt.runtime.MTScope;
 import mt.runtime.MTNil;
 
 public final class BlockPrimitives {
@@ -14,7 +15,8 @@ public final class BlockPrimitives {
     @Primitive("value")
     public static MTObject value(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTBlock self =
                 (MTBlock) receiver;
@@ -26,7 +28,8 @@ public final class BlockPrimitives {
     @Primitive("value:")
     public static MTObject value1(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTBlock self =
                 (MTBlock) receiver;
@@ -37,7 +40,8 @@ public final class BlockPrimitives {
     @Primitive("value:value:")
     public static MTObject value2(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTBlock self =
                 (MTBlock) receiver;
@@ -48,7 +52,8 @@ public final class BlockPrimitives {
     @Primitive("value:value:value:")
     public static MTObject value3(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTBlock self =
                 (MTBlock) receiver;
@@ -59,7 +64,8 @@ public final class BlockPrimitives {
     @Primitive("valueArray:")
     public static MTObject valueArray(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTBlock self =
                 (MTBlock) receiver;
@@ -74,7 +80,8 @@ public final class BlockPrimitives {
     @Primitive("whileTrue:")
     public static MTObject whileTrue(
         MTObject receiver,
-        MTArray arguments) {
+        MTArray arguments,
+        MTScope scope) {
 
         MTBlock condition = (MTBlock) receiver;
 
@@ -92,7 +99,8 @@ public final class BlockPrimitives {
     @Primitive("whileFalse:")
     public static MTObject whileFalse(
         MTObject receiver,
-        MTArray arguments) {
+        MTArray arguments,
+        MTScope scope) {
 
         MTBlock condition = (MTBlock) receiver;
 

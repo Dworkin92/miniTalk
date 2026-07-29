@@ -4,6 +4,7 @@ import mt.runtime.MTArray;
 import mt.runtime.MTBoolean;
 import mt.runtime.MTObject;
 import mt.runtime.MTBlock;
+import mt.runtime.MTScope;
 import mt.runtime.MTNil;
 
 public final class BooleanPrimitives {
@@ -14,7 +15,8 @@ public final class BooleanPrimitives {
     @Primitive("not")
     public static MTObject not(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTBoolean self =
                 (MTBoolean) receiver;
@@ -26,7 +28,8 @@ public final class BooleanPrimitives {
     @Primitive("and:")
     public static MTObject and(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTBoolean self =
                 (MTBoolean) receiver;
@@ -42,7 +45,8 @@ public final class BooleanPrimitives {
     @Primitive("or:")
     public static MTObject or(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTBoolean self =
                 (MTBoolean) receiver;
@@ -56,15 +60,11 @@ public final class BooleanPrimitives {
     }
 
     @Primitive("xor:")
-    public static MTObject xor(
-            MTObject receiver,
-            MTArray arguments) {
+    public static MTObject xor(MTObject receiver, MTArray arguments, MTScope scope) {
 
-        MTBoolean self =
-                (MTBoolean) receiver;
+        MTBoolean self = (MTBoolean) receiver;
 
-        MTBoolean other =
-                (MTBoolean) arguments.at(0);
+        MTBoolean other = (MTBoolean) arguments.at(0);
 
         return MTBoolean.valueOf(
                 self.getValue()
@@ -74,7 +74,8 @@ public final class BooleanPrimitives {
     @Primitive("ifTrue:")
     public static MTObject ifTrue(
         MTObject receiver,
-        MTArray arguments) {
+        MTArray arguments,
+        MTScope scope) {
 
         MTBoolean self = (MTBoolean) receiver;
 
@@ -90,7 +91,8 @@ public final class BooleanPrimitives {
     @Primitive("ifFalse:")
     public static MTObject ifFalse(
         MTObject receiver,
-        MTArray arguments) {
+        MTArray arguments,
+        MTScope scope) {
 
         MTBoolean self = (MTBoolean) receiver;
 
@@ -106,7 +108,8 @@ public final class BooleanPrimitives {
     @Primitive("ifTrue:ifFalse:")
     public static MTObject ifTrueIfFalse(
         MTObject receiver,
-        MTArray arguments) {
+        MTArray arguments,
+        MTScope scope) {
 
         MTBoolean self = (MTBoolean) receiver;
 

@@ -4,6 +4,7 @@ import mt.runtime.MTArray;
 import mt.runtime.MTBoolean;
 import mt.runtime.MTDictionary;
 import mt.runtime.MTInteger;
+import mt.runtime.MTScope;
 import mt.runtime.MTObject;
 
 public final class DictionaryPrimitives {
@@ -14,7 +15,8 @@ public final class DictionaryPrimitives {
     @Primitive("size")
     public static MTObject size(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTDictionary self =
                 (MTDictionary) receiver;
@@ -36,7 +38,8 @@ public final class DictionaryPrimitives {
     @Primitive("at:")
     public static MTObject at(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTDictionary self =
                 (MTDictionary) receiver;
@@ -50,7 +53,8 @@ public final class DictionaryPrimitives {
     @Primitive("at:put:")
     public static MTObject atPut(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTDictionary self =
                 (MTDictionary) receiver;
@@ -71,7 +75,8 @@ public final class DictionaryPrimitives {
     @Primitive("includesKey:")
     public static MTObject includesKey(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTDictionary self =
                 (MTDictionary) receiver;

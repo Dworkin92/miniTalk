@@ -18,48 +18,29 @@ public final class ClassDefInstaller {
     private ClassDefInstaller() {
     }
 
-    public static MTClass install(
-            MTRuntime runtime,
-            Class<?> classDefClass) {
+    public static MTClass install(MTRuntime runtime, Class<?> classDefClass) {
 
-        ClassDef definition =
-            classDefClass.getAnnotation(
-                ClassDef.class);
+        ClassDef definition = classDefClass.getAnnotation(ClassDef.class);
 
         if (definition == null) {
-            throw new MTBootstrapException(
-                "Missing @ClassDef annotation");
+            throw new MTBootstrapException("Missing @ClassDef annotation");
         }
 
-        String className =
-            definition.name();
+        String className = definition.name();
 
-        String superclassName =
-            definition.superclass();
+        String superclassName = definition.superclass();
 
-        MTClass superclass =
-            runtime.classNamed(
-                superclassName);
+        MTClass superclass = runtime.classNamed(superclassName);
 
         if (superclass == null) {
-            throw new MTBootstrapException(
-                "Unknown superclass: "
-                + superclassName);
+            throw new MTBootstrapException("Unknown superclass: " + superclassName);
         }
 
-        MTClass clazz =
-            new MTClass(
-                MTSymbol.intern(
-                    className));
-        clazz.setSuperclass(
-            superclass);
+        MTClass clazz = new MTClass(MTSymbol.intern(className));
+        clazz.setSuperclass(superclass);
 
-        MTMetaclass metaclazz =
-            new MTMetaclass(
-                MTSymbol.intern(
-                    className + "Class"));
-        metaclazz.setSuperclass(
-            (MTClass) superclass.getMetaclazz());
+        MTMetaclass metaclazz = new MTMetaclass(MTSymbol.intern(className + "Class"));
+        metaclazz.setSuperclass((MTClass) superclass.getMetaclazz());
 
 
         metaclazz.setClazz(runtime.getClassMetaclass());
@@ -76,6 +57,12 @@ public final class ClassDefInstaller {
 
         if (primitiveClass != Void.class) {
             PrimitiveInstaller.install(clazz, primitiveClass);
+        }
+
+        Class<?> primitiveMetaclass = definition.classPrimitives();
+
+        if (primitiveMetaclass != Void.class) {
+            PrimitiveInstaller.install(metaclazz, primitiveMetaclass);
         }
 
         return clazz;

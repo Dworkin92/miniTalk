@@ -4,6 +4,7 @@ import mt.runtime.MTArray;
 import mt.runtime.MTBoolean;
 import mt.runtime.MTObject;
 import mt.runtime.MTString;
+import mt.runtime.MTScope;
 import mt.runtime.MTSymbol;
 
 public final class SymbolPrimitives {
@@ -14,7 +15,8 @@ public final class SymbolPrimitives {
     @Primitive("asString")
     public static MTObject asString(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTSymbol symbol =
                 (MTSymbol) receiver;
@@ -26,7 +28,8 @@ public final class SymbolPrimitives {
     @Primitive("=")
     public static MTObject equals(
             MTObject receiver,
-            MTArray arguments) {
+            MTArray arguments,
+            MTScope scope) {
 
         MTSymbol left =
                 (MTSymbol) receiver;
