@@ -32,7 +32,51 @@ public final class MTParser {
 
     public MTNode parse() {
 
-        return parseSequence();
+        return parseTopLevelSequence();
+    }
+
+    private MTNode parseTopLevelSequence() {
+
+        MTSequenceNode sequence = new MTSequenceNode();
+
+        parseTemporaryDeclarations(sequence);
+
+        if (isAtEnd()) {
+            return sequence;
+        }
+
+        sequence.add(parseExpression());
+
+        while (match(MTTokenType.DOT)) {
+            if (isAtEnd()) {
+                break;
+            }
+
+            sequence.add(parseExpression());
+        }
+
+        if (!sequence.hasTemporaries() && sequence.getStatements().size() == 1) {
+            return sequence.getStatements().get(0);
+        }
+
+        return sequence;
+    }
+
+    private void parseTemporaryDeclarations(MTSequenceNode sequence) {
+
+        if (!match(MTTokenType.PIPE)) {
+            return;
+        }
+
+        while (!check(MTTokenType.PIPE)) {
+            MTToken name = consume(MTTokenType.IDENTIFIER, "Expected temporary name");
+
+            //System.out.println("temporary parsed: " + name.text());
+
+            sequence.addTemporary(MTSymbol.intern(name.text()));
+        }
+
+        consume(MTTokenType.PIPE, "Expected '|'");
     }
 
     /*

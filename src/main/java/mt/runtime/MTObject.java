@@ -66,6 +66,7 @@ public class MTObject {
      * méthode pour envoyer un message binaire (exemple "at:") ou
      * binaire composé d'un ou plusieurs arguments (exemple "at:put:")
      */
+    /*
     public MTObject send(MTSymbol selector, MTArray arguments, MTScope scope) {
 
         MTClass lookupClass = clazz;
@@ -77,6 +78,25 @@ public class MTObject {
         }
 
         MTMethod method = lookupClass.lookupMethod(selector);
+
+        if (method == null) {
+            throw new MTRuntimeException("Unknown selector: " + selector);
+        }
+
+        return method.invoke(this, arguments, scope);
+    }
+    */
+    public MTObject send(MTSymbol selector, MTArray arguments, MTScope scope) {
+        MTMethod method = null;
+
+        if (this instanceof MTClass classReceiver
+                && classReceiver.getMetaclazz() != null) {
+            method = classReceiver.getMetaclazz().lookupMethod(selector);
+        }
+
+        if (method == null && clazz != null) {
+            method = clazz.lookupMethod(selector);
+        }
 
         if (method == null) {
             throw new MTRuntimeException("Unknown selector: " + selector);

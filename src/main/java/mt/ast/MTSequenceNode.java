@@ -3,20 +3,30 @@ package mt.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MTSequenceNode
-        extends MTNode {
+import mt.runtime.MTSymbol;
 
-    private final List<MTNode> statements =
-            new ArrayList<>();
+public class MTSequenceNode extends MTNode {
 
-    public void add(
-            MTNode node) {
+    private final List<MTSymbol> temporaries = new ArrayList<>();
+    private final List<MTNode> statements = new ArrayList<>();
 
+    public void addTemporary(MTSymbol name) {
+        temporaries.add(name);
+    }
+
+    public List<MTSymbol> getTemporaries() {
+        return temporaries;
+    }
+
+    public boolean hasTemporaries() {
+        return !temporaries.isEmpty();
+    }
+
+    public void add(MTNode node) {
         statements.add(node);
     }
 
     public List<MTNode> getStatements() {
-
         return statements;
     }
 }

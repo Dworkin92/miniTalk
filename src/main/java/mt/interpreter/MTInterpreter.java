@@ -132,12 +132,29 @@ public class MTInterpreter {
             return n.getObject();
         }
 
+        /*
         if (node instanceof MTSequenceNode n) {
 
             MTObject result = MTNil.instance();
 
             for (MTNode statement : n.getStatements()) {
 
+                result = evaluate(statement, scope);
+            }
+
+            return result;
+        }
+        */
+        if (node instanceof MTSequenceNode sequence) {
+
+            for (MTSymbol temporary : sequence.getTemporaries()) {
+                //System.out.println("define temporary " + temporary);
+                scope.define(temporary, MTNil.instance());
+            }
+
+            MTObject result = MTNil.instance();
+
+            for (MTNode statement : sequence.getStatements()) {
                 result = evaluate(statement, scope);
             }
 

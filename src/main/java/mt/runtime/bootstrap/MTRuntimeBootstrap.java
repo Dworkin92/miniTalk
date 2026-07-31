@@ -125,14 +125,18 @@ public final class MTRuntimeBootstrap {
     }
 
     private static void bootstrapCorePrimitives(MTRuntime runtime) {
+
         PrimitiveInstaller.install(
             runtime.getObjectClass(),
             ObjectPrimitives.class);
 
         PrimitiveInstaller.install(
-            runtime.getClassMetaclass(),
+            runtime.getClassClass(),
             ClassPrimitives.class);
 
+        PrimitiveInstaller.install(
+            runtime.getClassMetaclass(),
+            ClassClassPrimitives.class);
     }
 
     private static void bootstrapFirstClasses(MTRuntime runtime) {

@@ -24,15 +24,15 @@ public final class ClassClassPrimitives {
 
         MTMetaclass metaclazz = new MTMetaclass(MTSymbol.intern("AnonymousClassClass"));
 
-        clazz.setClazz((MTClass) receiver);
+        clazz.setClazz(runtime.getClassClass());
+        clazz.setSuperclass(runtime.getObjectClass());
         clazz.setMetaclazz(metaclazz);
 
         metaclazz.setClazz(runtime.getClassMetaclass());
-
         metaclazz.setSuperclass(runtime.getObjectMetaclass());
-
-        clazz.setSuperclass(runtime.getObjectClass());
+        metaclazz.setMetaclazz(null);
 
         return clazz;
     }
+
 }

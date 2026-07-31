@@ -46,6 +46,20 @@ public final class ClassPrimitives {
                 : MTNil.instance();
     }
 
+    @Primitive("superclass:")
+    public static MTObject setSuperclass(MTObject receiver, MTArray arguments, MTScope scope) {
+        MTClass clazz = (MTClass) receiver;
+        MTClass superclass = (MTClass) arguments.at(0);
+
+        clazz.setSuperclass(superclass);
+
+        if (clazz.getMetaclazz() != null) {
+            clazz.getMetaclazz().setSuperclass(superclass.getMetaclazz());
+        }
+
+        return superclass;
+    }
+
     @Primitive("metaclass")
     public static MTObject metaclass(
             MTObject receiver,
@@ -61,14 +75,4 @@ public final class ClassPrimitives {
                 : MTNil.instance();
     }
 
-    @Primitive("new")
-    public static MTObject newInstance(
-            MTObject receiver,
-            MTArray arguments,
-            MTScope scope) {
-
-        MTClass clazz = (MTClass) receiver;
-
-        return clazz.newInstance();
-    }
 }

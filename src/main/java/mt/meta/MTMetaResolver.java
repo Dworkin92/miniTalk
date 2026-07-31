@@ -11,6 +11,8 @@ import mt.ast.MTNode;
 import mt.ast.MTSequenceNode;
 import mt.lexer.MTLexer;
 import mt.parser.MTParser;
+import mt.runtime.MTSymbol;
+import mt.runtime.MTRuntime;
 
 public final class MTMetaResolver {
 
@@ -32,30 +34,25 @@ public final class MTMetaResolver {
         return ast;
     }
 
-    private MTNode resolveSequence(
-            MTSequenceNode sequence,
-            MTModule module,
-            Path currentFile) {
+    private MTNode resolveSequence(MTSequenceNode sequence, MTModule module, Path currentFile) {
 
-        MTSequenceNode result =
-                new MTSequenceNode();
+        MTSequenceNode result = new MTSequenceNode();
+
+        for (MTSymbol temporary : sequence.getTemporaries()) {
+            result.addTemporary(temporary);
+        }
 
         for (MTNode node : sequence.getStatements()) {
 
             if (node instanceof MTMetaDirectiveNode meta) {
 
-                String directive =
-                        meta.getText();
+                String directive = meta.getText();
 
                 if (directive.startsWith("module ")) {
 
-                    String moduleName =
-                            directive.substring(7).trim();
+                    String moduleName = directive.substring(7).trim();
 
-                    module =
-                            modules.computeIfAbsent(
-                                    moduleName,
-                                    MTModule::new);
+                    module = modules.computeIfAbsent(moduleName, MTModule::new);
 
                     module.register(currentFile);
 
@@ -64,13 +61,9 @@ public final class MTMetaResolver {
 
                 if (directive.startsWith("import ")) {
 
-                    String fileName =
-                            directive.substring(7).trim();
+                    String fileName = directive.substring(7).trim();
 
-                    Path importedFile = currentFile.getParent()
-                            .resolve(fileName)
-                            .toAbsolutePath()
-                            .normalize();
+                    Path importedFile = currentFile.getParent().resolve(fileName).toAbsolutePath().normalize();
 
                     if (module.contains(importedFile)) {
                         continue;
@@ -78,14 +71,9 @@ public final class MTMetaResolver {
 
                     module.register(importedFile);
 
-                    MTNode importedAst =
-                            loadAst(importedFile);
+                    MTNode importedAst = loadAst(importedFile);
 
-                    importedAst =
-                            resolve(
-                                    importedAst,
-                                    module,
-                                    importedFile);
+                    importedAst = resolve(importedAst, module, importedFile);
 
                     append(result, importedAst);
 
