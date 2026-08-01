@@ -21,6 +21,7 @@ public final class ModuleRegressionTests {
 
     public static void runAll() {
         testMetaDirectiveNode();
+        testMetaAndTemporaries();
        /* testModuleDirective();
         testImportDirectives();
         testModuleExecution();*/
@@ -139,6 +140,8 @@ private static void testMetaDirectiveNode() {
     MTNode ast =
         parser.parse();
 
+    System.out.println(ast.getClass().getName());
+
     if (!(ast instanceof MTSequenceNode seq)) {
         throw new AssertionError(
             "Expected MTSequenceNode");
@@ -156,4 +159,62 @@ private static void testMetaDirectiveNode() {
         meta.getText());
 }
 
+private static void testMetaAndTemporaries() {
+
+    System.out.println(
+        "=== Meta and Temporaries test ===");
+
+    String source =
+        """
+        @[module Core]
+        |x|
+        x <- 10.
+        x println.
+        @[module B]
+        |y|
+        y <- 20.
+        y println.
+        """;
+
+        MTLexer lexer =
+        new MTLexer(source);
+
+    MTParser parser =
+        new MTParser(
+            lexer.tokenize());
+
+    MTNode ast =
+        parser.parse();
+
+    System.out.println(ast.getClass().getName());
+
+    if (ast instanceof MTSequenceNode seq) {
+
+    System.out.println(
+        "nb statements = "
+        + seq.getStatements().size());
+
+    for (MTNode node : seq.getStatements()) {
+        System.out.println(
+            node.getClass().getSimpleName());
+    }
+}
+    /*
+    if (!(ast instanceof MTSequenceNode seq)) {
+        throw new AssertionError(
+            "Expected MTSequenceNode");
+    }
+
+    if (!(seq.getStatements().get(0)
+            instanceof MTMetaDirectiveNode meta)) {
+
+        throw new AssertionError(
+            "Expected MTMetaDirectiveNode");
+    }
+
+    assertResult(
+        "module Core",
+        meta.getText());
+        */
+    }
 }

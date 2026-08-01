@@ -40,6 +40,20 @@ public class MTInterpreter {
             return MTNil.instance();
         }
 
+        if (node instanceof MTTemporaryDeclarationNode temp) {
+
+            MTArray temporaries = temp.getTemporaries();
+
+            for (int i = 0; i < temporaries.size(); i++) {
+
+                MTSymbol symbol = (MTSymbol) temporaries.at(i);
+
+                scope.define(symbol, MTNil.instance());
+            }
+
+            return MTNil.instance();
+        }
+
         if (node instanceof MTBooleanLiteralNode n) {
             return MTBoolean.valueOf(n.getValue());
         }

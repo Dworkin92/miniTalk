@@ -16,7 +16,7 @@ public final class MTKernelBootstrap {
         MTClass integerClass = new MTClass(MTSymbol.intern(className));
         integerClass.setSuperclass(superclass);
 
-        MTMetaclass integerMetaclass = new MTMetaclass(
+        MTClass integerMetaclass = new MTClass(
             MTSymbol.intern(className + "Class"));
         integerMetaclass.setSuperclass(superclass.getClazz());
 
@@ -35,7 +35,7 @@ public final class MTKernelBootstrap {
         MTClass booleanClass = new MTClass(MTSymbol.intern(className));
         booleanClass.setSuperclass(superclass);
 
-        MTMetaclass booleanMetaclass = new MTMetaclass(
+        MTClass booleanMetaclass = new MTClass(
             MTSymbol.intern(className + "Class"));
         booleanMetaclass.setSuperclass(superclass.getClazz());
 
@@ -54,7 +54,7 @@ public final class MTKernelBootstrap {
         stringClass.setSuperclass(superclass);
 
         /* création de la meta classe et ajout de la superclass */
-        MTMetaclass stringMetaclass = new MTMetaclass(
+        MTClass stringMetaclass = new MTClass(
             MTSymbol.intern(className + "Class"));
         stringMetaclass.setSuperclass(superclass.getClazz());
 
@@ -75,7 +75,7 @@ public final class MTKernelBootstrap {
         arrayClass.setSuperclass(superclass);
 
         /* création de la meta classe et ajout de la superclass */
-        MTMetaclass arrayMetaclass = new MTMetaclass(
+        MTClass arrayMetaclass = new MTClass(
             MTSymbol.intern(className + "Class"));
         arrayMetaclass.setSuperclass(superclass.getClazz());
 
@@ -95,7 +95,7 @@ public final class MTKernelBootstrap {
         dictionaryClass.setSuperclass(superclass);
 
         /* création de la meta classe et ajout de la superclass */
-        MTMetaclass dictionaryMetaclass = new MTMetaclass(
+        MTClass dictionaryMetaclass = new MTClass(
             MTSymbol.intern(className + "Class"));
         dictionaryMetaclass.setSuperclass(superclass.getClazz());
 
@@ -115,7 +115,7 @@ public final class MTKernelBootstrap {
         blockClass.setSuperclass(superclass);
 
         /* création de la meta classe et ajout de la superclass */
-        MTMetaclass blockMetaclass = new MTMetaclass(
+        MTClass blockMetaclass = new MTClass(
             MTSymbol.intern(className + "Class"));
         blockMetaclass.setSuperclass(superclass.getClazz());
 

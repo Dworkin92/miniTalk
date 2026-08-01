@@ -33,35 +33,49 @@ public final class MTParser {
     public MTNode parse() {
 
         return parseTopLevelSequence();
+        //return parseExpression();
     }
 
     private MTNode parseTopLevelSequence() {
 
         MTSequenceNode sequence = new MTSequenceNode();
 
-        parseTemporaryDeclarations(sequence);
-
-        if (isAtEnd()) {
-            return sequence;
+        while (!isAtEnd()) {
+            sequence.add(parseTopLevelStatement());
         }
 
-        sequence.add(parseExpression());
-
-        while (match(MTTokenType.DOT)) {
-            if (isAtEnd()) {
-                break;
-            }
-
-            sequence.add(parseExpression());
-        }
-
-        if (!sequence.hasTemporaries() && sequence.getStatements().size() == 1) {
+        if (sequence.getStatements().size() == 1) {
             return sequence.getStatements().get(0);
         }
 
         return sequence;
     }
 
+    private MTNode parseTopLevelStatement() {
+
+        if (match(MTTokenType.META_DIRECTIVE)) {
+            return new MTMetaDirectiveNode(previous().text());
+        }
+
+        if (check(MTTokenType.PIPE)) {
+            return parseTemporaryDeclaration();
+        }
+
+        MTNode expr = parseExpression();
+
+        if (!isAtEnd()) {
+            consume(MTTokenType.DOT, "Expected '.'");
+        }
+
+        return expr;
+    }
+
+    /*
+     * OBSOLETE
+     * Ancien mécanisme de temporaires top-level.
+     * Remplacé par MTTemporaryDeclarationNode.
+     */
+    /*
     private void parseTemporaryDeclarations(MTSequenceNode sequence) {
 
         if (!match(MTTokenType.PIPE)) {
@@ -77,6 +91,25 @@ public final class MTParser {
         }
 
         consume(MTTokenType.PIPE, "Expected '|'");
+    }
+    */
+
+    private MTTemporaryDeclarationNode parseTemporaryDeclaration() {
+
+        MTArray temporaries = new MTArray();
+
+        consume(MTTokenType.PIPE, "Expected '|'");
+
+        while (!check(MTTokenType.PIPE)) {
+
+            MTToken name = consume(MTTokenType.IDENTIFIER, "Expected temporary name");
+
+            temporaries.add(MTSymbol.intern(name.text()));
+        }
+
+        consume(MTTokenType.PIPE, "Expected '|'");
+
+        return new MTTemporaryDeclarationNode(temporaries);
     }
 
     /*
@@ -158,6 +191,10 @@ public final class MTParser {
 
         if (match(MTTokenType.META_DIRECTIVE)) {
             return new MTMetaDirectiveNode(previous().text());
+        }
+
+        if (check(MTTokenType.PIPE)) {
+            return parseTemporaryDeclaration();
         }
 
         if (match(

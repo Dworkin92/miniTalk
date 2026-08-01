@@ -52,6 +52,18 @@ public final class MTLexer {
             }
 
             /*
+             * Affectation historique
+             *
+             * x <- 10
+             */
+            if (c == '<' && peekNext() == '-') {
+                addToken(MTTokenType.ASSIGN, "<-");
+                advance();
+                advance();
+                continue;
+            }
+
+            /*
              * Symbol
              */
             if (c == '#') {

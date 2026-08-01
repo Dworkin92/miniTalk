@@ -10,6 +10,7 @@ public class MTSequenceNode extends MTNode {
     private final List<MTSymbol> temporaries = new ArrayList<>();
     private final List<MTNode> statements = new ArrayList<>();
 
+
     public void addTemporary(MTSymbol name) {
         temporaries.add(name);
     }

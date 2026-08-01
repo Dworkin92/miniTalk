@@ -6,17 +6,17 @@ public final class MTRuntime {
 
     private final MTClass classClass;
 
-    private final MTMetaclass objectMetaclass;
+    private final MTClass objectMetaclass;
 
-    private final MTMetaclass classMetaclass;
+    private final MTClass classMetaclass;
 
     private final MTDictionary classes = new MTDictionary();
 
     public MTRuntime(
             MTClass objectClass,
             MTClass classClass,
-            MTMetaclass objectMetaclass,
-            MTMetaclass classMetaclass) {
+            MTClass objectMetaclass,
+            MTClass classMetaclass) {
 
         this.objectClass = objectClass;
         this.classClass = classClass;
@@ -32,11 +32,11 @@ public final class MTRuntime {
         return classClass;
     }
 
-    public MTMetaclass getObjectMetaclass() {
+    public MTClass getObjectMetaclass() {
         return objectMetaclass;
     }
 
-    public MTMetaclass getClassMetaclass() {
+    public MTClass getClassMetaclass() {
         return classMetaclass;
     }
 

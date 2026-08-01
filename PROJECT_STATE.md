@@ -624,7 +624,130 @@ relation metaclazz. Le travail effectué a donc été
 Tous les tests de non-régression sont préservés.
 
 Je sais que pour certains, ce sera intellectuellement
-non satisfaisant, mais au temps pour les puristes :
-le nouveau modèle semble fonctionner sans mécanismes
-alambiqués (Behaivious, ClassDescription, etc.).
+non satisfaisant, mais le nouveau modèle semble
+fonctionner sans mécanismes alambiqués
+(Behaviour, ClassDescription, etc.).
 
+### Parser v2 - Top Level Statements
+
+Décision prise lors du refactoring des variables temporaires top-level.
+
+#### Variables temporaires top-level
+
+Les déclarations :
+
+    | x |
+    | x y z |
+
+ne sont plus considérées comme une propriété implicite de la
+séquence principale.
+
+Elles deviennent des instructions AST autonomes :
+
+    MTTemporaryDeclarationNode
+
+et peuvent apparaître à n'importe quel endroit du programme :
+
+    | x |
+
+    x := 42.
+
+    | y |
+
+    y := x + 1.
+
+Les variables déclarées sont injectées dans le scope général
+du programme lors de l'évaluation du noeud.
+
+#### META Directives
+
+Les directives :
+
+    @[module Core]
+    @[import Math]
+
+continuent à produire :
+
+    MTMetaDirectiveNode
+
+Elles sont considérées comme des instructions auto-terminées.
+
+Le caractère :
+
+    ]
+
+termine naturellement l'instruction.
+
+Aucun point n'est requis.
+
+#### Programme complet
+
+La grammaire retenue est désormais :
+
+    program
+        ::= statement*
+
+    statement
+        ::= temporaryDeclaration
+         | metaDirective
+         | expression
+
+Les instructions :
+
+    temporaryDeclaration
+    metaDirective
+
+sont auto-terminées.
+
+Les expressions ordinaires continuent à utiliser le point
+comme séparateur d'instructions.
+
+#### Point d'entrée du parser
+
+Deux points d'entrée distincts sont conservés :
+
+    parse()
+
+Parse une expression unique.
+
+Utilisé principalement par les tests unitaires du parser.
+
+    parseProgram()
+
+Parse un programme complet.
+
+Utilisé par :
+
+    MTLoader
+    MTMetaResolver
+
+Le programme complet est représenté par un :
+
+    MTSequenceNode
+
+contenant les différentes instructions du fichier.
+
+#### Suppression de l'ancien modèle
+
+Les temporaires top-level ne sont plus stockées dans :
+
+    MTSequenceNode
+
+Les mécanismes :
+
+    addTemporary(...)
+    hasTemporaries(...)
+    parseTemporaryDeclarations(...)
+
+sont considérés comme obsolètes pour le top-level.
+
+Les temporaires de blocs restent quant à elles stockées dans :
+
+    MTBlockNode
+
+car elles demeurent lexicalement attachées au bloc.
+
+NOTE IMPORTANTE :
+Les temporaires top-level sont désormais des instructions AST
+(MTTemporaryDeclarationNode) et non plus un attribut caché
+de MTSequenceNode.

@@ -31,10 +31,10 @@ public final class MTRuntimeBootstrap {
         MTClass classClass = new MTClass(
                 MTSymbol.intern("Class"));
 
-        MTMetaclass objectMetaclass = new MTMetaclass(
+        MTClass objectMetaclass = new MTClass(
                 MTSymbol.intern("ObjectClass"));
 
-        MTMetaclass classMetaclass = new MTMetaclass(
+        MTClass classMetaclass = new MTClass(
                 MTSymbol.intern("ClassClass"));
 
         MTRuntime runtime = new MTRuntime(
@@ -98,9 +98,9 @@ public final class MTRuntimeBootstrap {
 
         classClass.setMetaclazz(classMetaclass);
 
-        objectMetaclass.setMetaclazz((MTMetaclass)null);
+        objectMetaclass.setMetaclazz(classClass);
 
-        classMetaclass.setMetaclazz((MTMetaclass)null);
+        classMetaclass.setMetaclazz(classClass);
 
 
 

@@ -16,7 +16,7 @@ public class MTClass
 
     private MTClass superclass;
 
-    private MTMetaclass metaclazz;
+    private MTClass metaclazz;
 
     private final Map<MTSymbol, MTProperty>
             declaredProperties =
@@ -52,12 +52,12 @@ public class MTClass
         this.superclass = superclass;
     }
 
-    public MTMetaclass getMetaclazz() {
+    public MTClass getMetaclazz() {
         return metaclazz;
     }
 
     public void setMetaclazz(
-            MTMetaclass metaclazz) {
+            MTClass metaclazz) {
 
         this.metaclazz = metaclazz;
     }

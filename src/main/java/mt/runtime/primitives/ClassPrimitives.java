@@ -2,7 +2,6 @@ package mt.runtime.primitives;
 
 import mt.runtime.MTArray;
 import mt.runtime.MTClass;
-import mt.runtime.MTMetaclass;
 import mt.runtime.MTObject;
 import mt.runtime.MTNil;
 import mt.runtime.MTSymbol;
@@ -13,23 +12,6 @@ public final class ClassPrimitives {
 
     private ClassPrimitives() {
     }
-
-    /*
-    @Primitive("name")
-    public static MTObject name(
-            MTObject receiver,
-            MTArray arguments) {
-
-        MTClass clazz = (MTClass) receiver;
-
-        MTSymbol result = clazz.getName();
-
-        MTDebug.log("name result = " + result);
-        MTDebug.log("name result clazz = " + result.getClazz());
-
-        return result;
-    }
-    */
 
     @Primitive("superclass")
     public static MTObject superclass(
@@ -68,7 +50,7 @@ public final class ClassPrimitives {
 
         MTClass clazz = (MTClass) receiver;
 
-        MTMetaclass metaclass = clazz.getMetaclazz();
+        MTClass metaclass = clazz.getMetaclazz();
 
         return metaclass != null
                 ? metaclass

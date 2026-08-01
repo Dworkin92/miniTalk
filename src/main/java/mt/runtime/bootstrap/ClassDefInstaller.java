@@ -3,7 +3,6 @@ package mt.runtime.bootstrap;
 import mt.runtime.bootstrap.ClassDef;
 import mt.runtime.MTRuntime;
 import mt.runtime.MTClass;
-import mt.runtime.MTMetaclass;
 import mt.runtime.MTSymbol;
 import mt.runtime.primitives.PrimitiveInstaller;
 import mt.exceptions.MTBootstrapException;
@@ -39,12 +38,12 @@ public final class ClassDefInstaller {
         MTClass clazz = new MTClass(MTSymbol.intern(className));
         clazz.setSuperclass(superclass);
 
-        MTMetaclass metaclazz = new MTMetaclass(MTSymbol.intern(className + "Class"));
-        metaclazz.setSuperclass((MTClass) superclass.getMetaclazz());
+        MTClass metaclazz = new MTClass(MTSymbol.intern(className + "Class"));
+        metaclazz.setSuperclass((MTClass)superclass.getMetaclazz());
 
 
         metaclazz.setClazz(runtime.getClassMetaclass());
-        metaclazz.setMetaclazz((MTMetaclass)null);
+        metaclazz.setMetaclazz((MTClass)null);
 
         clazz.setClazz(runtime.getClassClass());
         clazz.setMetaclazz(metaclazz);

@@ -2,7 +2,6 @@ package mt.runtime.primitives;
 
 import mt.runtime.MTArray;
 import mt.runtime.MTClass;
-import mt.runtime.MTMetaclass;
 import mt.runtime.MTObject;
 import mt.runtime.MTNil;
 import mt.runtime.MTSymbol;
@@ -22,7 +21,7 @@ public final class ClassClassPrimitives {
 
         MTClass clazz = new MTClass(MTSymbol.intern("AnonymousClass"));
 
-        MTMetaclass metaclazz = new MTMetaclass(MTSymbol.intern("AnonymousClassClass"));
+        MTClass metaclazz = new MTClass(MTSymbol.intern("AnonymousClassClass"));
 
         clazz.setClazz(runtime.getClassClass());
         clazz.setSuperclass(runtime.getObjectClass());

@@ -274,8 +274,8 @@ System.out.println("Integer Metaclass class name = " +
     personClass.setSuperclass(
         objectClass);
 
-    MTMetaclass personMetaclass =
-        new MTMetaclass(
+    MTClass personMetaclass =
+        new MTClass(
             MTSymbol.intern("PersonClass"));
 
     personMetaclass.setSuperclass(
@@ -313,8 +313,8 @@ System.out.println("Integer Metaclass class name = " +
 employeeClass.setSuperclass(
     personClass);
 
-MTMetaclass employeeMetaclass =
-    new MTMetaclass(
+MTClass employeeMetaclass =
+    new MTClass(
         MTSymbol.intern("EmployeeClass"));
 
 employeeMetaclass.setSuperclass(
@@ -359,7 +359,7 @@ employeeClass.setClazz(
         MTRuntime runtime = MTRuntimeBootstrap.bootstrapCoreOnly();
 
         MTClass integerClass = ClassDefInstaller.install(runtime,IntegerClassDef.class);
-        MTMetaclass integerMetaclass = integerClass.getMetaclazz();
+        MTClass integerMetaclass = integerClass.getMetaclazz();
 
         assertEquals(
             "Integer : name",
@@ -449,10 +449,10 @@ employeeClass.setClazz(
             "#Object",
             objectMetaclass.getSuperclass().getName().toString());
 
-        if ( objectMetaclass.getMetaclazz() == null)
-            System.out.println("ObjectClass : metaclass name expected: null ==> OK");
+        if ( objectMetaclass.getMetaclazz() == classClass)
+            System.out.println("ObjectClass : metaclass name expected: " + classClass.getName().toString() + " ==> OK");
         else
-            System.out.println("ObjectClass : metaclass name expected: null ==> ECHEC");
+            System.out.println("ObjectClass : metaclass name expected: " + classClass.getName().toString() + " ==> ECHEC");
 
         /* Class MetaClasse */
         MTClass classMetaclass = runtime.getClassMetaclass();
@@ -466,10 +466,10 @@ employeeClass.setClazz(
             "#ObjectClass",
             classMetaclass.getSuperclass().getName().toString());
 
-        if ( classMetaclass.getMetaclazz() == null)
-            System.out.println("ClassClass : metaclass name expected: null ==> OK");
+        if ( classMetaclass.getMetaclazz() == classClass)
+            System.out.println("ClassClass : metaclass name expected: " + classClass.getName().toString() + " ==> OK");
         else
-            System.out.println("ClassClass : metaclass name expected: null ==> ECHEC");
+            System.out.println("ClassClass : metaclass name expected: " + classClass.getName().toString() + " ==> ECHEC");
 
     }
 }

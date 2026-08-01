@@ -38,9 +38,11 @@ public final class MTMetaResolver {
 
         MTSequenceNode result = new MTSequenceNode();
 
-        for (MTSymbol temporary : sequence.getTemporaries()) {
-            result.addTemporary(temporary);
-        }
+        // OBSOLETE - ancien modèle des temporaires top-level
+        //
+        //for (MTSymbol temporary : sequence.getTemporaries()) {
+        //    result.addTemporary(temporary);
+        //}
 
         for (MTNode node : sequence.getStatements()) {
 
