@@ -2,9 +2,10 @@ package mt.runtime;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
-public class MTArray
-        extends MTObject {
+public class MTArray extends MTObject implements Iterable<MTObject> {
+//public class MTArray extends MTObject {
 
     private final List<MTObject> values;
 
@@ -39,6 +40,11 @@ public class MTArray
     public int size() {
 
         return values.size();
+    }
+
+    @Override
+    public Iterator<MTObject> iterator() {
+        return values.iterator();
     }
 
     @Override

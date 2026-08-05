@@ -3,6 +3,7 @@ package mt.runtime;
 import java.util.HashMap;
 import java.util.Map;
 import mt.exceptions.MTRuntimeException;
+import mt.runtime.MTDictionary;
 import mt.debug.MTDebug;
 
 /**
@@ -29,8 +30,8 @@ public class MTObject {
     /**
      * propertyValues est en fait un dictionnaire Java dont les clés sont des MTSymbol et les valeurs, des MTObject
      */
-    private final Map<MTSymbol, MTObject> propertyValues =
-            new HashMap<>();
+    private final Map<MTSymbol, MTObject> propertyValues = new HashMap<>();
+    //private final MTDictionary propertyValues = new MTDictionary();
 
     /**
      * name est un symbole permettant de désigner tout objet dans miniTalk
@@ -66,26 +67,6 @@ public class MTObject {
      * méthode pour envoyer un message binaire (exemple "at:") ou
      * binaire composé d'un ou plusieurs arguments (exemple "at:put:")
      */
-    /*
-    public MTObject send(MTSymbol selector, MTArray arguments, MTScope scope) {
-
-        MTClass lookupClass = clazz;
-
-        if (this instanceof MTClass classReceiver
-            && classReceiver.getMetaclazz() != null) {
-
-            lookupClass = classReceiver.getMetaclazz();
-        }
-
-        MTMethod method = lookupClass.lookupMethod(selector);
-
-        if (method == null) {
-            throw new MTRuntimeException("Unknown selector: " + selector);
-        }
-
-        return method.invoke(this, arguments, scope);
-    }
-    */
     public MTObject send(MTSymbol selector, MTArray arguments, MTScope scope) {
         MTMethod method = null;
 
@@ -117,6 +98,8 @@ public class MTObject {
      */
     public void setClazz(MTClass clazz) {
         this.clazz = clazz;
+
+        setProperty(MTSymbol.intern("class"), clazz);
     }
 
     public MTSymbol getName() {
@@ -125,6 +108,7 @@ public class MTObject {
 
     public void setName(MTSymbol name){
         this.name = name;
+        setProperty(MTSymbol.intern("name"), name);
     }
 
     /**

@@ -43,7 +43,8 @@ public final class ClassDefInstaller {
 
 
         metaclazz.setClazz(runtime.getClassMetaclass());
-        metaclazz.setMetaclazz((MTClass)null);
+        //metaclazz.setMetaclazz((MTClass)null);
+        metaclazz.setMetaclazz(runtime.getClassClass());
 
         clazz.setClazz(runtime.getClassClass());
         clazz.setMetaclazz(metaclazz);

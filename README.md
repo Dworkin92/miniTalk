@@ -6,13 +6,45 @@ MiniTalk est un langage de scripting orienté objet inspiré de la famille Small
 
 L'objectif du projet est double :
 
-- proposer un langage simple, lisible et agréable à utiliser pour des tâches quotidiennes de scripting ;
+- proposer un langage simple, concis, lisible et agréable à utiliser pour des tâches quotidiennes de scripting ;
 
 - permettre la construction d'applications plus ambitieuses grâce à un véritable modèle objet et à l'accès à l'écosystème Java.
 
 MiniTalk est entièrement implémenté en Java et s'exécute sur la JVM.
 
 ---
+
+## Installer miniTalk
+
+Pour compiler et installer miniTalk, vous aurez besoin de :
+* un Open JDK 21 ou supérieur. Celui avec lequel je travaille est : [Adoptium Temurin JDK 21](https://adoptium.net/temurin/releases?version=21&os=any&arch=any)
+* Maven, que vous pouvez downloader depuis : [ site apache Maven ](https://maven.apache.org/download.cgi#CurrentMaven)
+* télécharger une version de minitalk depuis ce site.
+
+Vous aurez besoin de renseigner les variables d'environnements suivantes :
+* JAVA_HOME
+* MAVEN_HOME
+* MT_PATH (accès aux librairies minitalk)
+* PATH complété avec $JAVA_HOME/bin (pour windows ce sera %JAVA_HOME%\bin), avec $MAVEN_HOME/bin (pour winbdows ce sera %MAVEN_HOME%\bin)
+
+Pour windows 11, taper "environnement" dans la barre de recherche à coté du petit carré bleu windows. Vous aurez le choix entre 
+
+* "modifier les variables d'environnement utilisateur",
+* "modifier les variables d'environnement système".
+
+Si vous n'êtes pas admin de votre poste, choisissez le premier choix :)
+
+Un fois les variable renseignées, ouvrez une fenêtre cmd, et faites un "cd" vers le répertoire où vous avez désarchivé le projet. Lancez :
+
+```bash
+mvn clean package
+```
+pour compiler. Vous pourrez ensuite lancer minitalk avec la commande
+
+```bash
+java -jar target/miniTalk-2.0.0.jar chemin/fichier.mt
+```
+
 
 ## Pourquoi MiniTalk ?
 
@@ -41,11 +73,11 @@ MiniTalk reprend plusieurs idées fondamentales de Smalltalk :
 - tout est objet ;
 - la communication se fait par envoi de messages ;
 - les classes sont elles-mêmes des objets ;
-- les métaclasses sont des objets ;
+- les métaclasses sont des classes et, donc, des objets ;
 - les closures sont des objets de premier ordre ;
 - le modèle objet est visible et manipulable.
 
-Le projet ne cherche cependant pas à reproduire Smalltalk à l'identique.
+Le projet ne cherche cependant pas à reproduire Smalltalk à l'identique : nous en profitons pour explorer des notions plus modernes qui n'existaient pas dans les années 80, ou utiliser un vocabuler un peu différents du Smalltalk originel.
 
 L'objectif est plutôt de construire un langage moderne, léger et facilement intégrable à l'écosystème Java.
 
@@ -83,7 +115,7 @@ Le runtime implémente un véritable Meta Object Protocol (MOP) permettant de re
 - les métaclasses.
 
 ---
-## Exemple
+## Exemples
 
 
 Addition :
@@ -155,9 +187,9 @@ Le runtime repose notamment sur les objets suivants :
 - MTClass
 - MTMetaclass
 - MTMethod
-- MTProperty
+- MTProperty (correspond aux attributes de Smalltalk)
 - MTBlock
-- MTScope
+- MTScope    (correspond au Context de Smalltalk)
 - MTRuntime
 
 ---

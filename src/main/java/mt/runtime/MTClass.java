@@ -106,8 +106,11 @@ public class MTClass
                 declaredProperties);
     }
 
-    public Map<MTSymbol, MTProperty>
-    getAllProperties() {
+    public Map<MTSymbol, MTProperty>  getDeclaredProperties() {
+        return declaredProperties;
+    }
+
+    public Map<MTSymbol, MTProperty>  getAllProperties() {
 
         return allProperties;
     }
@@ -150,5 +153,6 @@ public class MTClass
 
         return null;
     }
+
 
 }

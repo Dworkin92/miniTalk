@@ -44,12 +44,19 @@ public class MTInterpreter {
 
             MTArray temporaries = temp.getTemporaries();
 
+            for(MTObject each : temporaries) {
+                MTSymbol symbol = (MTSymbol)each;
+
+                scope.define(symbol, MTNil.instance());
+            }
+/*
             for (int i = 0; i < temporaries.size(); i++) {
 
                 MTSymbol symbol = (MTSymbol) temporaries.at(i);
 
                 scope.define(symbol, MTNil.instance());
             }
+            */
 
             return MTNil.instance();
         }
@@ -61,28 +68,6 @@ public class MTInterpreter {
         if (node instanceof MTVariableNode n) {
             return scope.lookup(n.getName());
         }
-
-        /* modif pour debugger certaines choses */
-        /*
-        if (node instanceof MTVariableNode n) {
-
-            try {
-                return scope.lookup(n.getName());
-            }
-            catch (MTRuntimeException ex) {
-
-                MTClass clazz =
-                    runtime.classNamed(
-                        n.getName().getValue());
-
-                if (clazz != null) {
-                    return clazz;
-                }
-
-            throw ex;
-            }
-        }
-        */
 
         if (node instanceof MTStringLiteralNode n) {
 
@@ -108,37 +93,23 @@ public class MTInterpreter {
 
         if (node instanceof MTMessageSendNode n) {
 
-            MTObject receiver =
-                evaluate(
-                    n.getReceiver(),
-                    scope);
+            MTObject receiver = evaluate(n.getReceiver(), scope);
 
-            MTArray arguments =
-                new MTArray();
+            MTArray arguments = new MTArray();
 
-            for (MTNode argumentNode :
-                n.getArguments()
-                    .getElements()) {
+            for (MTNode argumentNode : n.getArguments().getElements()) {
 
-                arguments.add(
-                    evaluate(
-                        argumentNode,
-                        scope));
+                arguments.add(evaluate(argumentNode, scope));
             }
 
 
             MTDebug.log("receiver = " + receiver);
 
-            MTDebug.log("receiver class = "
-                + receiver.getClazz());
+            MTDebug.log("receiver class = " + receiver.getClazz());
 
-            MTDebug.log("selector = "
-                + n.getSelector());
+            MTDebug.log("selector = " + n.getSelector());
 
-            return receiver.send(
-                n.getSelector(),
-                arguments,
-                scope);
+            return receiver.send(n.getSelector(), arguments, scope);
         }
 
         if (node instanceof MTObjectLiteralNode n) {
@@ -146,19 +117,6 @@ public class MTInterpreter {
             return n.getObject();
         }
 
-        /*
-        if (node instanceof MTSequenceNode n) {
-
-            MTObject result = MTNil.instance();
-
-            for (MTNode statement : n.getStatements()) {
-
-                result = evaluate(statement, scope);
-            }
-
-            return result;
-        }
-        */
         if (node instanceof MTSequenceNode sequence) {
 
             for (MTSymbol temporary : sequence.getTemporaries()) {
@@ -176,8 +134,7 @@ public class MTInterpreter {
         }
 
         if (node instanceof MTBlockNode n) {
-            MTClass blockClass =
-                MTKernelBootstrap.createBlockClass();
+            MTClass blockClass = MTKernelBootstrap.createBlockClass();
 
             MTBlock block = new MTBlock(
                 scope, n.getParameters(), n);
@@ -191,16 +148,12 @@ public class MTInterpreter {
 
         if (node instanceof MTNonLocalReturnNode n) {
 
-            MTObject value =
-                evaluate(
-                    n.getExpression(),
-                    scope);
+            MTObject value = evaluate(n.getExpression(), scope);
 
             throw new MTNonLocalReturnException(value, scope.getHomeBlock());
         }
 
         throw new MTRuntimeException(
-                "Unsupported node: "
-                + node.getClass().getName());
+                "Unsupported node: " + node.getClass().getName());
     }
 }

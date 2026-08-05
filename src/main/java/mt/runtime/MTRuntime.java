@@ -78,4 +78,9 @@ public final class MTRuntime {
         return classes.includesKey(
             MTSymbol.intern(name));
     }
+
+    public MTArray getClasses() {
+
+        return classes.values();
+    }
 }

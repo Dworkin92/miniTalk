@@ -30,3 +30,6 @@ miniTalk.layout
 *.old
 minitalk_sources.txt
 *.tgz
+
+# temporairement : images minitalk
+*.img

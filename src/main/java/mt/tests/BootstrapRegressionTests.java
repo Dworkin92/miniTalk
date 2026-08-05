@@ -1,5 +1,8 @@
 package mt.tests;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import mt.runtime.*;
 import mt.runtime.primitives.*;
 import mt.runtime.bootstrap.*;
@@ -38,6 +41,8 @@ public final class BootstrapRegressionTests {
         testClassDefInstaller();
 
         testQuadrant();
+
+        testImageWriter();
     }
 
     private static void testIntegerClassCreation() {
@@ -472,4 +477,27 @@ employeeClass.setClazz(
             System.out.println("ClassClass : metaclass name expected: " + classClass.getName().toString() + " ==> ECHEC");
 
     }
+
+    private static void testImageWriter() {
+
+    System.out.println(
+        "=== Image Writer test ===");
+
+    try {
+
+        MTImageWriter.save(
+            runtime,
+            Paths.get("miniTalk.img"));
+
+        System.out.println(
+            "image écrite");
+
+    }
+    catch (Exception ex) {
+
+        ex.printStackTrace();
+
+        throw new RuntimeException(ex);
+    }
+}
 }

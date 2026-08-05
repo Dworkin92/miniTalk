@@ -191,3 +191,30 @@ Les tests de non-régression constituent la référence
 comportementale du système.
 
 Le MOP v1.2 reste un chantier actif.
+
+TODO MOP
+
+- Clarifier le dispatch :
+    objet -> hiérarchie d'objets
+    classe -> hiérarchie des métaclasses
+
+- Déterminer précisément où vivent :
+    new
+    new:
+    subclass:
+
+- Dessiner le graphe complet :
+    Object
+    Class
+    ObjectClass
+    ClassClass
+    Person
+    PersonClass
+
+- Réfléchir au mécanisme d'image
+    (sans coder pour l'instant)
+
+## retouchage du code
+
+- MTArray est désormais iterable
+

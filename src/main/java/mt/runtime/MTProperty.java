@@ -7,7 +7,7 @@ public class MTProperty
 
     private final MTClass ownerClass;
 
-    private MTObject defaultValue =
+    private MTObject value =
             MTNil.instance();
 
     public MTProperty(
@@ -26,13 +26,13 @@ public class MTProperty
         return ownerClass;
     }
 
-    public MTObject getDefaultValue() {
-        return defaultValue;
+    public MTObject getValue() {
+        return value;
     }
 
-    public void setDefaultValue(
-            MTObject defaultValue) {
+    public void setValue(
+            MTObject value) {
 
-        this.defaultValue = defaultValue;
+        this.value = value;
     }
 }

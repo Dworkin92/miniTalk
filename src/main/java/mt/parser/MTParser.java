@@ -163,24 +163,16 @@ public final class MTParser {
 
         if (check(
                 MTTokenType.IDENTIFIER)
+                && lookAhead(MTTokenType.ASSIGN)) {
 
-                && lookAhead(
-                        MTTokenType.ASSIGN)) {
+            MTToken variable = advance();
 
-            MTToken variable =
-                    advance();
+            consume(MTTokenType.ASSIGN, "Expected :=");
 
-            consume(
-                    MTTokenType.ASSIGN,
-                    "Expected :=");
-
-            MTNode value =
-                    parseExpression();
+            MTNode value = parseExpression();
 
             return new MTAssignmentNode(
-                    MTSymbol.intern(
-                            variable.text()),
-                    value);
+                    MTSymbol.intern(variable.text()), value);
         }
 
         //return parseBinaryMessage();
@@ -221,13 +213,9 @@ public final class MTParser {
                 MTSymbol.intern(previous().text()));
         }
 
-        if (match(
-                MTTokenType.IDENTIFIER)) {
-
+        if (match(MTTokenType.IDENTIFIER)) {
             return new MTVariableNode(
-                    MTSymbol.intern(
-                            previous()
-                                    .text()));
+                    MTSymbol.intern(previous().text()));
         }
 
         if (match(MTTokenType.RETURN)) {
@@ -284,8 +272,7 @@ public final class MTParser {
     private MTNode parseBinaryMessage() {
         MTNode left = parseUnaryMessage();
 
-        while (match(
-            MTTokenType.BINARY_SELECTOR)) {
+        while (match(MTTokenType.BINARY_SELECTOR)) {
 
             MTToken selector = previous();
 
@@ -296,9 +283,7 @@ public final class MTParser {
             arguments.add(right);
 
             left = new MTMessageSendNode(
-                       left,
-                       MTSymbol.intern(
-                               selector.text()),
+                       left, MTSymbol.intern(selector.text()),
                        arguments);
         }
 
@@ -353,18 +338,12 @@ public final class MTParser {
         if (check(MTTokenType.COLON)) {
             while (match(MTTokenType.COLON)) {
                 MTToken parameter =
-                    consume(
-                            MTTokenType.IDENTIFIER,
-                            "Expected parameter name");
+                    consume(MTTokenType.IDENTIFIER, "Expected parameter name");
 
-                parameters.add(
-                    MTSymbol.intern(
-                            parameter.text()));
+                parameters.add(MTSymbol.intern(parameter.text()));
             }
 
-            consume(
-                MTTokenType.PIPE,
-                "Expected '|'");
+            consume(MTTokenType.PIPE, "Expected '|'");
         }
 
         if (match(MTTokenType.PIPE)) {
@@ -490,8 +469,7 @@ public final class MTParser {
 
     private boolean isAtEnd() {
 
-        return peek().type()
-                == MTTokenType.EOF;
+        return peek().type() == MTTokenType.EOF;
     }
 
     private boolean isKeywordStart() {
@@ -503,13 +481,11 @@ public final class MTParser {
 
     private MTToken peek() {
 
-        return tokens.get(
-                current);
+        return tokens.get(current);
     }
 
     private MTToken previous() {
 
-        return tokens.get(
-                current - 1);
+        return tokens.get(current - 1);
     }
 }

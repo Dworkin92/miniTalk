@@ -97,8 +97,8 @@ public class MTBlock
         /* Traitement des variables temporaires */
         MTArray temporaries = ast.getTemporaries();
 
-        for (int i = 0; i < temporaries.size(); i++) {
-            MTSymbol temporary = (MTSymbol)temporaries.at(i);
+        for (MTObject each : temporaries) {
+            MTSymbol temporary = (MTSymbol)each;
 
             activationScope.define(temporary, MTNil.instance());
         }

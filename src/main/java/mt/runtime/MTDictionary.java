@@ -27,6 +27,12 @@ public class MTDictionary
                 value);
     }
 
+    public void atPutIfAbsent(MTObject key, MTObject value) {
+
+        if (!includesKey(key)) {
+            atPut(key, value);
+        }
+    }
     public boolean includesKey(
             MTObject key) {
 
@@ -37,6 +43,28 @@ public class MTDictionary
     public int size() {
 
         return entries.size();
+    }
+
+    public MTArray keys() {
+
+        MTArray result = new MTArray();
+
+        for (MTObject key : entries.keySet()) {
+            result.add(key);
+        }
+
+        return result;
+    }
+
+    public MTArray values() {
+
+        MTArray result = new MTArray();
+
+        for (MTObject value : entries.values()) {
+            result.add(value);
+        }
+
+        return result;
     }
 
     @Override
