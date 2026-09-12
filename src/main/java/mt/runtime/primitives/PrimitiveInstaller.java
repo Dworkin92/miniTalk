@@ -27,6 +27,7 @@ public final class PrimitiveInstaller {
             }
 
             for (Primitive annotation : annotations) {
+    //System.out.println("Installing " + annotation.value() + " into " + clazz.getName());
                 clazz.addMethod(
                     new MTMethod(
                         MTSymbol.intern(annotation.value()),

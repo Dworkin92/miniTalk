@@ -40,7 +40,6 @@ public final class MTRuntime {
         return classMetaclass;
     }
 
-
     public void registerClass(MTClass clazz) {
         classes.atPut(
             clazz.getName(),

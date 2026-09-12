@@ -28,10 +28,10 @@ public class MTObject {
     private MTClass clazz;
 
     /**
-     * propertyValues est en fait un dictionnaire Java dont les clés sont des MTSymbol et les valeurs, des MTObject
+     * properties est en fait un dictionnaire Java dont les clés sont des MTSymbol et les valeurs, des MTObject
      */
-    private final Map<MTSymbol, MTObject> propertyValues = new HashMap<>();
-    //private final MTDictionary propertyValues = new MTDictionary();
+    private final Map<MTSymbol, MTObject> properties = new HashMap<>();
+    //private final MTDictionary properties = new MTDictionary();
 
     /**
      * name est un symbole permettant de désigner tout objet dans miniTalk
@@ -79,6 +79,27 @@ public class MTObject {
             method = clazz.lookupMethod(selector);
         }
 
+        /*
+System.out.println(
+    "receiver = "
+    + this);
+
+if (this instanceof MTClass c) {
+
+    System.out.println(
+        "metaclass = "
+        + c.getMetaclazz());
+
+    MTMethod m =
+        c.getMetaclazz()
+         .lookupMethod(selector);
+
+    System.out.println(
+        "lookup = "
+        + m);
+}
+*/
+
         if (method == null) {
             throw new MTRuntimeException("Unknown selector: " + selector);
         }
@@ -117,7 +138,7 @@ public class MTObject {
     public MTObject getProperty(MTSymbol symbol) {
 
         MTObject value =
-                propertyValues.get(symbol);
+                properties.get(symbol);
 
         return value != null
                 ? value
@@ -128,7 +149,7 @@ public class MTObject {
             MTSymbol symbol,
             MTObject value) {
 
-        propertyValues.put(symbol, value);
+        properties.put(symbol, value);
     }
 
     public void rebindProps() {
@@ -140,7 +161,7 @@ public class MTObject {
         for (MTProperty property :
                 clazz.getAllProperties().values()) {
 
-            propertyValues.putIfAbsent(
+            properties.putIfAbsent(
                     property.getName(),
                     MTNil.instance());
         }
@@ -155,8 +176,8 @@ public class MTObject {
     */
 
     /* methode temporaire : propertyCount */
-    public int propertyCount() {
-        return propertyValues.size();
+    public int propertiesCount() {
+        return properties.size();
     }
 
 }

@@ -104,7 +104,6 @@ public final class MTRuntimeBootstrap {
 
 
 
-
         runtime.registerClass(objectClass);
 
         runtime.registerClass(classClass);
@@ -131,8 +130,14 @@ public final class MTRuntimeBootstrap {
             ObjectPrimitives.class);
 
         PrimitiveInstaller.install(
+            runtime.getObjectMetaclass(),
+            ObjectClassPrimitives.class);
+
+        PrimitiveInstaller.install(
             runtime.getClassClass(),
             ClassPrimitives.class);
+
+System.out.println(runtime.getClassMetaclass().getName());
 
         PrimitiveInstaller.install(
             runtime.getClassMetaclass(),
@@ -146,6 +151,9 @@ public final class MTRuntimeBootstrap {
 
         MTClass nilClass = ClassDefInstaller.install(runtime, NilClassDef.class);
         MTNil.setNilClass(nilClass);
+
+        //MTClass anonymousClass = ClassDefInstaller.install(runtime, AnonymousClassDef.class);
+
 
         MTClass integerClass = ClassDefInstaller.install(runtime, IntegerClassDef.class);
 

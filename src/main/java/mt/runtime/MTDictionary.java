@@ -6,9 +6,7 @@ import java.util.Map;
 public class MTDictionary
         extends MTObject {
 
-    private final Map<MTObject, MTObject>
-            entries =
-                new LinkedHashMap<>();
+    private final Map<MTObject, MTObject> entries = new LinkedHashMap<>();
 
     public MTObject at(
             MTObject key) {

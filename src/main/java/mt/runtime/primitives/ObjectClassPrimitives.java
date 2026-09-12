@@ -1,44 +1,40 @@
 package mt.runtime.primitives;
 
-import mt.runtime.MTArray;
-import mt.runtime.MTClass;
 import mt.runtime.MTObject;
+import mt.runtime.MTArray;
+import mt.runtime.MTScope;
+import mt.runtime.MTClass;
 import mt.runtime.MTNil;
 import mt.runtime.MTSymbol;
-import mt.runtime.MTScope;
 import mt.runtime.MTRuntime;
 import mt.runtime.MTMethod;
 import mt.runtime.MTBlock;
 import mt.debug.MTDebug;
 
-public final class ClassClassPrimitives {
+public final class ObjectClassPrimitives {
 
-    private static long nextAnonymousId = 1;
-
-    private ClassClassPrimitives() {
+    private ObjectClassPrimitives() {
     }
 
     @Primitive("new")
-    public static MTObject newClass(MTObject receiver, MTArray arguments, MTScope scope) {
-        String className = "Anonymous" + nextAnonymousId++;
+    public static MTObject newInstance(
+            MTObject receiver,
+            MTArray arguments,
+            MTScope scope) {
 
-        MTRuntime runtime = scope.getRuntime();
+        MTClass clazz =
+                (MTClass) receiver;
 
-        MTClass clazz = new MTClass(MTSymbol.intern(className));
-        MTClass metaclazz = new MTClass(MTSymbol.intern(className + "Class"));
+        MTObject instance =
+                new MTObject();
 
-        clazz.setClazz(runtime.getClassClass());
-        clazz.setSuperclass(runtime.getObjectClass());
-        clazz.setMetaclazz(metaclazz);
+        instance.setClazz(clazz);
 
-        metaclazz.setClazz(runtime.getClassMetaclass());
-        metaclazz.setSuperclass(runtime.getObjectMetaclass());
-        metaclazz.setMetaclazz(runtime.getClassClass());
+        instance.rebindProps();
 
-        return clazz;
+        return instance;
     }
 
-    /*
     @Primitive("addInstProperty:")
     @Primitive("addInstProp:")
     public static MTObject addInstProp(
@@ -54,23 +50,34 @@ public final class ClassClassPrimitives {
 
         clazz.addProperty(propertyName);
 
-
+        /*
+        * getter
+        */
+        MTDebug.log("[addInstProp] add getter " + propertyName.toString() + " to class " + clazz.getName().toString() );
         clazz.addMethod(
             new MTMethod(
                     propertyName,
                     clazz,
                     (self, args, activationScope) ->
                             self.getProperty(propertyName)));
+        System.out.println(
+"lookup after add = "
++ clazz.lookupMethod(
+MTSymbol.intern(propertyName + ":")));
 
-
+        /*
+        * setter
+        */
+        MTDebug.log("[addInstProp] add setter "+ propertyName.toString() + ": to class " +  clazz.getName().toString() );
         clazz.addMethod(
             new MTMethod(
-                    MTSymbol.intern(propertyName + ":"),
+                    MTSymbol.intern(propertyName.getValue() + ":"),
                     clazz,
                     (self, args, activationScope) -> {
                         MTObject value = args.at(0);
                         self.setProperty(propertyName, value);
                         return value;}));
+
 
         return receiver;
     }
@@ -90,13 +97,18 @@ public final class ClassClassPrimitives {
 
         metaclass.addProperty(propertyName);
 
-
+        /*
+        * getter
+        */
         metaclass.addMethod(
             new MTMethod(
                     propertyName,
                     metaclass,
                     (self, args, activationScope) -> self.getProperty(propertyName)));
 
+        /*
+        * setter
+        */
         metaclass.addMethod(
             new MTMethod(
                     MTSymbol.intern(propertyName + ":"),
@@ -151,5 +163,4 @@ public final class ClassClassPrimitives {
 
         return receiver;
     }
-*/
 }

@@ -9,8 +9,7 @@ import mt.exceptions.MTRuntimeException;
 
 import mt.debug.MTDebug;
 
-public class MTClass
-        extends MTObject {
+public class MTClass extends MTObject {
 
     //private final MTSymbol name;
 
@@ -18,17 +17,11 @@ public class MTClass
 
     private MTClass metaclazz;
 
-    private final Map<MTSymbol, MTProperty>
-            declaredProperties =
-                new LinkedHashMap<>();
+    private final Map<MTSymbol, MTProperty> declaredProperties = new LinkedHashMap<>();
 
-    private final Map<MTSymbol, MTProperty>
-            allProperties =
-                new LinkedHashMap<>();
+    private final Map<MTSymbol, MTProperty> allProperties = new LinkedHashMap<>();
 
-    private final Map<MTSymbol, MTMethod>
-            methods =
-                new LinkedHashMap<>();
+    private final Map<MTSymbol, MTMethod> methods = new LinkedHashMap<>();
 
     public MTClass(MTSymbol name) {
 
@@ -132,8 +125,18 @@ public class MTClass
     }
 
     private MTMethod lookupMethod(MTSymbol selector, Set<MTClass> visited) {
-        MTDebug.log( getName() + " -> " + selector + " superclass="
-            + (superclass != null ? superclass.getName() : "null"));
+        MTClass myClass = getClazz();
+
+        MTDebug.log( "[CLASS - LOOKUP] " + getName() + " -> " + selector +
+            ", class=" + (myClass != null ? myClass.getName() : "null" ) +
+            ", superclass=" + (superclass != null ? superclass.getName() : "null"));
+/*
+    System.out.println(
+    "LOOKUP "
+    + selector
+    + " IN "
+    + getName());
+*/
 
         if (!visited.add(this)) {
 

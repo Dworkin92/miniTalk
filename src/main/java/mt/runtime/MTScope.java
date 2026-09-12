@@ -49,7 +49,7 @@ public class MTScope extends MTObject {
 public MTObject lookup(
         MTSymbol name) {
 
-    MTDebug.log("[LOOKUP] " + name);
+    MTDebug.log("[SCOPE - LOOKUP] " + name);
 
     if (bindings.includesKey(name)) {
         return bindings.at(name);
@@ -64,12 +64,12 @@ public MTObject lookup(
     if (!symbolName.isEmpty()
             && Character.isUpperCase(symbolName.charAt(0))) {
 
-        MTDebug.log("[CLASS LOOKUP] " + symbolName);
+        MTDebug.log("[SCOPE - CLASS LOOKUP] " + symbolName);
 
         MTClass clazz =
             runtime.classNamed(symbolName);
 
-        MTDebug.log("[FOUND] " + clazz);
+        MTDebug.log("[SCOPE - CLASS FOUND] " + clazz);
 
         if (clazz != null) {
             return clazz;

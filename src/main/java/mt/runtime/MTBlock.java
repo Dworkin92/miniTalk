@@ -172,6 +172,30 @@ public class MTBlock
         }
     }
 
+    public MTObject value(
+           MTObject self,
+           MTArray arguments) {
+
+        MTScope activationScope = createActivationScope(arguments);
+
+        activationScope.define(MTSymbol.intern("self"),self);
+
+        MTInterpreter interpreter = new MTInterpreter(activationScope.getRuntime());
+
+        try {
+
+            return interpreter.evaluate(ast.getBody(),activationScope);
+        }
+        catch (MTNonLocalReturnException ex) {
+
+            if (ex.getTargetBlock() == this) {
+                return ex.getValue();
+            }
+
+            throw ex;
+        }
+    }
+
     @Override
     public String toString() {
 
